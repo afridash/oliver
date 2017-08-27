@@ -9,7 +9,7 @@ const firebase =  require('firebase')
 export class AddNew extends Component {
   render () {
     return (
-      <Col xs={6} xsOffset={3} style={{marginTop:'5%'}}>
+      <Col xs={12} md={6} mdOffset={3} style={{marginTop:'5%'}}>
         <Panel header="Add New Information" bsStyle="primary" >
           <Tabs defaultActiveKey={1} id="uncontrolled-tab-example">
             <Tab eventKey={1} title="University">
@@ -22,11 +22,10 @@ export class AddNew extends Component {
               <AddDepartment />
             </Tab>
           </Tabs>
-            <div className='text-center'>
-              <Link to="/"><Button bsStyle='danger' bsSize='small'>Go Home</Button></Link>
-              </div>
         </Panel>
-
+        <div className='text-center'>
+          <Link to="/"><Button bsStyle='danger' bsSize='small'>Go Home</Button></Link>
+          </div>
       </Col>
     )
   }

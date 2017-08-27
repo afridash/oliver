@@ -5,6 +5,7 @@ import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap/dist/css/bootstrap-theme.css';
 import './index.css';
 import {AddNew} from './components/AddNew'
+import {AddQuestions} from './components/AddQuestions'
 import App from './App';
 import registerServiceWorker from './registerServiceWorker';
 
@@ -13,6 +14,7 @@ ReactDOM.render(<BrowserRouter >
     <Switch>
        <Route exact path={"/"} component={App} />
        <Route exact path={"/add"} component={AddNew} />
+       <Route path={"/questions"} component={AddQuestions} />
     </Switch>
   </div>
 </BrowserRouter>, document.getElementById('root'));

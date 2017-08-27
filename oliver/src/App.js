@@ -15,9 +15,9 @@ class App extends Component {
         <p className="App-intro">
           Please sir, can I have some more questions ? :(
         </p>
-        <Button bsStyle="primary" bsSize="large">Add Questions</Button>
+        <Link to="/questions"><Button bsStyle="primary" bsSize="large">Add Questions</Button></Link>
         <div style={{margin:5}}>Or Maybe...View Them <Link to="/add">Here</Link></div>
-        <Navbar fixedBottom justified>
+        <Navbar fixedBottom >
           <Navbar.Header>
             <Navbar.Brand>
             <p>Powered By Afridash</p>
