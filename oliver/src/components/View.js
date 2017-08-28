@@ -15,6 +15,7 @@ export class View extends Component {
       addQuestions:false,
       checked:false,
       showCourses:false,
+      courseName:'',
     }
     this.collegesRef = firebase.database().ref().child('colleges')
     this.facultiesRef = firebase.database().ref().child('faculties')
@@ -67,7 +68,7 @@ export class View extends Component {
     })
   }
   handleSelectCourse (event) {
-    this.setState({courseKey:event.target.value, showViewButton:true})
+    this.setState({courseKey:event.target.value, courseName:event.target.name, showViewButton:true})
   }
   selectDetails () {
     return (
@@ -77,9 +78,9 @@ export class View extends Component {
           controlId="formBasicText"
           >
             <ControlLabel>Choose University</ControlLabel>
-          <select className='form-control' onChange={(event)=>{this.handleSelect(event); this.setState({showFaculties:true})}} name='selected'>
+          <select className='form-control' onChange={(event)=>{this.handleSelect(event); this.setState({showFaculties:true})}}>
             <option></option>
-            {this.state.colleges.map((college, key)=> <option key={key} value={college.key}>{college.name}</option>)}
+            {this.state.colleges.map((college, key)=> <option key={key} value={college.key} >{college.name}</option>)}
           </select>
           </FormGroup>
 
@@ -112,9 +113,9 @@ export class View extends Component {
         controlId="formBasicText"
         >
         <ControlLabel>Choose Course</ControlLabel>
-        <select className='form-control' onChange={(event)=>{this.handleSelectCourse(event)}} name='selected'>
+        <select className='form-control' onChange={(event)=>{this.handleSelectCourse(event)}} >
           <option></option>
-            {this.state.courses.map((course, key)=> <option key={key} value={course.key}>{course.name}</option>)}
+            {this.state.courses.map((course, key)=> <option key={key} value={course.key} >{course.name}</option>)}
         </select>
       </FormGroup>
     )
@@ -128,7 +129,7 @@ export class View extends Component {
   render () {
     return (
       <Col md={8} mdOffset={2} xs={12} style={{marginTop:'5%'}}>
-        <Panel header="View Questions" bsStyle="primary" >
+        <Panel header={"View Questions " + this.state.courseName} bsStyle="primary" >
           <form>
             {this.state.viewQuestions ? <Questions courseKey={this.state.courseKey} close={this.done.bind(this)} /> : this.selectDetails()}
             {this.state.showViewButton ?<Button  bsStyle='primary' onClick={()=>this.close()}>View Questions</Button>: <div></div>}
