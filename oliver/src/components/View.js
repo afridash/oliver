@@ -1,10 +1,10 @@
 import React, {Component} from 'react'
 import {FormGroup, FormControl, ControlLabel, Col, Panel, Button, Modal} from 'react-bootstrap'
-import {Questions} from './Questions'
+import {Questions} from './ViewQuestions'
 import {Link} from 'react-router-dom'
 import {Firebase} from '../auth/firebase'
 const firebase =  require('firebase')
-export class AddQuestions extends Component {
+export class View extends Component {
   constructor (props) {
     super(props)
     this.state = {
@@ -67,63 +67,12 @@ export class AddQuestions extends Component {
     })
   }
   handleSelectCourse (event) {
-    this.setState({courseKey:event.target.value, showAddButton:true})
-  }
-  showModal () {
-    return (
-      <Modal show={this.state.showModal} onHide={()=>this.setState({showModal:false})}>
-        <Modal.Header closeButton>
-          <Modal.Title>Add New Course</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <FormGroup
-            controlId="formBasicText"
-            >
-              <ControlLabel>Enter Course Title</ControlLabel>
-              <FormControl
-                type="text"
-                value={this.state.name}
-                name="name"
-                placeholder="Course Title"
-                onChange={(event)=>this.handleChange(event)}
-              />
-
-              <FormControl.Feedback />
-            </FormGroup>
-            <FormGroup
-              controlId="formBasicText"
-              >
-                <ControlLabel>Enter Course Code</ControlLabel>
-                <FormControl
-                  type="text"
-                  value={this.state.code}
-                  name="code"
-                  placeholder="Course Code"
-                  onChange={(event)=>this.handleChange(event)}
-                />
-
-                <FormControl.Feedback />
-              </FormGroup>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button onClick={()=>this.saveCourse()}>Save</Button>
-          <Button onClick={()=>this.setState({showModal:false})}>Close</Button>
-        </Modal.Footer>
-      </Modal>
-    )
-  }
-  saveCourse () {
-    var data = {
-      name:this.state.name,
-      code:this.state.code
-    }
-    this.coursesRef.child(this.state.departmentKey).push(data)
-    this.retrieveCourses(this.state.departmentKey)
-    this.setState({showModal:false})
+    this.setState({courseKey:event.target.value, showViewButton:true})
   }
   selectDetails () {
     return (
       <div>
+        <h5 className='text-warning'>Choose university, faculty, department and course to view questions</h5>
         <FormGroup
           controlId="formBasicText"
           >
@@ -154,7 +103,6 @@ export class AddQuestions extends Component {
               </select>
             </FormGroup>
             {this.state.showCourses ? this.showCourses() : <div></div>}
-              {this.showModal()}
       </div>
     )
   }
@@ -163,33 +111,31 @@ export class AddQuestions extends Component {
       <FormGroup
         controlId="formBasicText"
         >
-        <ControlLabel>Choose Course, if not found, add a new one...then select it</ControlLabel>
+        <ControlLabel>Choose Course</ControlLabel>
         <select className='form-control' onChange={(event)=>{this.handleSelectCourse(event)}} name='selected'>
           <option></option>
             {this.state.courses.map((course, key)=> <option key={key} value={course.key}>{course.name}</option>)}
         </select>
-        <Button style={{marginTop:10}} onClick={()=>this.setState({showModal:true})}>Add New</Button>
       </FormGroup>
     )
   }
-  close () {
-    this.setState({showAddButton:false, addQuestions:true})
-  }
   done () {
-    this.setState({addQuestions:false})
+    this.setState({viewQuestions:false})
+  }
+  close () {
+    this.setState({showViewButton:false, viewQuestions:true})
   }
   render () {
     return (
-      <Col xs={12} md={8} mdOffset={2} style={{marginTop:'5%'}}>
-        <Panel header="Add Questions" bsStyle="primary" >
-          <h5 className='text-warning'>Choose university, faculty, department and course to add questions</h5>
+      <Col md={8} mdOffset={2} xs={12} style={{marginTop:'5%'}}>
+        <Panel header="View Questions" bsStyle="primary" >
           <form>
-            {this.state.addQuestions ? <Questions courseKey={this.state.courseKey} close={this.done.bind(this)} /> : this.selectDetails()}
-            {this.state.showAddButton ?<Button bsSize='small' bsStyle='primary' onClick={()=>this.close()}>Add Questions</Button>: <div></div>}
+            {this.state.viewQuestions ? <Questions courseKey={this.state.courseKey} close={this.done.bind(this)} /> : this.selectDetails()}
+            {this.state.showViewButton ?<Button  bsStyle='primary' onClick={()=>this.close()}>View Questions</Button>: <div></div>}
           </form>
         </Panel>
         <div className='text-center' style={{marginTop:30}}>
-          <Link to="/"><Button bsStyle='danger' bsSize='small'>Go Home</Button></Link>
+          <Link to="/"><Button bsStyle='danger'>Go Home</Button></Link>
         </div>
       </Col>
     )

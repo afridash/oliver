@@ -16,7 +16,7 @@ class App extends Component {
           Please sir, can I have some more questions ? :(
         </p>
         <Link to="/questions"><Button bsStyle="primary" bsSize="large">Add Questions</Button></Link>
-        <div style={{margin:5}}>Or Maybe...View Them <Link to="/add">Here</Link></div>
+        <div style={{margin:5}}>Or Maybe...View Them <Link to="/view">Here</Link></div>
         <Navbar fixedBottom >
           <Navbar.Header>
             <Navbar.Brand>

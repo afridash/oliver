@@ -107,7 +107,7 @@ export class Questions extends Component {
     }
   }
   authenticateQuestion () {
-    if (this.state.question === '' || this.state.answer === '' || this.state.optionA === ''
+    if (this.state.question === '' || this.state.optionA === ''
     ||this.state.optionB === '' || this.state.optionC === '' || this.state.optionD === '') return false
     else return true
   }
