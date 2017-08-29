@@ -15,6 +15,7 @@ export class Questions extends Component {
       optionB:'',
       optionC:'',
       optionD:'',
+      questionType:'objective',
     }
     this.questions = []
     this.courseKey = this.props.courseKey
@@ -57,6 +58,7 @@ export class Questions extends Component {
         optionC:question.optionC,
         optionD:question.optionD,
         answer:question.answer,
+        checked:question.answered,
         question:question.question,
       })
   }
@@ -80,7 +82,9 @@ export class Questions extends Component {
     var data = {}
     var isOk = this.authenticateQuestion()
     if (isOk) {
+      if (this.state.questionType === 'objective') {
         data = {
+          type:this.state.questionType,
           answered:this.state.checked,
           question:this.state.question,
           optionA:this.state.optionA,
@@ -89,6 +93,15 @@ export class Questions extends Component {
           optionD:this.state.optionD,
           answer:this.state.answer,
         }
+      }else {
+        data = {
+          type:this.state.questionType,
+          answered:this.state.checked,
+          question:this.state.question,
+          answer:this.state.answer,
+        }
+      }
+
       this.questions[this.state.number] = data
       this.setState({
         error:'',
@@ -107,14 +120,23 @@ export class Questions extends Component {
     }
   }
   authenticateQuestion () {
-    if (this.state.question === '' || this.state.optionA === ''
-    ||this.state.optionB === '' || this.state.optionC === '' || this.state.optionD === '') return false
-    else return true
+    if (this.state.questionType === 'objective') {
+      if (this.state.question === '' || this.state.optionA === ''
+      ||this.state.optionB === '' || this.state.optionC === '' || this.state.optionD === '') return false
+      else return true
+    }else {
+      if (this.state.question === '') return false
+      else return true
+    }
   }
-  showQuestionForm () {
+  showQuestions () {
+    if (this.state.questionType === 'objective') return this.showObjectivesForm()
+    else if (this.state.questionType === 'theory') return this.showTheoryForm()
+    else return this.showChooseQuestiontType()
+  }
+  showObjectivesForm () {
     return (
       <div>
-        <h5 className="text-center">{this.state.number+1}</h5>
         <FormGroup
           controlId="formBasicText"
           >
@@ -180,13 +202,69 @@ export class Questions extends Component {
               />
               <HelpBlock>Enter the correct option</HelpBlock>
             </FormGroup>
+          </div>
+        )
+  }
+  showTheoryForm () {
+      return (
+        <div>
+          <FormGroup
+            controlId="formBasicText"
+            >
+              <textarea
+                className='form-control'
+                style={{resize:'none'}}
+                type="text"
+                value={this.state.question}
+                name="question"
+                placeholder="Enter Question"
+                onChange={(event)=>this.handleChange(event)} />
+              <FormControl.Feedback />
+            </FormGroup>
+
+            <FormGroup>
+              <FormControl
+                type="text"
+                value={this.state.answer}
+                name="answer"
+                placeholder="Answer (Option)"
+                onChange={(event)=>this.handleChange(event)}
+              />
+              <HelpBlock>Enter the correct option</HelpBlock>
+            </FormGroup>
+        </div>
+      )
+  }
+  showChooseQuestiontType () {
+    return (
+      <div className='text-center'><h3>Choose A Question Type To Add New Question</h3></div>
+    )
+  }
+  showQuestionForm () {
+    return (
+      <div>
+        <h3 className="text-center">{this.state.number+1}</h3>
+        <FormGroup controlId="formControlsSelect">
+          <ControlLabel>Select Question Type</ControlLabel>
+          <FormControl
+            componentClass="select"
+            placeholder="Choose Type"
+            name='questionType'
+            onChange={(event)=>this.handleChange(event)}
+            >
+            <option value="objective">Objective</option>
+            <option value="theory">Theory</option>
+          </FormControl>
+        </FormGroup>
+            {this.showQuestions()}
             <Checkbox checked={this.state.checked} onChange={(event)=>this.setChecked(event)}>Answered</Checkbox>
             {this.state.error !== '' ? <p className='text-warning'>{this.state.error}</p> :<p></p>}
             <Button onClick={()=>this.showNext()} bsStyle='primary' style={{margin:10}} >Next</Button>
             {this.state.number > 0 ? <Button onClick={()=>this.showPrevious()} bsStyle='default'>Previous</Button> : <div></div>  }
-            <Button className='pull-right' onClick={this.props.close}>Close</Button>
-            {this.state.number > 0 ? <Button onClick={()=>this.saveAssignment()} className="pull-right" bsStyle='success' style={{margin:10}}>Save</Button> : <div></div>  }
-
+            <div className='text-center'>
+              <Button  bsStyle='danger' onClick={this.props.close}>Close</Button>
+              {this.state.number > 0 ? <Button onClick={()=>this.saveAssignment()}  bsStyle='success' style={{margin:10}}>Save</Button> : <div></div>  }
+            </div>
     </div>
     )
   }
