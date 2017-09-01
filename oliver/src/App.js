@@ -36,7 +36,7 @@ class App extends Component {
         </p>
         <Link to="/questions"><Button bsStyle="primary" bsSize="large">Add Questions</Button></Link>
         <div style={{margin:5}}>Or Maybe...View Them <Link to="/view">Here</Link></div>
-        <div style={{marginTop:'10%'}}><h3 className='text-info'>Our Questions so Far: {this.state.questions}</h3></div>
+        <div style={{marginTop:'10%'}}><h3 className='text-danger'>Our Questions so Far: <Link to='/stats'>{this.state.questions}</Link></h3></div>
         <Navbar fixedBottom >
           <Navbar.Header>
             <Navbar.Brand>

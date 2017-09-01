@@ -7,6 +7,7 @@ import './index.css';
 import {AddNew} from './components/AddNew'
 import {AddQuestions} from './components/AddQuestions'
 import {View} from './components/View'
+import {Stats} from './components/Stats'
 import App from './App';
 import registerServiceWorker from './registerServiceWorker';
 
@@ -17,6 +18,7 @@ ReactDOM.render(<BrowserRouter >
        <Route exact path={"/add"} component={AddNew} />
        <Route path={"/questions"} component={AddQuestions} />
        <Route path={'/view'} component={View} />
+       <Route path={'/stats'} component={Stats} />
     </Switch>
   </div>
 </BrowserRouter>, document.getElementById('root'));
