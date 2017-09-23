@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import {Button, Navbar, NavItem, Nav} from 'react-bootstrap'
 import {Link} from 'react-router-dom'
 import oliver from './oliver.jpg'
-import './AppStyles.css'
+import './App.css'
 import {Firebase} from './auth/firebase'
 const firebase =  require('firebase')
 class App extends Component {
