@@ -1,107 +1,49 @@
 import React from 'react';
-import { StyleSheet, Text, View , Image, TouchableHighlight, Alert, Platform} from 'react-native';
-
+import { StyleSheet, AsyncStorage} from 'react-native';
+import {Router, Scene} from 'react-native-router-flux'
+import Index from './components/index'
+import Login from './components/login'
+import SignUp from './components/signup'
+import Reset from './components/reset'
+import Home from './components/home'
+import * as main from './assets/styles/main.js'
+import theme, { styles } from 'react-native-theme'
 export default class App extends React.Component {
-  _handlePress = () => {
-    Alert.alert('Clicked')
+  async componentWillMount () {
+    theme.setRoot(this)
+    var activeTheme = await AsyncStorage.getItem('theme')
+    if (activeTheme !== null) {
+      if (activeTheme !== 'default') theme.active(activeTheme)
+      else {
+        theme.active()
+      }
+    }
   }
   render() {
     return (
-      <View style={styles.container}>
-        <View style={styles.login}>
-          <Text style={styles.loginButton}>Log in</Text>
-        </View>
-        <View style={styles.secondaryContainer}>
-          <View style={styles.title}><Text style={styles.header}>Oliver</Text>
-          <Text style={styles.subtitle}>Exam Prep Simplified</Text>
-        </View>
-          <View style={styles.image}><Image
-           style={{width: 200, height: 200}}
-           source={{uri: 'https://facebook.github.io/react/img/logo_og.png'}}
-         />
-         <Text style={styles.information}>Find courses from your institution</Text>
-       </View>
-         </View>
-         <TouchableHighlight style={styles.signup} onPress={this._handlePress}>
-           <Text style={styles.signupButton}>Create Account</Text>
-         </TouchableHighlight>
-      </View>
+      <Router navigationBarStyle>
+        <Scene key='root' hideNavBar>
+          <Scene key='index'  initial  component={Index} />
+          <Scene key='login' component={Login}  />
+          <Scene key='signup' component={SignUp} />
+          <Scene key='resetpassword'  component={Reset} />
+          <Scene key='home'  hideNavBar component={Home} />
+        </Scene>
+      </Router>
     );
   }
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#424242',
+const customStyles = StyleSheet.create({
+  navBarTitle:{
+    color:'#FFFFFF'
   },
-  secondaryContainer: {
-    flex:10,
-    alignItems: 'center',
-    justifyContent: 'center',
+  barButtonTextStyle:{
+      color:'#FFFFFF'
   },
-  login: {
-    flex:1.5,
-    alignItems:'flex-end',
-    justifyContent:'center',
-    marginTop:20,
+  barButtonIconStyle:{
+      tintColor:'rgb(255,255,255)'
   },
-  loginButton: {
-    padding:10,
-    textAlign:'center',
-    fontSize:20,
-    borderWidth:2,
-    borderRadius:5,
-    color:'white',
-    fontFamily:(Platform.OS === 'ios') ? 'Didot' : 'serif',
-    borderColor:'#fafafa',
-    backgroundColor:'#0277bd',
-    margin:5,
+  backButtonTextStyle: {
+    tintColor: 'white'
   },
-  title: {
-    flex:2,
-    justifyContent:'center',
-    alignItems:'center',
-  },
-  header:{
-    fontSize:100,
-    fontFamily:(Platform.OS === 'ios') ? 'Didot' : 'serif',
-    color:'#fafafa',
-  },
-  subtitle: {
-    fontSize:35,
-    fontFamily:(Platform.OS === 'ios') ? 'Didot' : 'serif',
-    textShadowColor:'#01579b',
-    textShadowOffset: {width: 2, height: 2},
-    textShadowRadius:2,
-    color:'#f5f5f5',
-  },
-  image: {
-    flex:3,
-    alignItems:'center',
-    justifyContent:'center',
-  },
-  information: {
-    fontSize:20,
-    fontFamily:(Platform.OS === 'ios') ? 'Didot' : 'serif',
-    color:'#f5f5f5',
-    padding:10,
-  },
-  signup:{
-    flex:1,
-    backgroundColor:'#757575',
-    justifyContent:'center',
-    alignItems:'center'
-  },
-  signupButton: {
-    flex:1,
-    justifyContent:'center',
-    alignItems:'center',
-    textAlign:'center',
-    fontSize:25,
-    padding:10,
-    color:'white',
-    fontFamily:(Platform.OS === 'ios') ? 'Didot' : 'serif',
-  },
-
-});
+})
