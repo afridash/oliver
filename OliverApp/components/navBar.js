@@ -3,37 +3,36 @@ import {
 } from 'react-native';
 import React, { Component } from 'react';
 import { Actions, Router, Scene } from 'react-native-router-flux';
+import theme, {styles} from 'react-native-theme'
 
 export default class NavBar extends Component {
+  componentWillMount () {
+    theme.setRoot(this)
+  }
   render() {
     return (
-<View style={styles.backgroundStyle}>
+<View style={styles.navBar}>
       <StatusBar />
       <View style={{ flexDirection: 'row' }}>
       <TouchableWithoutFeedback onPress={Actions.drawerOpen}>
       <Image
     source={require('../assets/images/menu_burger.png')}
-    style={styles.backarrowStyle} />
+    style={customStyles.backarrowStyle} />
       </TouchableWithoutFeedback>
 
       <Image
       source={require('../assets/images/menu_burger.png')}
-      style={styles.helpStyle} />
+      style={customStyles.helpStyle} />
 
       <Image
     source={require('../assets/images/menu_burger.png')}
-    style={styles.settingStyle} />
+    style={customStyles.settingStyle} />
     </View>
 </View>
     );
   }
 }
-const styles = {
-  backgroundStyle: {
-    borderTopWidth:20,
-    borderColor:'#757575',
-    backgroundColor: '#616161'
-  },
+const customStyles = {
   backarrowStyle: {
     resizeMode: 'contain',
     flexDirection: 'row',

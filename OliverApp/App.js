@@ -13,7 +13,6 @@ import {
   Stack,
   Lightbox,
 } from 'react-native-router-flux';
-import CardStackStyleInterpolator from 'react-navigation/src/views/CardStackStyleInterpolator';
 import theme, { styles } from 'react-native-theme'
 import Index from './components/index'
 import Login from './components/login'

@@ -30,7 +30,7 @@ export default class Login extends React.Component {
       contentContainerStyle={styles.container}
       scrollEnabled={false}
     >
-        <View style={customStyles.title}><Text style={customStyles.header}>Log In</Text></View>
+        <View style={customStyles.title}><Text style={[customStyles.header, styles.header]}>Log In</Text></View>
         <View style={customStyles.secondaryContainer}>
           <View style={customStyles.box}>
             <View style={customStyles.emailDIV}>

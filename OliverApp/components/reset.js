@@ -23,7 +23,7 @@ export default class Reset extends React.Component {
       contentContainerStyle={styles.container}
       scrollEnabled={false}
     >
-        <View style={customStyles.title}><Text style={customStyles.header}>Reset Password</Text></View>
+        <View style={customStyles.title}><Text style={[customStyles.header, styles.header]}>Reset Password</Text></View>
         <View style={customStyles.secondaryContainer}>
           <View style={customStyles.box}>
             <View style={customStyles.emailDIV}>

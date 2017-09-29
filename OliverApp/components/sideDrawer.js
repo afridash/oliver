@@ -29,6 +29,27 @@ class DrawerContent extends React.Component {
     }
     this.forceUpdate()
   }
+  async _blueTheme () {
+    if (theme.name !== 'blue') {
+      theme.active('blue')
+      await AsyncStorage.setItem('theme', 'blue')
+    }
+    this.forceUpdate()
+  }
+  async _purpleTheme () {
+    if (theme.name !== 'purple') {
+      theme.active('purple')
+      await AsyncStorage.setItem('theme', 'purple')
+    }
+    this.forceUpdate()
+  }
+  async _pinkTheme () {
+    if (theme.name !== 'pink') {
+      theme.active('pink')
+      await AsyncStorage.setItem('theme', 'pink')
+    }
+    this.forceUpdate()
+  }
   static propTypes = {
     name: PropTypes.string,
     sceneStyle: ViewPropTypes.style,
@@ -52,6 +73,9 @@ class DrawerContent extends React.Component {
 
           <Button onPress={this._lightTheme}>GO LIGHT</Button>
           <Button onPress={this._defaultTheme}>GO DARK</Button>
+          <Button onPress={this._blueTheme}>GO BLUE</Button>
+          <Button onPress={this._purpleTheme}>GO PURPLE</Button>
+          <Button onPress={this._pinkTheme}>GO PINK</Button>
         </View>
       </View>
     );
