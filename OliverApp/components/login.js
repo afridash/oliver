@@ -30,7 +30,7 @@ export default class Login extends React.Component {
       contentContainerStyle={styles.container}
       scrollEnabled={false}
     >
-        <View style={customStyles.title}><Text style={customStyles.header}>Log In</Text></View>
+        <View style={customStyles.title}><Text style={[customStyles.header,styles.header]}>Log In</Text></View>
         <View style={customStyles.secondaryContainer}>
           <View style={customStyles.box}>
             <View style={customStyles.emailDIV}>
@@ -80,8 +80,8 @@ const customStyles = StyleSheet.create({
     shadowOffset:{width: 10, height: 10},
     shadowOpacity:0.5,
     shadowRadius:5,
-    borderWidth:2,
-    borderColor:'white',
+    borderWidth:1,
+    borderColor:'grey',
     margin:40,
     backgroundColor:'white',
     borderRadius:10,

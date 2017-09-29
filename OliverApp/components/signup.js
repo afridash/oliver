@@ -23,7 +23,7 @@ export default class SignUp extends Component {
         contentContainerStyle={styles.container}
         scrollEnabled
       >
-        <View style={customStyles.title}><Text style={customStyles.header}>Sign Up</Text></View>
+        <View style={styles.title}><Text style={[styles.header,customStyles.header]}>Sign Up</Text></View>
         <View style={customStyles.secondaryContainer}>
           <View style={customStyles.box}>
             <View style={customStyles.emailDIV}>
@@ -130,8 +130,8 @@ const customStyles = StyleSheet.create({
     shadowOffset:{width: 10, height: 10},
     shadowOpacity:0.5,
     shadowRadius:5,
-    borderWidth:2,
-    borderColor:'white',
+    borderWidth:1,
+    borderColor:'grey',
     margin:40,
     backgroundColor:'white',
     borderRadius:10,
@@ -167,7 +167,6 @@ const customStyles = StyleSheet.create({
     textDecorationLine:'underline',
     textDecorationColor:'white',
     fontFamily:(Platform.OS === 'ios') ? 'Didot' : 'serif',
-    color:'#fafafa',
   },
   box: {
     flex:8,

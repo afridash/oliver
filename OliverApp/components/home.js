@@ -22,6 +22,12 @@ export default class Home extends Component {
       await AsyncStorage.setItem('theme', 'light')
     }
   }
+  async _blueTheme () {
+    if (theme.name !== 'blue') {
+      theme.active('blue')
+      await AsyncStorage.setItem('theme', 'blue')
+    }
+  }
   render () {
     return (
       <View style={styles.container}>
@@ -29,6 +35,7 @@ export default class Home extends Component {
           <Text>Hello Esther! How are you?</Text>
           <Text onPress={this._lightTheme}>GO LIGHT</Text>
           <Text onPress={this._defaultTheme}>GO DARK</Text>
+          <Text onPress={this._blueTheme}>GO BLUE</Text>
         </View>
       </View>
     )
