@@ -9,26 +9,11 @@ export default class DrawerContent extends React.Component {
   constructor (props) {
     super(props)
     this.state = {}
-    this._defaultTheme = this._defaultTheme.bind(this)
-    this._lightTheme = this._lightTheme.bind(this)
   }
   componentWillMount () {
     theme.setRoot(this)
   }
-  async _defaultTheme () {
-    if (theme.name !== 'default') {
-      theme.active()
-      await AsyncStorage.setItem('theme', 'default')
-    }
-    this.forceUpdate()
-  }
-  async _lightTheme () {
-    if (theme.name !== 'light') {
-      theme.active('light')
-      await AsyncStorage.setItem('theme', 'light')
-    }
-    this.forceUpdate()
-  }
+
   static propTypes = {
     name: PropTypes.string,
     sceneStyle: ViewPropTypes.style,
@@ -51,25 +36,24 @@ export default class DrawerContent extends React.Component {
            <Text style={sidebar.profileName}>Mabel Ogiriki</Text>
            <Text style={sidebar.profileEmail}>OliverApp@gmail.com</Text>
          </View>
-
           </View>
           <View style={sidebar.menu}>
-            <Button style={sidebar.secondaryContainer} onPress={Actions.home}><Image source={require('../assets/images/homeicon.png')} style={sidebar.home} />  Home</Button>
-              <Button style={sidebar.secondaryContainer} onPress={Actions.course}><Image source={require('../assets/images/courses.png')} style={sidebar.home} /> Courses</Button>
-              <Button style={sidebar.secondaryContainer} onPress={Actions.bookmark}><Image source={require('../assets/images/bookmark.png')} style={sidebar.home} />  Bookmarks</Button>
+            <Button style={[sidebar.secondaryContainer, styles.textColor]} onPress={Actions.home}><Image source={require('../assets/images/homeicon.png')} style={[sidebar.home, styles.iconColor]} />  Home</Button>
+              <Button style={[sidebar.secondaryContainer, styles.textColor]} onPress={Actions.course}><Image source={require('../assets/images/courses.png')} style={[sidebar.home, styles.iconColor]} /> Courses</Button>
+              <Button style={[sidebar.secondaryContainer, styles.textColor]} onPress={Actions.bookmark}><Image source={require('../assets/images/bookmark.png')} style={[sidebar.home, styles.iconColor]} />  Bookmarks</Button>
           </View>
 
         </View>
         <View style={{flex:1, justifyContent:'flex-end', alignItems:'center', borderTopWidth:3, borderColor:'white'}}>
-            <Button style={sidebar.secondaryContainer} onPress={Actions.logout}><Image source={require('../assets/images/logout.png')} style={sidebar.home} />Logout</Button>
-        </View>
+          <Button style={[sidebar.secondaryContainer, styles.textColor]} onPress={Actions.themes}>Themes</Button>
+            <Button style={[sidebar.secondaryContainer, styles.textColor]} onPress={Actions.logout}><Image source={require('../assets/images/logout.png')} style={[sidebar.home, styles.iconColor]} />Logout</Button>
       </View>
+    </View>
     );
   }
 }
 const sidebar = {
   secondaryContainer:{
-    color:'white',
     fontSize: 25,
     fontFamily:(Platform.OS === 'ios') ? 'Didot' : 'sans-serif',
   },
@@ -86,12 +70,14 @@ const sidebar = {
     backgroundColor:'white',
     justifyContent:'flex-start',
     alignItems:'center',
+    shadowColor:'#000000',
+    shadowOffset:{width: 5, height: 5},
+    shadowOpacity:0.5,
+    shadowRadius:5,
   },
 
   menu:{
     flex:4,
-    //borderWidth:1,
-    //borderColor:'yellow',
     justifyContent:'flex-start',
     alignItems:'flex-start',
     marginTop:10,
@@ -110,7 +96,6 @@ const sidebar = {
     width: 30,
     height: 30,
     alignItems:'flex-end',
-    tintColor:'white',
   },
   profileText:{
     marginLeft: 15,

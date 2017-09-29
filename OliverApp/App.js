@@ -24,6 +24,7 @@ import Exams from './components/exam'
 import * as main from './assets/styles/main.js'
 import NavBar from './components/navBar'
 import DrawerContent from './components/sideDrawer'
+import Themes from './components/themes'
 import MenuIcon from './assets/images/menu_burger.png';
 
 const reducerCreate = params => {
@@ -56,13 +57,12 @@ export default class App extends React.Component {
                 hideNavBar
                 key="root"
               >
-                <Scene key='index' component={Index} />
+                <Scene key='index' initial component={Index} />
                 <Scene key='login' component={Login}  />
                 <Scene key='signup' component={SignUp} />
                 <Scene key='resetpassword'  component={Reset} />
                 <Drawer
                   hideNavBar
-                  initial
                   key="drawer"
                   contentComponent={DrawerContent}
                   drawerImage={MenuIcon}
@@ -72,10 +72,11 @@ export default class App extends React.Component {
                     reload as a modal ontop of itself
                   */}
 
-                  <Scene navBar={NavBar}>
+                  <Scene hideNavBar>
                     <Scene key="home" initial component={Home}  />
                       <Scene key="start_exam"  component={Exams}  />
                       <Scene key="add_course" component={Add} />
+                      <Scene key="themes" component={Themes} />
                   </Scene>
                 </Drawer>
               </Stack>

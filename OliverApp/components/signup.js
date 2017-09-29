@@ -23,7 +23,7 @@ export default class SignUp extends Component {
         contentContainerStyle={styles.container}
         scrollEnabled
       >
-        <View style={customStyles.title}><Text style={customStyles.header}>Sign Up</Text></View>
+        <View style={customStyles.title}><Text style={[customStyles.header, styles.header]}>Sign Up</Text></View>
         <View style={customStyles.secondaryContainer}>
           <View style={customStyles.box}>
             <View style={customStyles.emailDIV}>
@@ -163,6 +163,7 @@ const customStyles = StyleSheet.create({
     alignItems:'center',
   },
   header:{
+    marginTop:30,
     fontSize:40,
     textDecorationLine:'underline',
     textDecorationColor:'white',

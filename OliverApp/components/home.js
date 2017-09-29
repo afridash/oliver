@@ -10,6 +10,7 @@ import {
 import {Actions} from 'react-native-router-flux'
 import theme, { styles } from 'react-native-theme'
 import Button from 'react-native-button'
+import NavBar from './navBar'
 export default class Home extends Component {
   constructor (props) {
     super (props)
@@ -36,10 +37,8 @@ export default class Home extends Component {
     <View
       id={item.id}
       style={customStyles.listItem}
-    //onPressItem={this._onPressItem}
-    //selected={!!this.state.selected.get(item.id)}
     >
-      <Text onPress={()=>this._onPressItem(item)} style={customStyles.listText}>{item.key} {item.name}</Text>
+      <Text onPress={()=>this._onPressItem(item)} style={[customStyles.listText, styles.textColor]}>{item.key} {item.name}</Text>
       <View style={{display: item.show ? 'flex' : 'none'}}>
         <Text>Study Theory Questions</Text>
         <Text>Practice Exam</Text>
@@ -53,6 +52,7 @@ export default class Home extends Component {
         <StatusBar
           barStyle="light-content"
         />
+        <NavBar />
         <View style={{flex:1}} >
           <View style={customStyles.container}>
             <FlatList
@@ -104,7 +104,6 @@ const customStyles = StyleSheet.create({
   },
   listText:{
     fontSize:20,
-    color:'white',
     fontWeight:'500',
     fontFamily:(Platform.OS === 'ios') ? 'Didot' : 'serif',
   },

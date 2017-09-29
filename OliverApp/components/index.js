@@ -17,31 +17,35 @@ export default class Index extends React.Component {
           <Text onPress={()=>Actions.login()} style={[styles.primaryButton,customStyles.loginButton]}>Log in</Text>
         </View>
         <View style={styles.secondaryContainer}>
-          <View style={styles.title}><Text style={styles.header}>Oliver</Text>
-          <Text style={styles.subtitle}>Exam Prep Simplified</Text>
+          <View style={styles.title}><Text style={[styles.header, customStyles.headerInfo]}>Oliver</Text>
+          <Text style={[styles.subtitle, customStyles.subtitleInfo]}>Exam Prep Simplified</Text>
         </View>
         <Slider style={styles.image} logoStyle={styles.logo} informationStyle={styles.information} />
          </View>
-         <TouchableHighlight style={styles.signup} onPress={()=>Actions.signup()}>
-           <Text style={customStyles.signupButton}>Create Account</Text>
-         </TouchableHighlight>
+           <Text onPress={()=>Actions.signup()} style={[styles.primaryButton, customStyles.loginButton]}>Create Account</Text>
       </View>
     );
   }
 }
 const customStyles = StyleSheet.create({
   loginButton: {
-    borderWidth:2,
+    borderWidth:1,
     borderRadius:5,
   },
-  signupButton: {
-    flex:1,
-    justifyContent:'center',
-    alignItems:'center',
-    textAlign:'center',
-    fontSize:25,
+  sliderInfo: {
+    fontSize:20,
     padding:10,
-    color:'white',
+    fontFamily:(Platform.OS === 'ios') ? 'Didot' : 'serif',
+  },
+  subtitleInfo: {
+    fontSize:35,
+    textShadowColor:'#01579b',
+    textShadowOffset: {width: 2, height: 2},
+    textShadowRadius:2,
+    fontFamily:(Platform.OS === 'ios') ? 'Didot' : 'serif',
+  },
+  headerInfo: {
+    fontSize:100,
     fontFamily:(Platform.OS === 'ios') ? 'Didot' : 'serif',
   },
 })
