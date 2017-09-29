@@ -28,6 +28,14 @@ theme.add({ // Add default theme
     backgroundColor:'#0277bd',
     margin:5,
   },
+  secondaryButton:{
+    padding:10,
+    flex:1,
+    height:45,
+    overflow:'hidden',
+    borderRadius:10,
+    backgroundColor: '#757575',
+  },
   signup:{
     flex:1,
     backgroundColor:'#757575',
@@ -52,6 +60,9 @@ theme.add({ // Add default theme
     alignItems:'flex-end',
     justifyContent:'center',
     marginTop:20,
+  },
+  buttonContainer:{
+    borderColor:'grey',
   },
   title: {
     flex:2,
@@ -164,6 +175,14 @@ theme.add({
       fontFamily:'serif'
     },
     color:'#fafafa',
+  },
+  secondaryButton:{
+    padding:10,
+    flex:1,
+    height:45,
+    overflow:'hidden',
+    borderRadius:10,
+    backgroundColor: '#0277bd',
   },
 
   image: {
