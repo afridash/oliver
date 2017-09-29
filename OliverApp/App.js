@@ -13,7 +13,6 @@ import {
   Stack,
   Lightbox,
 } from 'react-native-router-flux';
-import CardStackStyleInterpolator from 'react-navigation/src/views/CardStackStyleInterpolator';
 import theme, { styles } from 'react-native-theme'
 import Index from './components/index'
 import Login from './components/login'
@@ -57,12 +56,13 @@ export default class App extends React.Component {
                 hideNavBar
                 key="root"
               >
-                <Scene key='index'  initial  component={Index} />
+                <Scene key='index'  component={Index} />
                 <Scene key='login' component={Login}  />
                 <Scene key='signup' component={SignUp} />
                 <Scene key='resetpassword'  component={Reset} />
                 <Drawer
                   hideNavBar
+                  initial
                   key="drawer"
                   contentComponent={DrawerContent}
                   drawerImage={MenuIcon}

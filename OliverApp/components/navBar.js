@@ -19,7 +19,6 @@ export default class NavBar extends Component {
       <Image
       source={require('../assets/images/menu_burger.png')}
       style={styles.helpStyle} />
-
       <Image
     source={require('../assets/images/menu_burger.png')}
     style={styles.settingStyle} />
