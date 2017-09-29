@@ -1,14 +1,40 @@
 import React from 'react';
 import { StyleSheet, AsyncStorage} from 'react-native';
-import {Router, Scene} from 'react-native-router-flux'
+import {
+  Scene,
+  Router,
+  Actions,
+  Reducer,
+  ActionConst,
+  Overlay,
+  Tabs,
+  Modal,
+  Drawer,
+  Stack,
+  Lightbox,
+} from 'react-native-router-flux';
+import CardStackStyleInterpolator from 'react-navigation/src/views/CardStackStyleInterpolator';
+import theme, { styles } from 'react-native-theme'
 import Index from './components/index'
 import Login from './components/login'
 import SignUp from './components/signup'
 import Reset from './components/reset'
 import Home from './components/home'
+import Add from './components/add'
+import Exams from './components/exam'
 import * as main from './assets/styles/main.js'
-import theme, { styles } from 'react-native-theme'
+import NavBar from './components/navBar'
+import DrawerContent from './components/sideDrawer'
+import MenuIcon from './assets/images/menu_burger.png';
+
+const reducerCreate = params => {
+  const defaultReducer = new Reducer(params);
+  return (state, action) => {
+    return defaultReducer(state, action);
+  };
+};
 export default class App extends React.Component {
+
   async componentWillMount () {
     theme.setRoot(this)
     var activeTheme = await AsyncStorage.getItem('theme')
@@ -21,14 +47,40 @@ export default class App extends React.Component {
   }
   render() {
     return (
-      <Router navigationBarStyle>
-        <Scene key='root' hideNavBar>
-          <Scene key='index'  initial  component={Index} />
-          <Scene key='login' component={Login}  />
-          <Scene key='signup' component={SignUp} />
-          <Scene key='resetpassword'  component={Reset} />
-          <Scene key='home'  hideNavBar component={Home} />
-        </Scene>
+      <Router
+        createReducer={reducerCreate}
+        SceneStyle={styles}
+        >
+        <Overlay>
+            <Lightbox>
+              <Stack
+                hideNavBar
+                key="root"
+              >
+                <Scene key='index'  initial  component={Index} />
+                <Scene key='login' component={Login}  />
+                <Scene key='signup' component={SignUp} />
+                <Scene key='resetpassword'  component={Reset} />
+                <Drawer
+                  hideNavBar
+                  key="drawer"
+                  contentComponent={DrawerContent}
+                  drawerImage={MenuIcon}
+                >
+                  {/*
+                    Wrapper Scene needed to fix a bug where the tabs would
+                    reload as a modal ontop of itself
+                  */}
+
+                  <Scene navBar={NavBar}>
+                    <Scene key="home" initial component={Home}  />
+                      <Scene key="start_exam"  component={Exams}  />
+                      <Scene key="add_course" component={Add} />
+                  </Scene>
+                </Drawer>
+              </Stack>
+            </Lightbox>
+        </Overlay>
       </Router>
     );
   }

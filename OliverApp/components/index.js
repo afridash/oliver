@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View , Image, TouchableHighlight, Platform} from 'react-native';
+import { StyleSheet, Text, View , Image, TouchableHighlight, Platform, StatusBar} from 'react-native';
 import {Actions} from 'react-native-router-flux'
 import Slider from './slider'
 import theme, { styles } from 'react-native-theme'
@@ -10,6 +10,9 @@ export default class Index extends React.Component {
   render() {
     return (
       <View style={styles.container}>
+        <StatusBar
+          barStyle="light-content"
+        />
         <View style={styles.login}>
           <Text onPress={()=>Actions.login()} style={[styles.primaryButton,customStyles.loginButton]}>Log in</Text>
         </View>

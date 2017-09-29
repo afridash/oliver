@@ -63,7 +63,7 @@ export default class Login extends React.Component {
                     />
             </View>
           </View>
-            <Text style={[styles.primaryButton, customStyles.loginButton]} onPress={()=>Actions.home({type:'replace'})}>Log in</Text>
+            <Text style={[styles.primaryButton, customStyles.loginButton]} onPress={()=>Actions.drawer({type:'replace'})}>Log in</Text>
           <Text style={customStyles.information} onPress={()=>Actions.resetpassword()}>Forgot Password?</Text>
          </View>
          <View style={customStyles.title}></View>
