@@ -120,10 +120,10 @@ theme.add({ // Add LIGHT theme
   },
   navBar: {
     borderTopWidth:20,
-    borderColor:'#424242',
-    backgroundColor: '#424242',
+    borderColor:'#0277bd',
+    backgroundColor: '#01579b',
     shadowColor:'#000000',
-    shadowOffset:{width: 5, height: 5},
+    shadowOffset:{width:5, height: 5},
     shadowOpacity:0.5,
     shadowRadius:5,
     borderWidth:2,
