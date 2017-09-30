@@ -6,6 +6,7 @@ import {
   StyleSheet,
   FlatList,
   Platform,
+  TextInput
 } from 'react-native'
 import {Actions} from 'react-native-router-flux'
 import theme, { styles } from 'react-native-theme'
@@ -19,7 +20,7 @@ export default class Home extends Component {
     }
   }
   componentWillMount () {
-    theme.setRoot(this)
+    //theme.setRoot(this)
   }
   _onPressItem (item) {
     var key
@@ -35,17 +36,33 @@ export default class Home extends Component {
 }
   _renderItem = ({item}) => (
     <View
-      id={item.id}
       style={customStyles.listItem}
     >
       <Text onPress={()=>this._onPressItem(item)} style={[customStyles.listText, styles.textColor]}>{item.key} {item.name}</Text>
-      <View style={{display: item.show ? 'flex' : 'none'}}>
-        <Text>Study Theory Questions</Text>
-        <Text>Practice Exam</Text>
-        <Text>Bookmark</Text>
+      <View style={{display: item.show ? 'flex' : 'none', }}>
+        <View style={customStyles.actionsContainer}>
+          <Text style={[customStyles.actions, styles.textColor]}>Study Theory Questions</Text>
+        </View>
+        <View style={customStyles.actionsContainer}>
+          <Text style={[customStyles.actions, styles.textColor]}>Practice Exam</Text>
+        </View>
+        <View style={customStyles.actionsContainer}>
+          <Text style={[customStyles.actions, styles.textColor]}>Bookmark</Text>
+        </View>
       </View>
     </View>
   )
+  headerComponent () {
+    return (
+      <View style={{flex:1}}>
+        <TextInput
+            style={styles.input}
+            placeholder='Search'
+            onChangeText={(text) => { this.searchFriends(text) }}
+          />
+      </View>
+    )
+  }
   render () {
     return (
       <View style={styles.container}>
@@ -56,6 +73,7 @@ export default class Home extends Component {
         <View style={{flex:1}} >
           <View style={customStyles.container}>
             <FlatList
+              ListHeaderComponent={this.headerComponent()}
               ItemSeparatorComponent={()=><View style={customStyles.separator}></View>}
               data={this.state.data}
               renderItem={this._renderItem}
@@ -66,7 +84,7 @@ export default class Home extends Component {
               containerStyle={styles.secondaryButton}
               style={customStyles.addButton}
               styleDisabled={{color: 'red'}}
-              onPress={() => this._handlePress()}>
+              onPress={Actions.add_course}>
               Add Course
             </Button>
           </View>
@@ -106,5 +124,29 @@ const customStyles = StyleSheet.create({
     fontSize:20,
     fontWeight:'500',
     fontFamily:(Platform.OS === 'ios') ? 'Didot' : 'serif',
+    margin:5,
   },
+  actionsContainer:{
+    borderColor:'white',
+    borderWidth:1,
+    borderRadius:10,
+    overflow:'hidden',
+    margin:5,
+    marginLeft:20,
+    marginRight:20
+  },
+  actions:{
+    padding:10,
+    fontSize:16,
+    fontFamily:(Platform.OS === 'ios') ? 'Didot' : 'serif',
+    },
+  input: {
+  height: 50,
+  flex: 1,
+  fontSize: 12,
+  backgroundColor: 'white',
+  fontFamily:(Platform.OS === 'ios') ? 'Didot' : 'serif',
+  borderRadius: 10,
+  textAlign: 'center'
+},
 })

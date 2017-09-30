@@ -57,13 +57,14 @@ export default class App extends React.Component {
                 hideNavBar
                 key="root"
               >
-                <Scene key='index' initial component={Index} />
+                <Scene key='index' component={Index} />
                 <Scene key='login' component={Login}  />
                 <Scene key='signup' component={SignUp} />
                 <Scene key='resetpassword'  component={Reset} />
                 <Drawer
                   hideNavBar
                   key="drawer"
+                  initial
                   contentComponent={DrawerContent}
                   drawerImage={MenuIcon}
                 >
