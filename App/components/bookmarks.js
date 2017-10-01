@@ -15,7 +15,7 @@ export default class Bookmarks extends Component {
   render () {
     return (
       <View style={styles.container}>
-        <NavBar />
+        <NavBar title='Bookmarks' />
         <View style={styles.secondaryContainer} >
           <Text style={styles.header}>Bookmarks</Text>
         </View>

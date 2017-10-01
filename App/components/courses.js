@@ -15,7 +15,7 @@ export default class Courses extends Component {
   render () {
     return (
       <View style={styles.container}>
-        <NavBar />
+        <NavBar title='All courses' />
         <View style={styles.secondaryContainer} >
           <Text style={styles.header}>Courses</Text>
         </View>

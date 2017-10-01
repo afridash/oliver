@@ -1,5 +1,5 @@
 import {
- View, Image, StatusBar, TouchableWithoutFeedback
+ View, Image, StatusBar, TouchableWithoutFeedback, Text,Platform,
 } from 'react-native';
 import React, { Component } from 'react';
 import { Actions, Router, Scene } from 'react-native-router-flux';
@@ -16,11 +16,15 @@ export default class NavBar extends Component {
       <View style={styles.navBar}>
       <StatusBar />
       <View style={{ flexDirection: 'row' }}>
-      <TouchableWithoutFeedback onPress={Actions.drawerOpen}>
-      <Image
-    source={require('../assets/images/menu_burger.png')}
-    style={[customStyles.backarrowStyle, styles.iconColor]} />
-      </TouchableWithoutFeedback>
+        <View style={{flex:1}}>
+          <TouchableWithoutFeedback  onPress={Actions.drawerOpen}>
+          <Image
+        source={require('../assets/images/menu_burger.png')}
+        style={[customStyles.backarrowStyle, styles.iconColor]} />
+          </TouchableWithoutFeedback>
+        </View>
+      {this.props.title && <View style={customStyles.titleContainer}><Text style={[customStyles.title, styles.textColor]}>{this.props.title}</Text></View>}
+      <View style={{flex:1}}></View>
     </View>
 </View>
     );
@@ -35,21 +39,14 @@ const customStyles = {
     left: 0,
     justifyContent: 'flex-start'
   },
-  helpStyle: {
-    resizeMode: 'contain',
-      width: 50,
-      height: 50,
-      left: 220,
-      justifyContent: 'flex-end',
-      position: 'relative'
-
+  title:{
+    fontSize:20,
+    fontFamily:(Platform.OS === 'ios') ? 'Didot' : 'serif',
+    fontWeight:'700',
   },
-  settingStyle: {
-    resizeMode: 'contain',
-    width: 50,
-    height: 50,
-    justifyContent: 'flex-end',
-  position: 'relative',
-  left: 210
-  }
+  titleContainer:{
+    flex:1,
+    justifyContent:'center',
+    alignItems:'center',
+  },
 };

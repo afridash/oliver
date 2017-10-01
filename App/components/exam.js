@@ -15,7 +15,7 @@ export default class Exams extends Component {
   render () {
     return (
       <View style={styles.container}>
-        <NavBar />
+        <NavBar title='Course Code' />
         <View style={styles.secondaryContainer} >
           <Text style={styles.header}>Start</Text>
         </View>

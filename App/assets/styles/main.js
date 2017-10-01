@@ -126,7 +126,6 @@ theme.add({ // Add LIGHT theme
     shadowOffset:{width:5, height: 5},
     shadowOpacity:0.5,
     shadowRadius:5,
-    borderWidth:2,
   },
   primaryButton:{
     fontSize:20,
