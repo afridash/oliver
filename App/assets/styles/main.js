@@ -21,6 +21,9 @@ theme.add({ // Add default theme
     borderRadius:10,
     backgroundColor: '#757575',
   },
+  progress:{
+    backgroundColor:'#757575'
+  },
   primaryButton:{
     fontSize:20,
     padding:10,
@@ -150,6 +153,9 @@ theme.add({ // Add LIGHT theme
     borderRadius:10,
     backgroundColor: '#0277bd',
   },
+  progress:{
+    backgroundColor:'#0277bd'
+  },
   loginButton: {
     padding:10,
     textAlign:'center',
@@ -250,6 +256,9 @@ theme.add({ // Add BLUE theme
     overflow:'hidden',
     borderRadius:10,
     backgroundColor: '#303F9F',
+  },
+  progress:{
+    backgroundColor:'#303F9F'
   },
   primaryButton:{
     fontSize:20,
@@ -397,6 +406,9 @@ theme.add({ // Add PURPLE theme
     backgroundColor:'#7B1FA2',
     margin:5,
   },
+  progress:{
+    backgroundColor:'#7B1FA2'
+  },
   signup:{
     flex:1,
     backgroundColor:'#303F9F',
@@ -526,6 +538,9 @@ theme.add({ // Add PINK theme
     borderColor:'#fafafa',
     backgroundColor:'#D81B60',
     margin:5,
+  },
+  progress:{
+    backgroundColor:'#D81B60'
   },
   signup:{
     flex:1,
