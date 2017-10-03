@@ -52,7 +52,7 @@ export default class Home extends Component {
       <Swipeable onRightActionRelease={()=>this.setState({activeRow:index})} rightActionActivationDistance={100} onRef={ref => this.swipeable = ref} rightButtons={this.rightButtons}>
         <View style={{flex:1, flexDirection:'row', justifyContent:'space-between'}}>
           <Text onPress={()=>this._onPressItem(index)} style={[customStyles.listText, styles.textColor]}> {item.name}</Text>
-          {!item.show ? <Image source={require('../assets/images/right.png')} style={[styles.iconColor, customStyles.icon]} resizeMode={'contain'}/> : <Image source={require('../assets/images/left.png')} style={[styles.iconColor, customStyles.icon]} resizeMode={'contain'}/>}
+          {!item.show ? <Image source={require('../assets/images/arrow_right.png')} style={[styles.iconColor, customStyles.icon]} resizeMode={'contain'}/> : <Image source={require('../assets/images/arrow_down.png')} style={[styles.iconColor, customStyles.icon]} resizeMode={'contain'}/>}
         </View>
       {item.show && <View style={{flex:1}}>
         <View style={customStyles.actionsContainer}>
