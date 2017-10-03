@@ -24,6 +24,7 @@ import Exams from './components/exam'
 import Bookmarks from './components/bookmarks'
 import Theories from './components/theories'
 import Courses from './components/courses'
+import Profile from './components/profile'
 import * as main from './assets/styles/main.js'
 import NavBar from './components/navBar'
 import DrawerContent from './components/sideDrawer'
@@ -79,13 +80,14 @@ export default class App extends React.Component {
                   */}
 
                   <Scene hideNavBar>
-                    <Scene key="home" initial component={Home}  />
+                    <Scene key="home" component={Home}  />
                       <Scene key="start_exam" component={Exams}  />
                       <Scene key="add_course" component={Add} />
                       <Scene key="themes" component={Themes} />
                       <Scene key="bookmarks" component={Bookmarks} />
                       <Scene key="theory" component={Theories} />
                       <Scene key="courses" component={Courses} />
+                      <Scene key="profile"  initial component={Profile} />
                   </Scene>
                 </Drawer>
               </Stack>
