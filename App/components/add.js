@@ -110,13 +110,17 @@ export default class Add extends Component {
         <View style={addStyles.top}></View>
         <View style={styles.secondaryContainer}>
           <View style={addStyles.box}>
-              <TouchableHighlight onPress={()=>this.setState({modalVisible:!this.state.modalVisible})} style={addStyles.boxItem} >
+              <TouchableHighlight
+                underlayColor={'transparent'}
+                onPress={()=>this.setState({modalVisible:!this.state.modalVisible})} style={addStyles.boxItem} >
                 <View style={addStyles.itemContainer}>
                   <Text style={addStyles.item} >{this.state.pickedFaculty}</Text>
                   <Image source={require('../assets/images/arrow_right.png')} style={[addStyles.home]} />
                 </View>
               </TouchableHighlight>
-              <TouchableHighlight style={addStyles.boxItem} onPress={()=>this.setState({modalVisible2:!this.state.modalVisible2})}>
+              <TouchableHighlight
+                underlayColor={'transparent'}
+                style={addStyles.boxItem} onPress={()=>this.setState({modalVisible2:!this.state.modalVisible2})}>
                   <View style={addStyles.itemContainer}>
                     <Text style={addStyles.item}  >{this.state.pickedDepartment}</Text>
                     <Image source={require('../assets/images/arrow_right.png')} style={[addStyles.home]} />

@@ -8,6 +8,7 @@ import {
   FlatList,
   Image,
   TextInput,
+  TouchableHighlight,
 } from 'react-native'
 import {Actions} from 'react-native-router-flux'
 import theme, { styles } from 'react-native-theme'
@@ -46,12 +47,15 @@ export default class Home extends Component {
   }
   renderItem({ item, index }) {
    return (
-     <View
+     <TouchableHighlight
+     onPress={()=>this._onPressItem(index)}
       style={customStyles.listItem}
+      underlayColor={'transparent'}
     >
+      <View style={{flex:1}}>
       <Swipeable onRightActionRelease={()=>this.setState({activeRow:index})} rightActionActivationDistance={100} onRef={ref => this.swipeable = ref} rightButtons={this.rightButtons}>
         <View style={{flex:1, flexDirection:'row', justifyContent:'space-between'}}>
-          <Text onPress={()=>this._onPressItem(index)} style={[customStyles.listText, styles.textColor]}> {item.name}</Text>
+          <Text style={[customStyles.listText, styles.textColor]}> {item.name}</Text>
           {!item.show ? <Image source={require('../assets/images/arrow_right.png')} style={[styles.iconColor, customStyles.icon]} resizeMode={'contain'}/> : <Image source={require('../assets/images/arrow_down.png')} style={[styles.iconColor, customStyles.icon]} resizeMode={'contain'}/>}
         </View>
       {item.show && <View style={{flex:1}}>
@@ -61,13 +65,11 @@ export default class Home extends Component {
       <View style={customStyles.actionsContainer}>
         <Text onPress={Actions.start_exam} style={[customStyles.actions, styles.textColor]}>Practice Exam</Text>
       </View>
-      <View style={[customStyles.actionsContainer, {flexDirection:'row'}]}>
-        <Text style={[customStyles.actions, styles.textColor]}>Bookmark</Text>
-      </View>
       </View>
     }
     </Swipeable>
     </View>
+    </TouchableHighlight>
       )
    }
    searchcourses (text) {

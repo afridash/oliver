@@ -57,8 +57,9 @@ export default class Exams extends Component {
     var question = this.state.questions[this.state.index]
     return (
       <View style={{flex:1}}>
-        <View style={{flex:1, margin:10, padding:10}}>
+        <View style={{flex:1, flexDirection:'row', justifyContent:'space-between', margin:10, padding:15,}}>
           <Text style={[customStyles.question, styles.textColor]}>{question.question}</Text>
+          <Button onPress={()=>this.bookmrkQuestion()}><Image source={require('../assets/images/bookmark.png')} style={[styles.iconColor, {width:25, height:25, margin:10}]} resizeMode={'contain'}/></Button>
         </View>
         <View style={{flex:1.5, margin:20,}}>
           <View style={[customStyles.actionsContainer,{backgroundColor:question.selected === 'A' ? '#607d8b' : 'transparent'}]}>
@@ -76,6 +77,9 @@ export default class Exams extends Component {
         </View>
       </View>
     )
+  }
+  bookmrkQuestion () {
+    console.log('Bokmarking question')
   }
   showSummary () {
     return (
