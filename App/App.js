@@ -80,8 +80,8 @@ export default class App extends React.Component {
 
                   <Scene hideNavBar>
                     <Scene key="home" component={Home}  />
-                      <Scene key="start_exam" initial  component={Exams}  />
-                      <Scene key="add_course" component={Add} />
+                      <Scene key="start_exam"   component={Exams}  />
+                      <Scene key="add_course" initial component={Add} />
                       <Scene key="themes" component={Themes} />
                       <Scene key="bookmarks" component={Bookmarks} />
                       <Scene key="theory" component={Theories} />
