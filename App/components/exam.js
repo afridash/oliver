@@ -26,6 +26,7 @@ export default class Exams extends Component {
       title:'Course Code',
       finished:false,
       modalVisible:false,
+      correct:0,
     }
   }
   componentWillMount () {
@@ -36,6 +37,10 @@ export default class Exams extends Component {
   }
   selectOption (option) {
     var clone = this.state.questions
+    if (option !== clone[this.state.index].selected && option === clone[this.state.index].answer )
+    this.setState({correct:this.state.correct + 1})
+    else if (clone[this.state.index].selected === clone[this.state.index].answer && option !== clone[this.state.index].answer )
+    this.setState({correct:this.state.correct - 1})
     clone[this.state.index].selected = option
     this.setState({questions:clone})
   }
@@ -54,9 +59,6 @@ export default class Exams extends Component {
       <View style={{flex:1}}>
         <View style={{flex:1, margin:10, padding:10}}>
           <Text style={[customStyles.question, styles.textColor]}>{question.question}</Text>
-          <View style={[customStyles.actionsContainer]}>
-            <Text onPress={()=>this.setState({modalVisible:!this.state.modalVisible})} style={[customStyles.actions, styles.textColor]}>Show Summary</Text>
-          </View>
         </View>
         <View style={{flex:1.5, margin:20,}}>
           <View style={[customStyles.actionsContainer,{backgroundColor:question.selected === 'A' ? '#607d8b' : 'transparent'}]}>
@@ -82,7 +84,7 @@ export default class Exams extends Component {
           <Text style={[customStyles.result, styles.textColor]}>Result</Text>
         </View>
         <View style={{flex:1.5, margin:20,}}>
-        <Text style={[customStyles.result, styles.textColor]}>Score: 3/4</Text>
+        <Text style={[customStyles.result, styles.textColor]}>Score: {this.state.correct}/{this.state.questions.length}</Text>
         <View style={[customStyles.actionsContainer]}>
           <Text onPress={()=>this.setState({modalVisible:!this.state.modalVisible})} style={[customStyles.actions, styles.textColor]}>Show Summary</Text>
         </View>
@@ -96,15 +98,15 @@ export default class Exams extends Component {
      <View
        key={item.id}
       style={customStyles.listItem}
-    >
+      >
       <Text style={[customStyles.listText, styles.textColor]}>{index+1}. {item.question}</Text>
-      <View style={{flex:1, flexDirection:'row', justifyContent:'space-between'}}>
-        <View style={customStyles.actionsContainer}>
-        <Text style={[customStyles.actions, styles.textColor]}>Suggested Answer: {item.answer}</Text>
-      </View>
-      <View style={customStyles.actionsContainer}>
-        <Text style={[customStyles.actions, styles.textColor]}>Selected: {item.selected}</Text>
-      </View>
+      <View style={{flex:1, flexDirection:'row', justifyContent:'center', alignItems:'center'}}>
+        <View style={[customStyles.actionsContainer]}>
+          <Text style={[customStyles.actions, styles.textColor]}>Suggested Answer: {item.answer}</Text>
+        </View>
+        <View style={[customStyles.actionsContainer, {borderColor:item.selected === item.answer ? '#004d40' : 'red'}]}>
+          <Text style={[customStyles.actions, styles.textColor]}>Selected: {item.selected}</Text>
+        </View>
       </View>
     </View>
       )
