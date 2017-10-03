@@ -6,6 +6,7 @@ import {
   Platform,
   Image,
   Modal,
+  FlatList,
   TouchableHighlight,
 } from 'react-native'
 import {Actions} from 'react-native-router-flux'
@@ -53,6 +54,9 @@ export default class Exams extends Component {
       <View style={{flex:1}}>
         <View style={{flex:1, margin:10, padding:10}}>
           <Text style={[customStyles.question, styles.textColor]}>{question.question}</Text>
+          <View style={[customStyles.actionsContainer]}>
+            <Text onPress={()=>this.setState({modalVisible:!this.state.modalVisible})} style={[customStyles.actions, styles.textColor]}>Show Summary</Text>
+          </View>
         </View>
         <View style={{flex:1.5, margin:20,}}>
           <View style={[customStyles.actionsContainer,{backgroundColor:question.selected === 'A' ? '#607d8b' : 'transparent'}]}>
@@ -86,26 +90,52 @@ export default class Exams extends Component {
       </View>
     )
   }
+  _keyExtractor = (item, index) => item.id
+  renderItem({ item, index }) {
+   return (
+     <View
+       key={item.id}
+      style={customStyles.listItem}
+    >
+      <Text style={[customStyles.listText, styles.textColor]}>{index+1}. {item.question}</Text>
+      <View style={{flex:1, flexDirection:'row', justifyContent:'space-between'}}>
+        <View style={customStyles.actionsContainer}>
+        <Text style={[customStyles.actions, styles.textColor]}>Suggested Answer: {item.answer}</Text>
+      </View>
+      <View style={customStyles.actionsContainer}>
+        <Text style={[customStyles.actions, styles.textColor]}>Selected: {item.selected}</Text>
+      </View>
+      </View>
+    </View>
+      )
+   }
   showSummaryModal () {
     return  (
       <Modal
-    animationType={"slide"}
-    transparent={false}
-    visible={this.state.modalVisible}
-    onRequestClose={() => {alert("Modal has been closed.")}}
-    >
-   <View style={styles.container}>
-    <View>
-      <Text>Hello World!</Text>
-
-      <TouchableHighlight onPress={() =>
-        this.setState({modalVisible:!this.state.modalVisible})}>
-        <Text>Hide Modal</Text>
-      </TouchableHighlight>
-
-    </View>
-   </View>
-  </Modal>
+      animationType={"slide"}
+      transparent={false}
+      visible={this.state.modalVisible}
+      onRequestClose={() => {alert("Modal has been closed.")}}
+      >
+        <View style={styles.container}>
+          <View style={{flex:1, marginTop:30, borderTopLeftRadius:10,borderTopRightRadius:10, borderTopWidth:2, borderColor:'grey', overflow:'hidden', padding:5}}>
+            <View style={{flex:1,justifyContent:'flex-start',alignItems:'flex-end'}}>
+              <TouchableHighlight onPress={() =>
+                this.setState({modalVisible:!this.state.modalVisible})}>
+                <Text style={[styles.textColor,{padding:1, fontSize:20, fontFamily:'Didot'}]}>Done</Text>
+              </TouchableHighlight>
+            </View>
+            <View style={{flex:12}}>
+              <FlatList
+                data={this.state.questions}
+                ItemSeparatorComponent={()=><View style={customStyles.separator}></View>}
+                renderItem={this.renderItem}
+                keyExtractor={this._keyExtractor}
+              />
+            </View>
+          </View>
+        </View>
+      </Modal>
     )
   }
   render () {
@@ -168,6 +198,10 @@ const customStyles = {
       height: 40,
       alignItems:'flex-end',
     },
+    separator:{
+      height:1,
+      backgroundColor:'grey',
+    },
     buttonContainer:{
       flex:0.1,
       flexDirection:'row',
@@ -186,5 +220,14 @@ const customStyles = {
       padding:10,
       fontWeight:'bold',
       textAlign:'center',
+    },
+    listItem:{
+      padding:20,
+    },
+    listText:{
+      fontSize:20,
+      fontWeight:'500',
+      fontFamily:(Platform.OS === 'ios') ? 'Didot' : 'serif',
+      margin:5,
     },
 }
