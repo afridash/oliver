@@ -12,6 +12,9 @@ import {
 import {Actions} from 'react-native-router-flux'
 import theme, { styles } from 'react-native-theme'
 import Button from 'react-native-button'
+import Swipeable from 'react-native-swipeable'
+
+
 import NavBar from './navBar'
 export default class Home extends Component {
   constructor (props) {
@@ -22,9 +25,19 @@ export default class Home extends Component {
     }
     this.data = this.state.data
     this.renderItem = this.renderItem.bind(this)
+    this.rightButtons = [
+      <Text onPress={()=>this.handleSwipeClick()} style={customStyles.swipeButton}>Delete</Text>,
+    ]
   }
   componentWillMount () {
     theme.setRoot(this)
+  }
+  handleSwipeClick () {
+    var rem = this.state.data.splice(this.state.activeRow,1)
+    this.setState({data:this.state.data})
+  }
+  handleUserBeganScrollingParentView() {
+    this.swipeable.recenter();
   }
   _onPressItem (index) {
     var clone = this.state.data
@@ -36,7 +49,11 @@ export default class Home extends Component {
      <View
       style={customStyles.listItem}
     >
-      <Text onPress={()=>this._onPressItem(index)} style={[customStyles.listText, styles.textColor]}>{item.key} {item.name}</Text>
+      <Swipeable onRightActionRelease={()=>this.setState({activeRow:index})} rightActionActivationDistance={100} onRef={ref => this.swipeable = ref} rightButtons={this.rightButtons}>
+        <View style={{flex:1, flexDirection:'row', justifyContent:'space-between'}}>
+          <Text onPress={()=>this._onPressItem(index)} style={[customStyles.listText, styles.textColor]}> {item.name}</Text>
+          {!item.show ? <Image source={require('../assets/images/right.png')} style={[styles.iconColor, customStyles.icon]} resizeMode={'contain'}/> : <Image source={require('../assets/images/left.png')} style={[styles.iconColor, customStyles.icon]} resizeMode={'contain'}/>}
+        </View>
       {item.show && <View style={{flex:1}}>
         <View style={customStyles.actionsContainer}>
         <Text onPress={Actions.theory} style={[customStyles.actions, styles.textColor]}>Study Theory Questions</Text>
@@ -46,10 +63,10 @@ export default class Home extends Component {
       </View>
       <View style={[customStyles.actionsContainer, {flexDirection:'row'}]}>
         <Text style={[customStyles.actions, styles.textColor]}>Bookmark</Text>
-        <Image source={require('../assets/images/bookmark.png')} style={[styles.iconColor, customStyles.icon]} resizeMode={'contain'}/>
       </View>
       </View>
     }
+    </Swipeable>
     </View>
       )
    }
@@ -156,19 +173,31 @@ const customStyles = StyleSheet.create({
   fontFamily:(Platform.OS === 'ios') ? 'Didot' : 'serif',
   borderRadius: 10,
   textAlign: 'center'
-},
-icon:{
-  marginTop:20,
-  resizeMode: 'contain',
-  width: 20,
-  height: 20,
-  alignItems:'flex-end',
-},
-inputContainer: {
+  },
+  icon:{
+    marginTop:10,
+    resizeMode: 'contain',
+    width: 20,
+    height: 20,
+    alignItems:'flex-end',
+  },
+  inputContainer: {
     flex: 1,
     padding: 8,
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: 'transparent'
+  },
+  swipeButton:{
+    color:'white',
+    fontSize:16,
+    marginLeft:20,
+    backgroundColor:'#ff1744',
+    overflow:'hidden',
+    padding:10,
+    borderRadius:10,
+    borderWidth:1,
+    borderColor:'white',
+    fontFamily:(Platform.OS === 'ios') ? 'Didot' : 'serif',
   },
 })
