@@ -42,10 +42,8 @@ export default class Courses extends Component {
     var stored = await AsyncStorage.getItem("courses")
     if (stored !== null) courses = JSON.parse(stored)
     if (courses.length === 0 || courses === null) {
-      console.log('Reading from online DB')
       this.retrieveCoursesOnline()
     }else{
-      console.log('Retrieving from AsyncStorage')
       this.data = courses
       this.setState({data:courses})
     }

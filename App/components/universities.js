@@ -47,7 +47,7 @@ export default class Universities extends Component {
   }
   saveCollege (college) {
     this.usersRef.child(this.userKey).update({collegeId:college.key, college:college.name})
-    AsyncStorage.setItem('college', college.name)
+    AsyncStorage.setItem([['college', college.name], ['collegeId', college.key]])
   }
   renderItem({ item, index }) {
    return (

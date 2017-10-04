@@ -42,6 +42,8 @@ export default class Home extends Component {
   }
 
   async retrieveCoursesOffline () {
+  //Retrieved and parse stored data in AsyncStorage
+  //If no such data, read courses from firebase, then store them locally
     var courses = []
     var stored = await AsyncStorage.getItem("user_courses")
     if (stored !== null) courses = JSON.parse(stored)
@@ -54,6 +56,8 @@ export default class Home extends Component {
   }
 
   readAddCourses() {
+      /* 1. Set courses to empty before reloading online data to avoid duplicate entries
+        2. Retrieve users courses from firebase and store them locally using AsyncStorage */
     this.data = []
     this.setState({user_courses:[], refreshing:true})
   firebase.database().ref().child('user_courses').child(this.state.userId).once('value', (snapshot)=>{
@@ -65,6 +69,7 @@ export default class Home extends Component {
 })
 }
   handleSwipeClick () {
+    //Delete row that has been clicked on after swiping
     var rem = this.state.data.splice(this.state.activeRow,1)
     this.setState({data:this.state.data})
   }
@@ -72,6 +77,7 @@ export default class Home extends Component {
     this.swipeable.recenter();
   }
   _onPressItem (index) {
+    //Update view to reflect the information on the clicked item
     var clone = this.state.data
     clone[index].show = !clone[index].show
     this.setState({data:clone})
@@ -103,6 +109,8 @@ export default class Home extends Component {
       )
    }
    searchcourses (text) {
+     //Search for user entry using the second variable that the courses are stored in.
+     //Filter each and return those that contain the searched string
      var clone = this.data
      this.result = clone.filter ((course) => { return course.name.toLowerCase().includes(text.toLowerCase()) === true})
      this.setState({data:this.result})

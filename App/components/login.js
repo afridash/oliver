@@ -44,6 +44,8 @@ export default class Login extends React.Component {
     await AsyncStorage.multiSet([["email", user.email],
                                  ['name', user.firstName + ' ' + user.lastName],
                                   ['myKey', user.userKey],
+                                  ['college', user.college],
+                                  ['collegeId', user.collegeId],
                                   ['pPicture',user.profilePicture]])
   }
   render() {
