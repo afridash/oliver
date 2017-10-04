@@ -1,19 +1,80 @@
 import React, {Component} from 'react';
-import { StyleSheet, Text, View , Image, TouchableHighlight, Alert, Platform, TextInput} from 'react-native';
+import { StyleSheet, Text, View , Image, TouchableHighlight, Alert, Platform, TextInput, AsyncStorage} from 'react-native';
 import {Actions} from 'react-native-router-flux'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
-
+import Button from 'react-native-button'
 import theme, { styles } from 'react-native-theme'
+import Firebase from '../auth/firebase'
+const firebase = require('firebase')
+import * as validate from '../auth/validations'
 export default class SignUp extends Component {
   constructor (props) {
     super (props)
-    this.state = {}
+    this.state = {
+      firstName:'',
+      lastName:'',
+      email:'',
+      password:'',
+      passwordConfirm:'',
+      username:'',
+      isLoading:false,
+    }
+    this.picture ='https://firebasestorage.googleapis.com/v0/b/oliver-f5285.appspot.com/o/users%2Fprofile%2Fuserprofile.png?alt=media&token=e96bc455-8477-46db-a3a2-05b4a1031fe8'
+    this.usersRef = firebase.database().ref().child('users')
   }
   componentWillMount () {
     theme.setRoot(this)
   }
-  createAccount = () => {
-    Alert.alert('Clicked')
+  async createAccount () {
+    this.setState({isLoading:true})
+    var p=false;
+    if(validate.verifyLength(this.state.password,this.state.passwordConfirm) && validate.verifyMatch(this.state.password,this.state.passwordConfirm)){
+      await firebase.auth().createUserWithEmailAndPassword(this.state.email, this.state.password).catch(function(error){
+        Alert.alert(error.message)
+        p=true
+      });
+      if(!p){
+        var user = firebase.auth().currentUser
+           user.updateProfile({
+            displayName: this.state.firstName + " "+this.state.lastName,
+            photoURL:this.picture
+          }).then(function() {
+            // Update successful.
+          }, function(error) {
+            console.log(error)
+          })
+          user.sendEmailVerification().then(function() {
+              //Email sent
+            }).catch(function(error) {
+              // An error happened.
+            })
+       this.saveUserInfo(user.uid,this.state.email, this.state.firstName,this.state.lastName, this.state.username)
+        this.saveLocalData(user.uid)
+        return Actions.universities()
+        this.setState({isLoading:false})
+      }else{
+        this.setState({isLoading:false})
+      }
+    }else{
+      Alert.alert('Password Verification Error, please try again')
+      this.setState({isLoading:false})
+    }
+  }
+  saveUserInfo(userKey, email, firstName, lastName, username){
+    this.usersRef.child(userKey).set({
+      firstName: firstName,
+      lastName:lastName,
+      email: email,
+      username : username,
+      userKey:userKey,
+      profilePicture:'https://firebasestorage.googleapis.com/v0/b/oliver-f5285.appspot.com/o/users%2Fprofile%2Fuserprofile.png?alt=media&token=e96bc455-8477-46db-a3a2-05b4a1031fe8'
+      })
+  }
+  async saveLocalData(userID){
+    await AsyncStorage.multiSet([["email", this.state.email],
+                                 ['name', this.state.firstName+" "+this.state.lastName],
+                                  ['myKey', userID],
+                                  ['pPicture',this.picture]])
   }
   render() {
     return (
@@ -116,7 +177,8 @@ export default class SignUp extends Component {
                     />
             </View>
           </View>
-              <Text onPress={()=>Actions.home({type:'replace'})} style={[styles.primaryButton,customStyles.signupButton]}>Create Account</Text>
+              {!this.state.isLoading ? <Button onPress={()=>this.createAccount()} style={[styles.primaryButton,customStyles.signupButton]}>Create Account</Button> :
+              <Text style={[styles.primaryButton,customStyles.signupButton]}>Signing up...</Text>}
          </View>
     </KeyboardAwareScrollView>
     );

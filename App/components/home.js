@@ -9,6 +9,8 @@ import {
   Image,
   TextInput,
   TouchableHighlight,
+  AsyncStorage,
+  RefreshControl,
 } from 'react-native'
 import {Actions} from 'react-native-router-flux'
 import theme, { styles } from 'react-native-theme'
@@ -21,8 +23,10 @@ export default class Home extends Component {
   constructor (props) {
     super (props)
     this.state = {
-      data:[{key:'1',show:false, name:"Richard Igbiriki",}, {key:'2',show:false, name:"Adaka Iguniwei",}, {key:'3',show:false, name:"Ikuromor Ogiriki",}, {key:'4',show:false, name:"Donald Nyingifa",},
-          {key:'5',show:false, name:"Richard Igbiriki",}, {key:'6',show:false, name:"Adaka Iguniwei",}, {key:'7',show:false, name:"Ikuromor Ogiriki",}, {key:'8',show:false, name:"Donald Nyingifa",}]
+      name:'',
+      code:'',
+      data:[],
+      refreshing: false,
     }
     this.data = this.state.data
     this.renderItem = this.renderItem.bind(this)
@@ -30,9 +34,36 @@ export default class Home extends Component {
       <Text onPress={()=>this.handleSwipeClick()} style={customStyles.swipeButton}>Delete</Text>,
     ]
   }
-  componentWillMount () {
+  async componentWillMount () {
     theme.setRoot(this)
+    var key = await AsyncStorage.getItem('myKey')
+    this.setState({userId:key})
+    this.retrieveCoursesOffline()
   }
+
+  async retrieveCoursesOffline () {
+    var courses = []
+    var stored = await AsyncStorage.getItem("user_courses")
+    if (stored !== null) courses = JSON.parse(stored)
+    if (courses.length === 0 || courses === null) {
+      this.readAddCourses()
+    }else{
+      this.data = courses
+      this.setState({data:courses})
+    }
+  }
+
+  readAddCourses() {
+    this.data = []
+    this.setState({user_courses:[], refreshing:true})
+  firebase.database().ref().child('user_courses').child(this.state.userId).once('value', (snapshot)=>{
+    snapshot.forEach((course)=>{
+    this.data.push({key:course.key, show:false, name:course.val().name, code:course.val().code})
+    this.setState({data:this.data, refreshing:false})
+      AsyncStorage.setItem('user_courses', JSON.stringify(this.data))
+  })
+})
+}
   handleSwipeClick () {
     var rem = this.state.data.splice(this.state.activeRow,1)
     this.setState({data:this.state.data})
@@ -60,7 +91,7 @@ export default class Home extends Component {
         </TouchableHighlight>
       {item.show && <View style={{flex:1}}>
         <View style={customStyles.actionsContainer}>
-        <Text onPress={Actions.theory} style={[customStyles.actions, styles.textColor]}>Study Theory Questions</Text>
+        <Text style={[customStyles.actions, styles.textColor]}>Study Theory Questions</Text>
       </View>
       <View style={customStyles.actionsContainer}>
         <Text onPress={Actions.start_exam} style={[customStyles.actions, styles.textColor]}>Practice Exam</Text>
@@ -102,6 +133,12 @@ export default class Home extends Component {
                 data={this.state.data}
                 ItemSeparatorComponent={()=><View style={customStyles.separator}></View>}
                 renderItem={this.renderItem}
+                refreshControl={
+                 <RefreshControl
+                 refreshing={this.state.refreshing}
+                    onRefresh={this.readAddCourses.bind(this)}
+                />
+               }
            />
             </View>
           </View>

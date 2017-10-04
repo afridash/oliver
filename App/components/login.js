@@ -1,26 +1,50 @@
 import React from 'react';
 import theme, { styles } from 'react-native-theme'
-import { StyleSheet, Text, View , Image, TouchableHighlight, Alert, Platform, TextInput,} from 'react-native';
+import { StyleSheet, Text, View , Image, TouchableHighlight, Alert, Platform, TextInput,AsyncStorage} from 'react-native';
 import {Actions} from 'react-native-router-flux'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
+import Button from 'react-native-button'
+import Firebase from '../auth/firebase'
+const firebase = require('firebase')
 
 export default class Login extends React.Component {
   constructor (props) {
     super (props)
-    this.state = {}
+    this.state = {
+      email:'',
+      password:'',
+      isLoading: false,
+    }
   }
   componentWillMount () {
     theme.setRoot(this)
-
   }
-  componentDidMount () {
-
+  async login () {
+    this.setState({isLoading: true})
+    var errors = false
+    await firebase.auth().signInWithEmailAndPassword(this.state.email, this.state.password).catch(function (error) {
+      var errorMessage = error.message
+      Alert.alert(errorMessage)
+      errors = true
+    })
+    if (!errors) {
+      var userId = firebase.auth().currentUser.uid
+      var user
+      await firebase.database().ref().child('users').child(userId).once('value').then(function (snapshot) {
+        user = snapshot.val()
+      })
+      this.saveLocal(user)
+      this.setState({isLoading: false})
+      return Actions.home()
+    } else {
+      this.setState({isLoading: false})
+    }
   }
-  componentWillReceiveProps () {
-    Actions.refresh({hideNavBar:true})
-  }
-  _handlePress = () => {
-    Alert.alert('Clicked')
+  async saveLocal(user){
+    await AsyncStorage.multiSet([["email", user.email],
+                                 ['name', user.firstName + ' ' + user.lastName],
+                                  ['myKey', user.userKey],
+                                  ['pPicture',user.profilePicture]])
   }
   render() {
     return (
@@ -57,13 +81,14 @@ export default class Login extends React.Component {
                 keyboardAppearance='dark'
                 placeholder={'Password '}
                 placeholderTextColor={'black'}
-                onSubmitEditing={() => { this.goHome() }}
+                onSubmitEditing={() => { this.login() }}
                 onChangeText={(password) => this.setState({password})}
                 secureTextEntry
                     />
             </View>
           </View>
-            <Text style={[styles.primaryButton, customStyles.loginButton]} onPress={()=>Actions.drawer({type:'replace'})}>Log in</Text>
+            {!this.state.isLoading ? <Button style={[styles.primaryButton, customStyles.loginButton]} onPress={()=>this.login()}>Log in</Button> :
+            <Text style={[styles.primaryButton, customStyles.loginButton]}>Logging In...</Text>}
           <Text style={customStyles.information} onPress={()=>Actions.resetpassword()}>Forgot Password?</Text>
          </View>
          <View style={customStyles.title}></View>

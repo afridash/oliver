@@ -7,6 +7,7 @@ import {
   StyleSheet,
   TextInput,
   Image,
+  Alert,
   AsyncStorage,
   RefreshControl,
   TouchableHighlight,
@@ -29,10 +30,12 @@ export default class Courses extends Component {
     this.data = []
     this.renderItem = this.renderItem.bind(this)
   }
-  componentWillMount () {
+  async componentWillMount () {
     theme.setRoot(this)
+    var key = await AsyncStorage.getItem('myKey')
+    var collegeId = await AsyncStorage.getItem('collegeId')
+    this.setState({userId:key, collegeId:collegeId})
     this.retrieveCoursesOffline()
-
   }
   async retrieveCoursesOffline () {
     var courses = []
@@ -49,31 +52,30 @@ export default class Courses extends Component {
   }
   retrieveCoursesOnline () {
     this.data = []
-    this.setState({courses:[]})
-    firebase.database().ref().child('faculties').child('-KsRrLdJr6_7kQT7kdcB').once('value', (snapshots)=>{
+    this.setState({courses:[], refreshing:true})
+    firebase.database().ref().child('faculties').child(this.state.collegeId).once('value', (snapshots)=>{
       snapshots.forEach((childSnap)=>{
         firebase.database().ref().child('departments').child(childSnap.key).once('value', (snapshot)=>{
           snapshot.forEach((department)=>{
             firebase.database().ref().child('courses').child(department.key).once('value', (snap)=>{
               snap.forEach((course)=>{
                 this.data.push({key:course.key, show:false, name:course.val().name, code:course.val().code})
-                this.setState({data:this.data})
+                this.setState({data:this.data, refreshing:false})
                 AsyncStorage.setItem('courses', JSON.stringify(this.data))
               })
             })
           })
         })
-
-
       })
     })
   }
 
-  writeAddCourses(key) {
-  firebase.database().ref().child('user_courses').child('12345').child(key).set({
-    name:this.state.name,
-    code:this.state.code,
+  writeAddCourses(item) {
+  firebase.database().ref().child('user_courses').child(this.state.userId).child(item.key).set({
+    name:item.name,
+    code:item.code,
   });
+  Alert.alert(item.name, 'has been added to your list')
  //console.log(this.state.code)
 }
 
@@ -110,7 +112,7 @@ export default class Courses extends Component {
         </TouchableHighlight>
       {item.show && <View style={{flex:1}}>
         <View style={customStyles.actionsContainer}>
-        <Text onPress={()=>this.writeAddCourses(item.key)} style={[customStyles.actions, styles.textColor]}>Add To My Courses</Text>
+        <Text onPress={()=>this.writeAddCourses(item)} style={[customStyles.actions, styles.textColor]}>Add To My Courses</Text>
       </View>
       <View style={customStyles.actionsContainer}>
         <Text onPress={Actions.start_exam} style={[customStyles.actions, styles.textColor]}>Practice Exam</Text>
