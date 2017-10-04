@@ -1,11 +1,13 @@
 import React from 'react';
-import { StyleSheet, Text, View , Image, TouchableHighlight, Platform, StatusBar} from 'react-native';
+import { StyleSheet, Text, View , Image, TouchableHighlight, Platform, StatusBar, AsyncStorage} from 'react-native';
 import {Actions} from 'react-native-router-flux'
 import Slider from './slider'
 import theme, { styles } from 'react-native-theme'
 export default class Index extends React.Component {
-  componentWillMount () {
+  async componentWillMount () {
     theme.setRoot(this)
+    var key = await AsyncStorage.getItem('myKey')
+    if (key !== null) Actions.home()
   }
   render() {
     return (

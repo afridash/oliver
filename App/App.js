@@ -25,6 +25,7 @@ import Exams from './components/exam'
 import Bookmarks from './components/bookmarks'
 import Theories from './components/theories'
 import Courses from './components/courses'
+import Universities from './components/universities'
 import * as main from './assets/styles/main.js'
 import NavBar from './components/navBar'
 import DrawerContent from './components/sideDrawer'
@@ -63,9 +64,10 @@ export default class App extends React.Component {
                 hideNavBar
                 key="root"
               >
-                <Scene key='index' initial component={Index} />
+                <Scene key='index'  component={Index} />
                 <Scene key='login' component={Login}  />
                 <Scene key='signup' component={SignUp} />
+                <Scene key='universities' component={Universities}  />
                 <Scene key='resetpassword'  component={Reset} />
                 <Drawer
                   hideNavBar

@@ -2,18 +2,43 @@ import React from 'react';
 import { StyleSheet, Text, View , Image, TouchableHighlight, Alert, Platform, TextInput,} from 'react-native';
 import {Actions} from 'react-native-router-flux'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
-
+import Firebase from '../auth/firebase'
+const firebase = require('firebase')
+import * as validate from '../auth/validations'
 import theme, { styles } from 'react-native-theme'
+import Button from 'react-native-button'
 export default class Reset extends React.Component {
   constructor (props) {
     super (props)
-    this.state = {}
+    this.state = {
+      isLoading:false,
+      email:''
+    }
   }
   componentWillMount () {
     theme.setRoot(this)
   }
   _handlePress = () => {
     Alert.alert('Clicked')
+  }
+  async sendEmail () {
+    this.auth = firebase.auth()
+    var email = this.state.email
+    await this.auth.sendPasswordResetEmail(this.state.email).then(function () {
+      Alert.alert('An email with instructions to reset password has been sent to: ' + email)
+    }, function (error) {
+      Alert.alert('An error occured. Try Again')
+    })
+  }
+  setPassword () {
+    this.setState({isLoading: true})
+    if (!validate.verifyEmail(this.state.email)) {
+      Alert.alert('Invalid Email', 'Wrong Email Format Provided')
+      this.setState({isLoading: false})
+    } else {
+      this.sendEmail()
+      return Actions.pop()
+    }
   }
   render() {
     return (
@@ -36,12 +61,12 @@ export default class Reset extends React.Component {
                 placeholder={'Email'}
                 placeholderTextColor={'black'}
                 onChangeText={(email) => this.setState({email})}
-                onSubmitEditing={() => { this.passwordinput.focus() }}
+                onSubmitEditing={() => { this.setPassword() }}
                 returnKeyType='next'
             />
             </View>
           </View>
-            <Text style={[styles.primaryButton, customStyles.signupButton]}>Reset</Text>
+            {!this.state.isLoading ? <Button onPress={()=>this.setPassword()} style={[styles.primaryButton, customStyles.signupButton]}>Reset</Button> : <Text style={[styles.primaryButton, customStyles.signupButton]}>Sending email...</Text>}
          </View>
          <View style={customStyles.title}></View>
          <View style={customStyles.title}></View>

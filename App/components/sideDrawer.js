@@ -4,6 +4,8 @@ import { StyleSheet, Text, View, ViewPropTypes, Platform, Image, AsyncStorage,To
 import Button from 'react-native-button';
 import { Actions } from 'react-native-router-flux';
 import theme, { styles } from 'react-native-theme'
+import Firebase from '../auth/firebase'
+const firebase = require('firebase')
 
 export default class DrawerContent extends React.Component {
   constructor (props) {
@@ -23,7 +25,17 @@ export default class DrawerContent extends React.Component {
   static contextTypes = {
     drawer: React.PropTypes.object,
   }
-
+  logout () {
+    firebase.auth().signOut().then(function () {
+  // Sign-out successful.
+    }, function (error) {
+  // An error happened.
+    })
+    let keys = ['email', 'myKey', 'name', 'pPicture',]
+    AsyncStorage.multiRemove(keys, (err) => {
+      return Actions.index()
+    })
+  }
   render() {
     return (
       <View style={styles.container}>
@@ -51,7 +63,7 @@ export default class DrawerContent extends React.Component {
         </View>
         <View style={{flex:1, justifyContent:'flex-end', alignItems:'center', borderTopWidth:3, borderColor:'white'}}>
           <Button style={[sidebar.secondaryContainer, styles.textColor]} onPress={Actions.themes}>Themes</Button>
-            <Button style={[sidebar.secondaryContainer, styles.textColor]} onPress={Actions.logout}><Image source={require('../assets/images/logout.png')} style={[sidebar.home, styles.iconColor]} />Logout</Button>
+            <Button onPress={()=>this.logout()} style={[sidebar.secondaryContainer, styles.textColor]}><Image source={require('../assets/images/logout.png')} style={[sidebar.home, styles.iconColor]} />Logout</Button>
       </View>
     </View>
     );

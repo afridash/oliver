@@ -28,7 +28,6 @@ export default class Courses extends Component {
     firebase.database().ref().child('courses').once('value', (snapshot)=>{
       snapshot.forEach((childSnap)=>{
         childSnap.forEach((course)=>{
-          console.log(course.val())
           this.data.push({key:course.key, show:false, name:course.val().name, code:course.val().code})
           this.setState({data:this.data})
         })
