@@ -14,8 +14,8 @@ import {Actions} from 'react-native-router-flux'
 import theme, { styles } from 'react-native-theme'
 import Button from 'react-native-button'
 import Swipeable from 'react-native-swipeable'
-
-
+import Firebase from '../auth/firebase'
+const firebase = require('firebase')
 import NavBar from './navBar'
 export default class Home extends Component {
   constructor (props) {
@@ -47,17 +47,17 @@ export default class Home extends Component {
   }
   renderItem({ item, index }) {
    return (
-     <TouchableHighlight
-     onPress={()=>this._onPressItem(index)}
+     <View
       style={customStyles.listItem}
-      underlayColor={'transparent'}
     >
-      <View style={{flex:1}}>
       <Swipeable onRightActionRelease={()=>this.setState({activeRow:index})} rightActionActivationDistance={100} onRef={ref => this.swipeable = ref} rightButtons={this.rightButtons}>
-        <View style={{flex:1, flexDirection:'row', justifyContent:'space-between'}}>
-          <Text style={[customStyles.listText, styles.textColor]}> {item.name}</Text>
-          {!item.show ? <Image source={require('../assets/images/arrow_right.png')} style={[styles.iconColor, customStyles.icon]} resizeMode={'contain'}/> : <Image source={require('../assets/images/arrow_down.png')} style={[styles.iconColor, customStyles.icon]} resizeMode={'contain'}/>}
-        </View>
+        <TouchableHighlight underlayColor={'transparent'}  onPress={()=>this._onPressItem(index)}
+          style={{flex:1}}>
+          <View style={{flex:1, flexDirection:'row', justifyContent:'space-between'}}>
+            <Text style={[customStyles.listText, styles.textColor]}> {item.name}</Text>
+            {!item.show ? <Image source={require('../assets/images/arrow_right.png')} style={[styles.iconColor, customStyles.icon]} resizeMode={'contain'}/> : <Image source={require('../assets/images/arrow_down.png')} style={[styles.iconColor, customStyles.icon]} resizeMode={'contain'}/>}
+          </View>
+        </TouchableHighlight>
       {item.show && <View style={{flex:1}}>
         <View style={customStyles.actionsContainer}>
         <Text onPress={Actions.theory} style={[customStyles.actions, styles.textColor]}>Study Theory Questions</Text>
@@ -68,8 +68,7 @@ export default class Home extends Component {
       </View>
     }
     </Swipeable>
-    </View>
-    </TouchableHighlight>
+  </View>
       )
    }
    searchcourses (text) {

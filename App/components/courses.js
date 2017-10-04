@@ -10,20 +10,30 @@ import {
 } from 'react-native'
 import {Actions} from 'react-native-router-flux'
 import theme, { styles } from 'react-native-theme'
-
+import Firebase from '../auth/firebase'
 import NavBar from './navBar'
+const firebase = require('firebase')
+
 export default class Courses extends Component {
   constructor (props) {
     super (props)
     this.state = {
-        data:[{key:'1',show:false, name:"Richard Igbiriki",}, {key:'2',show:false, name:"Adaka Iguniwei",}, {key:'3',show:false, name:"Ikuromor Ogiriki",}, {key:'4',show:false, name:"Donald Nyingifa",},
-            {key:'5',show:false, name:"Richard Igbiriki",}, {key:'6',show:false, name:"Adaka Iguniwei",}, {key:'7',show:false, name:"Ikuromor Ogiriki",}, {key:'8',show:false, name:"Donald Nyingifa",}]
+        data:[]
     }
-    this.data = this.state.data
+    this.data = []
     this.renderItem = this.renderItem.bind(this)
   }
   componentWillMount () {
     theme.setRoot(this)
+    firebase.database().ref().child('courses').once('value', (snapshot)=>{
+      snapshot.forEach((childSnap)=>{
+        childSnap.forEach((course)=>{
+          console.log(course.val())
+          this.data.push({key:course.key, show:false, name:course.val().name, code:course.val().code})
+          this.setState({data:this.data})
+        })
+      })
+    })
   }
   searchcourses (text) {
     var clone = this.data
@@ -52,7 +62,7 @@ export default class Courses extends Component {
       style={customStyles.listItem}
     >
       <View style={{flex:1, flexDirection:'row', justifyContent:'space-between'}}>
-        <Text onPress={()=>this._onPressItem(index)} style={[customStyles.listText, styles.textColor]}> {item.name}</Text>
+        <Text onPress={()=>this._onPressItem(index)} style={[customStyles.listText, styles.textColor]}> {item.name} ({item.code})</Text>
         {!item.show ? <Image source={require('../assets/images/arrow_right.png')} style={[styles.iconColor, customStyles.icon]} resizeMode={'contain'}/> : <Image source={require('../assets/images/arrow_down.png')} style={[styles.iconColor, customStyles.icon]} resizeMode={'contain'}/>}
       </View>
       {item.show && <View style={{flex:1}}>
