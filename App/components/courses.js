@@ -7,6 +7,9 @@ import {
   StyleSheet,
   TextInput,
   Image,
+  AsyncStorage,
+  RefreshControl,
+  TouchableHighlight,
 } from 'react-native'
 import {Actions} from 'react-native-router-flux'
 import theme, { styles } from 'react-native-theme'
@@ -18,23 +21,62 @@ export default class Courses extends Component {
   constructor (props) {
     super (props)
     this.state = {
-        data:[]
+      name:'',
+      code:'',
+        data:[],
+        refreshing: false,
     }
     this.data = []
     this.renderItem = this.renderItem.bind(this)
   }
   componentWillMount () {
     theme.setRoot(this)
-    firebase.database().ref().child('courses').once('value', (snapshot)=>{
-      snapshot.forEach((childSnap)=>{
-        childSnap.forEach((course)=>{
-          console.log(course.val())
-          this.data.push({key:course.key, show:false, name:course.val().name, code:course.val().code})
-          this.setState({data:this.data})
+    this.retrieveCoursesOffline()
+
+  }
+  async retrieveCoursesOffline () {
+    var courses = []
+    var stored = await AsyncStorage.getItem("courses")
+    if (stored !== null) courses = JSON.parse(stored)
+    if (courses.length === 0 || courses === null) {
+      console.log('Reading from online DB')
+      this.retrieveCoursesOnline()
+    }else{
+      console.log('Retrieving from AsyncStorage')
+      this.data = courses
+      this.setState({data:courses})
+    }
+  }
+  retrieveCoursesOnline () {
+    this.data = []
+    this.setState({courses:[]})
+    firebase.database().ref().child('faculties').child('-KsRrLdJr6_7kQT7kdcB').once('value', (snapshots)=>{
+      snapshots.forEach((childSnap)=>{
+        firebase.database().ref().child('departments').child(childSnap.key).once('value', (snapshot)=>{
+          snapshot.forEach((department)=>{
+            firebase.database().ref().child('courses').child(department.key).once('value', (snap)=>{
+              snap.forEach((course)=>{
+                this.data.push({key:course.key, show:false, name:course.val().name, code:course.val().code})
+                this.setState({data:this.data})
+                AsyncStorage.setItem('courses', JSON.stringify(this.data))
+              })
+            })
+          })
         })
+
+
       })
     })
   }
+
+  writeAddCourses(key) {
+  firebase.database().ref().child('user_courses').child('12345').child(key).set({
+    name:this.state.name,
+    code:this.state.code,
+  });
+ //console.log(this.state.code)
+}
+
   searchcourses (text) {
     var clone = this.data
     this.result = clone.filter ((course) => { return course.name.toLowerCase().includes(text.toLowerCase()) === true})
@@ -60,14 +102,15 @@ export default class Courses extends Component {
    return (
      <View
       style={customStyles.listItem}
-    >
+    ><TouchableHighlight onPress={()=>this._onPressItem(index)} style={{flex:1}}>
       <View style={{flex:1, flexDirection:'row', justifyContent:'space-between'}}>
-        <Text onPress={()=>this._onPressItem(index)} style={[customStyles.listText, styles.textColor]}> {item.name} ({item.code})</Text>
-        {!item.show ? <Image source={require('../assets/images/arrow_right.png')} style={[styles.iconColor, customStyles.icon]} resizeMode={'contain'}/> : <Image source={require('../assets/images/arrow_down.png')} style={[styles.iconColor, customStyles.icon]} resizeMode={'contain'}/>}
+          <Text style={[customStyles.listText, styles.textColor]}> {item.name} ({item.code})</Text>
+          {!item.show ? <Image source={require('../assets/images/arrow_right.png')} style={[styles.iconColor, customStyles.icon]} resizeMode={'contain'}/> : <Image source={require('../assets/images/arrow_down.png')} style={[styles.iconColor, customStyles.icon]} resizeMode={'contain'}/>}
       </View>
+        </TouchableHighlight>
       {item.show && <View style={{flex:1}}>
         <View style={customStyles.actionsContainer}>
-        <Text onPress={Actions.theory} style={[customStyles.actions, styles.textColor]}>Add To My Courses</Text>
+        <Text onPress={()=>this.writeAddCourses(item.key)} style={[customStyles.actions, styles.textColor]}>Add To My Courses</Text>
       </View>
       <View style={customStyles.actionsContainer}>
         <Text onPress={Actions.start_exam} style={[customStyles.actions, styles.textColor]}>Practice Exam</Text>
@@ -89,6 +132,12 @@ export default class Courses extends Component {
                 data={this.state.data}
                 ItemSeparatorComponent={()=><View style={customStyles.separator}></View>}
                 renderItem={this.renderItem}
+                refreshControl={
+                 <RefreshControl
+                 refreshing={this.state.refreshing}
+                    onRefresh={this.retrieveCoursesOnline.bind(this)}
+          />
+        }
            />
             </View>
           </View>
