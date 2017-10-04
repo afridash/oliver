@@ -75,7 +75,7 @@ export default class Add extends Component {
             </View>
           <View style={addStyles.buttonContainer}>
             <Button
-              containerStyle={styles.secondaryButton}
+              containerStyle={[styles.secondaryButton, addStyles.secondaryButton]}
               style={addStyles.addButton}
               styleDisabled={{color: 'red'}}
               onPress={Actions.add_course}>
@@ -136,5 +136,12 @@ const addStyles ={
     justifyContent:'center',
     alignItems:'center',
 
+  },
+  secondaryButton: {
+    padding:10,
+    flex:1,
+    height:45,
+    overflow:'hidden',
+    borderRadius:10,
   },
 }

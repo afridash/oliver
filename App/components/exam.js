@@ -157,7 +157,7 @@ export default class Exams extends Component {
             {this.showSummary()}
             <View style={[styles.buttonContainer,customStyles.buttonContainer]}>
               <Button
-                containerStyle={styles.secondaryButton}
+                containerStyle={[styles.secondaryButton, customStyles.secondaryButton]}
                 style={customStyles.addButton}
                 styleDisabled={{color: 'red'}}
                 onPress={()=>this.restart()}>
@@ -229,5 +229,12 @@ const customStyles = {
       fontWeight:'500',
       fontFamily:(Platform.OS === 'ios') ? 'Didot' : 'serif',
       margin:5,
+    },
+    secondaryButton: {
+      padding:10,
+      flex:1,
+      height:45,
+      overflow:'hidden',
+      borderRadius:10,
     },
 }

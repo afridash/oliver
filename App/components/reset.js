@@ -41,7 +41,7 @@ export default class Reset extends React.Component {
             />
             </View>
           </View>
-            <Text style={[styles.primaryButton, customStyles.signupButton]}>Reset</Text>
+            <Text style={[styles.primaryButton, customStyles.signupButton, customStyles.primaryButton]}>Reset</Text>
          </View>
          <View style={customStyles.title}></View>
          <View style={customStyles.title}></View>
@@ -99,5 +99,14 @@ const customStyles = StyleSheet.create({
   signupButton: {
     borderWidth:2,
     borderRadius:10,
+  },
+  primaryButton: {
+    fontSize:20,
+    padding:10,
+    textAlign:'center',
+    color:'white',
+    fontFamily:(Platform.OS === 'ios') ? 'Didot' : 'serif',
+    margin:5,
+    borderColor:'#fafafa',
   },
 });

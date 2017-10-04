@@ -116,7 +116,7 @@ export default class SignUp extends Component {
                     />
             </View>
           </View>
-              <Text onPress={()=>Actions.home({type:'replace'})} style={[styles.primaryButton,customStyles.signupButton]}>Create Account</Text>
+              <Text onPress={()=>Actions.home({type:'replace'})} style={[styles.primaryButton,customStyles.signupButton, customStyles.primaryButton]}>Create Account</Text>
          </View>
     </KeyboardAwareScrollView>
     );
@@ -185,5 +185,14 @@ const customStyles = StyleSheet.create({
   signupButton: {
     borderWidth:2,
     borderRadius:10,
+  },
+  primaryButton: {
+    fontSize:20,
+    padding:10,
+    textAlign:'center',
+    color:'white',
+    fontFamily:(Platform.OS === 'ios') ? 'Didot' : 'serif',
+    margin:5,
+    borderColor:'#fafafa',
   },
 });
