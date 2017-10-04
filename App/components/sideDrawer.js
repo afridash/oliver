@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { StyleSheet, Text, View, ViewPropTypes, Platform, Image, AsyncStorage } from 'react-native';
+import { StyleSheet, Text, View, ViewPropTypes, Platform, Image, AsyncStorage,TouchableHighlight } from 'react-native';
 import Button from 'react-native-button';
 import { Actions } from 'react-native-router-flux';
 import theme, { styles } from 'react-native-theme'
@@ -28,15 +28,20 @@ export default class DrawerContent extends React.Component {
     return (
       <View style={styles.container}>
         <View style={sidebar.container}>
-          <View style={sidebar.profile}>
-            <View style={sidebar.profileContainer}>
+          <TouchableHighlight
+            onPress={Actions.profile}
+            underlayColor={'transparent'}
+            style={{flex:1}}>
+            <View style={sidebar.profile}>
+              <View style={sidebar.profileContainer}>
               <Image resizeMode={'contain'} source={require('../assets/images/profile_1.png')} style={sidebar.profilePicture} />
-         </View>
-         <View style={sidebar.profileText}>
-           <Text style={sidebar.profileName}>Mabel Ogiriki</Text>
-           <Text style={sidebar.profileEmail}>OliverApp@gmail.com</Text>
-         </View>
-          </View>
+           </View>
+           <View style={sidebar.profileText}>
+             <Text style={sidebar.profileName}>Mabel Ogiriki</Text>
+             <Text style={sidebar.profileEmail}>OliverApp@gmail.com</Text>
+           </View>
+            </View>
+          </TouchableHighlight>
           <View style={sidebar.menu}>
             <Button style={[sidebar.secondaryContainer, styles.textColor]} onPress={Actions.home}><Image source={require('../assets/images/homeicon.png')} style={[sidebar.home, styles.iconColor]} />  Home</Button>
               <Button style={[sidebar.secondaryContainer, styles.textColor]} onPress={Actions.courses}><Image source={require('../assets/images/courses.png')} style={[sidebar.home, styles.iconColor]} /> Courses</Button>

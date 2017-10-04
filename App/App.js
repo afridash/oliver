@@ -20,11 +20,11 @@ import SignUp from './components/signup'
 import Reset from './components/reset'
 import Home from './components/home'
 import Add from './components/add'
+import Profile from './components/profile'
 import Exams from './components/exam'
 import Bookmarks from './components/bookmarks'
 import Theories from './components/theories'
 import Courses from './components/courses'
-import Profile from './components/profile'
 import * as main from './assets/styles/main.js'
 import NavBar from './components/navBar'
 import DrawerContent from './components/sideDrawer'
@@ -63,14 +63,13 @@ export default class App extends React.Component {
                 hideNavBar
                 key="root"
               >
-                <Scene key='index' component={Index} />
+                <Scene key='index' initial component={Index} />
                 <Scene key='login' component={Login}  />
                 <Scene key='signup' component={SignUp} />
                 <Scene key='resetpassword'  component={Reset} />
                 <Drawer
                   hideNavBar
                   key="drawer"
-                  initial
                   contentComponent={DrawerContent}
                   drawerImage={MenuIcon}
                 >
@@ -87,7 +86,7 @@ export default class App extends React.Component {
                       <Scene key="bookmarks" component={Bookmarks} />
                       <Scene key="theory" component={Theories} />
                       <Scene key="courses" component={Courses} />
-                      <Scene key="profile"  initial component={Profile} />
+                      <Scene key="profile" component={Profile} />
                   </Scene>
                 </Drawer>
               </Stack>

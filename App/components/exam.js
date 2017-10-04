@@ -7,6 +7,7 @@ import {
   Image,
   Modal,
   FlatList,
+  Alert,
   TouchableHighlight,
 } from 'react-native'
 import {Actions} from 'react-native-router-flux'
@@ -144,6 +145,17 @@ export default class Exams extends Component {
       </Modal>
     )
   }
+  showAlert () {
+    Alert.alert(
+      'Confirm',
+      'You are leaving us, are you sure?',
+      [
+        {text: 'No, Stay', onPress: () => console.log('Cancel Pressed'), style: 'cancel'},
+        {text: 'Yes', onPress: () => Actions.pop()},
+      ],
+      { cancelable: false }
+    )
+  }
   render () {
     return (
       <View style={styles.container}>
@@ -153,7 +165,7 @@ export default class Exams extends Component {
             {this.showQuestion()}
             <View style={[{flex:0.1,flexDirection:'row', justifyContent:'space-between', alignItems:'center'}, styles.progress]}>
               <Button onPress={()=>this.showPrevQuestion()}  ><Image source={require('../assets/images/left.png')} style={[customStyles.icons, styles.iconColor]} /></Button>
-              <Button onPress={Actions.home}><Image source={require('../assets/images/cancel.png')} style={[styles.iconColor, {width:25,height:25, padding:10}]} resizeMode={'contain'} /></Button>
+              <Button onPress={()=>this.showAlert()}><Image source={require('../assets/images/cancel.png')} style={[styles.iconColor, {width:25,height:25, padding:10}]} resizeMode={'contain'} /></Button>
               <Button onPress={()=>this.showNextQuestion()} ><Image source={require('../assets/images/right.png')} style={[customStyles.icons, styles.iconColor]} /></Button>
             </View>
           </View>
