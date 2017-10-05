@@ -46,7 +46,8 @@ export default class Login extends React.Component {
                                   ['myKey', user.userKey],
                                   ['college', user.college],
                                   ['collegeId', user.collegeId],
-                                  ['pPicture',user.profilePicture]])
+                                  ['pPicture',user.profilePicture],
+                                  ['username',user.username]])
   }
   render() {
     return (
