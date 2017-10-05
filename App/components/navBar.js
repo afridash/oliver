@@ -13,7 +13,7 @@ export default class NavBar extends Component {
   }
   render() {
     return (
-      <View style={styles.navBar}>
+      <View style={[customStyles.navBar, styles.navBar]}>
       <StatusBar />
       <View style={{ flexDirection: 'row' }}>
         <View style={{flex:1}}>
@@ -66,5 +66,12 @@ const customStyles = {
     flex:1,
     justifyContent:'center',
     alignItems:'center',
+  },
+  navBar: {
+    borderTopWidth:20,
+    shadowColor:'#000000',
+    shadowOffset:{width: 5, height: 5},
+    shadowOpacity:0.5,
+    shadowRadius:5,
   },
 };

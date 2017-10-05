@@ -89,8 +89,8 @@ export default class Login extends React.Component {
                     />
             </View>
           </View>
-            {!this.state.isLoading ? <Button style={[styles.primaryButton, customStyles.loginButton]} onPress={()=>this.login()}>Log in</Button> :
-            <Text style={[styles.primaryButton, customStyles.loginButton]}>Logging In...</Text>}
+            {!this.state.isLoading ? <Button style={[styles.primaryButton, customStyles.loginButton,customStyles.primaryButton]} onPress={()=>this.login()}>Log in</Button> :
+            <Text style={[styles.primaryButton, customStyles.loginButton, customStyles.primaryButton]}>Logging In...</Text>}
           <Text style={customStyles.information} onPress={()=>Actions.resetpassword()}>Forgot Password?</Text>
          </View>
          <View style={customStyles.title}></View>
@@ -167,5 +167,14 @@ const customStyles = StyleSheet.create({
   loginButton: {
     borderWidth:2,
     borderRadius:10,
+  },
+  primaryButton: {
+    fontSize:20,
+    padding:10,
+    textAlign:'center',
+    color:'white',
+    fontFamily:(Platform.OS === 'ios') ? 'Didot' : 'serif',
+    margin:5,
+    borderColor:'#fafafa',
   },
 });

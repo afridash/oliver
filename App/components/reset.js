@@ -66,7 +66,7 @@ export default class Reset extends React.Component {
             />
             </View>
           </View>
-            {!this.state.isLoading ? <Button onPress={()=>this.setPassword()} style={[styles.primaryButton, customStyles.signupButton]}>Reset</Button> : <Text style={[styles.primaryButton, customStyles.signupButton]}>Sending email...</Text>}
+            {!this.state.isLoading ? <Button onPress={()=>this.setPassword()} style={[styles.primaryButton, customStyles.signupButton,customStyles.primaryButton]}>Reset</Button> : <Text style={[styles.primaryButton, customStyles.signupButton]}>Sending email...</Text>}
          </View>
          <View style={customStyles.title}></View>
          <View style={customStyles.title}></View>
@@ -124,5 +124,14 @@ const customStyles = StyleSheet.create({
   signupButton: {
     borderWidth:2,
     borderRadius:10,
+  },
+  primaryButton: {
+    fontSize:20,
+    padding:10,
+    textAlign:'center',
+    color:'white',
+    fontFamily:(Platform.OS === 'ios') ? 'Didot' : 'serif',
+    margin:5,
+    borderColor:'#fafafa',
   },
 });

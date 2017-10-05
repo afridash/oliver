@@ -177,8 +177,8 @@ export default class SignUp extends Component {
                     />
             </View>
           </View>
-              {!this.state.isLoading ? <Button onPress={()=>this.createAccount()} style={[styles.primaryButton,customStyles.signupButton]}>Create Account</Button> :
-              <Text style={[styles.primaryButton,customStyles.signupButton]}>Signing up...</Text>}
+              {!this.state.isLoading ? <Button onPress={()=>this.createAccount()} style={[styles.primaryButton,customStyles.signupButton,customStyles.primaryButton]}>Create Account</Button> :
+              <Text style={[styles.primaryButton,customStyles.signupButton,customStyles.primaryButton]}>Signing up...</Text>}
          </View>
     </KeyboardAwareScrollView>
     );
@@ -247,5 +247,14 @@ const customStyles = StyleSheet.create({
   signupButton: {
     borderWidth:2,
     borderRadius:10,
+  },
+  primaryButton: {
+    fontSize:20,
+    padding:10,
+    textAlign:'center',
+    color:'white',
+    fontFamily:(Platform.OS === 'ios') ? 'Didot' : 'serif',
+    margin:5,
+    borderColor:'#fafafa',
   },
 });

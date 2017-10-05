@@ -171,7 +171,7 @@ export default class Home extends Component {
           </View>
           <View style={[styles.buttonContainer,customStyles.buttonContainer]}>
             <Button
-              containerStyle={styles.secondaryButton}
+              containerStyle={[styles.secondaryButton, customStyles.secondaryButton]}
               style={customStyles.addButton}
               styleDisabled={{color: 'red'}}
               onPress={Actions.add_course}>
@@ -264,5 +264,12 @@ const customStyles = StyleSheet.create({
     borderWidth:1,
     borderColor:'white',
     fontFamily:(Platform.OS === 'ios') ? 'Didot' : 'serif',
+  },
+  secondaryButton: {
+    padding:10,
+    flex:1,
+    height:45,
+    overflow:'hidden',
+    borderRadius:10,
   },
 })

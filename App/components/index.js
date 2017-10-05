@@ -16,7 +16,7 @@ export default class Index extends React.Component {
           barStyle="light-content"
         />
         <View style={styles.login}>
-          <Text onPress={()=>Actions.login()} style={[styles.primaryButton,customStyles.loginButton]}>Log in</Text>
+          <Text onPress={()=>Actions.login()} style={[styles.primaryButton,customStyles.loginButton, customStyles.primaryButton]}>Log in</Text>
         </View>
         <View style={styles.secondaryContainer}>
           <View style={styles.title}><Text style={[styles.header, customStyles.headerInfo]}>Oliver</Text>
@@ -24,7 +24,7 @@ export default class Index extends React.Component {
         </View>
         <Slider style={styles.image} logoStyle={styles.logo} informationStyle={styles.information} />
          </View>
-           <Text onPress={()=>Actions.signup()} style={[styles.primaryButton, customStyles.loginButton]}>Create Account</Text>
+           <Text onPress={()=>Actions.signup()} style={[styles.primaryButton, customStyles.loginButton, customStyles.primaryButton]}>Create Account</Text>
       </View>
     );
   }
@@ -49,5 +49,14 @@ const customStyles = StyleSheet.create({
   headerInfo: {
     fontSize:100,
     fontFamily:(Platform.OS === 'ios') ? 'Didot' : 'serif',
+  },
+  primaryButton: {
+    fontSize:20,
+    padding:10,
+    textAlign:'center',
+    color:'white',
+    fontFamily:(Platform.OS === 'ios') ? 'Didot' : 'serif',
+    margin:5,
+    borderColor:'#fafafa',
   },
 })
