@@ -10,10 +10,24 @@ const firebase = require('firebase')
 export default class DrawerContent extends React.Component {
   constructor (props) {
     super(props)
-    this.state = {}
+    this.state = {
+      name:'',
+      email:'',
+      profilePicture:'none',
+
+    }
   }
-  componentWillMount () {
+  async componentWillMount () {
     theme.setRoot(this)
+    var name = await AsyncStorage.getItem('name')
+    var email = await AsyncStorage.getItem('email')
+    var profilePicture = await AsyncStorage.getItem('pPicture')
+   this.setState({email, name, profilePicture})
+  }
+
+  async componentWillReceiveProps (newprops) {
+    var pic = await AsyncStorage.getItem('pPicture')
+    this.setState({profilePicture:pic})
   }
 
   static propTypes = {
@@ -36,6 +50,8 @@ export default class DrawerContent extends React.Component {
       return Actions.index()
     })
   }
+
+
   render() {
     return (
       <View style={styles.container}>
@@ -46,11 +62,11 @@ export default class DrawerContent extends React.Component {
             style={{flex:1}}>
             <View style={sidebar.profile}>
               <View style={sidebar.profileContainer}>
-              <Image resizeMode={'contain'} source={require('../assets/images/profile_1.png')} style={sidebar.profilePicture} />
+              <Image resizeMode={'stretch'} source={{uri: this.state.profilePicture}} style={sidebar.profilePicture} />
            </View>
            <View style={sidebar.profileText}>
-             <Text style={sidebar.profileName}>Mabel Ogiriki</Text>
-             <Text style={sidebar.profileEmail}>OliverApp@gmail.com</Text>
+             <Text style={sidebar.profileName}>{this.state.name}</Text>
+             <Text style={sidebar.profileEmail}>{this.state.email}</Text>
            </View>
             </View>
           </TouchableHighlight>
@@ -102,8 +118,7 @@ const sidebar = {
   profileContainer:{
     width:70,
     height:70,
-     borderColor:'grey',
-     borderRadius:35,
+     borderColor:'transparent',
      borderWidth:2,
   },
 
@@ -118,10 +133,11 @@ const sidebar = {
     marginLeft: 15,
   },
   profilePicture:{
-    margin:3,
-    height:60,
-    width:60,
-    alignItems:'flex-end',
+    width:70,
+    height:70,
+    borderColor:'transparent',
+    borderRadius:35,
+    borderWidth:3,
   },
   profileName:{
     color:'grey',
