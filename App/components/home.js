@@ -42,7 +42,15 @@ export default class Home extends Component {
     this.setState({userId:key})
     this.retrieveCoursesOffline()
   }
-
+   componentWillReceiveProps (p) {
+     this._setHighScore()
+  }
+async _setHighScore () {
+  await this.data.map(async (course)=>{
+    course.high = await this.getHighScore(course.key)
+  })
+  this.setState({questions:this.data, noCourses:false, isLoading:false})
+  }
   async retrieveCoursesOffline () {
     //Retrieved and parse stored data in AsyncStorage
     //If no such data, read courses from firebase, then store them locally
@@ -53,23 +61,28 @@ export default class Home extends Component {
       this.readAddCourses()
     }else{
       this.data = courses
-      this.setState({data:courses, noCourses:false, isLoading:false})
+      await this.data.map(async (course)=>{
+        course.high = await this.getHighScore(course.key)
+      })
+      this.setState({data:this.data, noCourses:false, isLoading:false})
     }
   }
 
-  readAddCourses() {
+  async readAddCourses() {
       /* 1. Set courses to empty before reloading online data to avoid duplicate entries
         2. Retrieve users courses from firebase and store them locally using AsyncStorage */
     this.data = []
     this.setState({refreshing:true})
-    firebase.database().ref().child('user_courses').child(this.state.userId).once('value', (snapshot)=>{
+    await firebase.database().ref().child('user_courses').child(this.state.userId).once('value', (snapshot)=>{
       if (snapshot.val() === null) this.setState({refreshing:false, noCourses:true,isLoading:false})
       snapshot.forEach((course)=>{
         this.data.push({key:course.key, show:false, name:course.val().name, code:course.val().code})
         this.setState({data:this.data, refreshing:false,noCourses:false, isLoading:false})
-      AsyncStorage.setItem('user_courses', JSON.stringify(this.data))
+         AsyncStorage.setItem('user_courses', JSON.stringify(this.data))
+
       })
     })
+    this._setHighScore()
   }
   handleSwipeClick () {
     //Delete row that has been clicked on after swiping
@@ -85,7 +98,20 @@ export default class Home extends Component {
     clone[index].show = !clone[index].show
     this.setState({data:clone})
   }
-  renderItem({ item, index }) {
+  async getHighScore (item) {
+    var result
+    try {
+      const value = await AsyncStorage.getItem(item+'high')
+      if (value !== null){
+        result = value
+      }else {
+        result = 'Not Started'
+      }
+    } catch (error) {
+    }
+    return result
+  }
+   renderItem({ item, index }) {
    return (
      <View
       style={customStyles.listItem}
@@ -104,6 +130,9 @@ export default class Home extends Component {
           </View>
           <View style={customStyles.actionsContainer}>
             <Text onPress={()=>Actions.start_exam({courseId:item.key, courseCode:item.code})} style={[customStyles.actions, styles.textColor]}>Practice Exam</Text>
+          </View>
+          <View style={customStyles.actionsContainer}>
+            <Text style={[customStyles.actions, styles.textColor]}>High Score: {item.high}</Text>
           </View>
           </View>
         }

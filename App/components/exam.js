@@ -1,3 +1,6 @@
+/*
+*@author Richard Igbiriki, October 2017
+*/
 import React, {Component} from 'react'
 import {
   View,
@@ -31,11 +34,13 @@ export default class Exams extends Component {
       noQuestions:false,
       isLoading:true
     }
+    //firebase realtime db references
     this.ref = firebase.database().ref().child('questions').child(this.props.courseId)
     this.bookmarksRef = firebase.database().ref().child('bookmarks')
   }
   async componentWillMount () {
     theme.setRoot(this)
+    //
     var key = await AsyncStorage.getItem('myKey')
     this.setState({userId:key})
     this.retrieveQuestionsOffline()
@@ -50,45 +55,92 @@ export default class Exams extends Component {
       this.retrieveQuestionsOnline ()
     }else{
       this.data = questions
-      this.setState({questions:questions, noQuestions:false,isLoading:false, total:questions.length})
+      this.setState({questions:questions, noQuestions:false,isLoading:false,})
+      this.randomizeQuestions()
     }
   }
-  retrieveQuestionsOnline () {
+  async retrieveQuestionsOnline () {
+    /*
+    * Retrieve questions from firebase based on type -- objective
+    * Toggle between downloading, and no questions
+    * Store them locally for offline usage
+    */
     this.data = []
-    this.ref.orderByChild('type').equalTo('objective').once('value',(snapshot)=>{
+    await this.ref.orderByChild('type').equalTo('objective').once('value',(snapshot)=>{
       if (snapshot.val()  === null ) this.setState({noQuestions:true,isLoading:false})
       snapshot.forEach((snap)=>{
         if (snap.val().answered) {
           this.data.push({key:snap.key, question:snap.val().question, optionA:snap.val().optionA, optionB:snap.val().optionB, optionC:snap.val().optionC, optionD:snap.val().optionD, selected:'', answer:snap.val().answer, show:false,})
-          this.setState({questions:this.data, total:this.state.total+1, noQuestions:false,isLoading:false})
+          this.setState({questions:this.data, noQuestions:false,isLoading:false})
           AsyncStorage.setItem(this.props.courseId+'obj', JSON.stringify(this.data))
         }
       })
     })
-
+    this.randomizeQuestions()
+  }
+  randomizeQuestions () {
+    /*
+    * Determine if there are more than 50 questions, set max num to 50, or set max num to questions.length
+    * Set the maximum number to generate a random number to questions.length
+    * Iterate over questions to select a random item, add it to questions, and increment counter
+    * If counter equals maxQuestions, break and set questions
+    */
+    var maxQuestions
+    if (this.state.questions.length > 50) maxQuestions = 50
+    else maxQuestions = this.state.questions.length
+    var num2 = this.state.questions.length //Max num to generate random questions
+    var objsArray = []
+    this.questions = []
+    var i=0
+    while (true) {
+      if (i===maxQuestions) break
+        var item = this.state.questions[Math.floor(Math.random()*num2)]; //Select random item from the questions
+        if (!objsArray[item.key]) { //Confirm if it has not been selecte before
+          this.questions.push(item) //Store the question
+          objsArray[item.key] = 1
+          i +=1 //Increment number of uniquely selected elements
+        }
+    }
+    this.setState({questions:this.questions, total:maxQuestions})
   }
   restart () {
-    this.setState({index:0, finished:false})
+    this.setState({index:0, finished:false,correct:0})
+    this.retrieveQuestionsOffline()
   }
   selectOption (option) {
+    /*
+    * Determine if the selected option is right (increase the score)
+    * Determine if the selected option is the wrong answer after a correct option has been previously selected (decrease the score)
+    * Update the UI with the selected option
+    */
     var clone = this.state.questions
-    if (option !== clone[this.state.index].selected && option === clone[this.state.index].answer )
+    if (option !== clone[this.state.index].selected && option === clone[this.state.index].answer.trim() )
     this.setState({correct:this.state.correct + 1})
     else if (clone[this.state.index].selected === clone[this.state.index].answer && option !== clone[this.state.index].answer )
     this.setState({correct:this.state.correct - 1})
     clone[this.state.index].selected = option
     this.setState({questions:clone})
   }
-  showNextQuestion () {
+  async showNextQuestion () {
+    //Determine if going forward is possible (increase the index), else exam has concluded
     if (this.state.index < this.state.questions.length - 1)
     this.setState({index:this.state.index + 1})
-    else this.setState(prevState =>({finished:!prevState.finished}))
+    else {
+      var score = await AsyncStorage.getItem(this.props.courseId+'high')
+      if (score === null) AsyncStorage.setItem(this.props.courseId+'high',this.state.correct.toString())
+      else {
+        if (score < this.state.correct) AsyncStorage.setItem(this.props.courseId+'high',this.state.correct.toString())
+      }
+      this.setState(prevState =>({finished:!prevState.finished}))
+    }
   }
   showPrevQuestion () {
+    //Determine if going backward is possible (decrease the index), else exam has concluded
     if (this.state.index > 0)
     this.setState({index:this.state.index - 1})
   }
   showQuestion (){
+    //Render current question at index
     var question = this.state.questions[this.state.index]
     return (
       <View style={{flex:1}}>
@@ -119,6 +171,10 @@ export default class Exams extends Component {
     )
   }
   bookmarkQuestion (question) {
+    /*
+    * Determine if question has been bookmarked previously, remove it, else add it to firebase
+    * Negate the value of bookmarked and update the UI
+    */
     if (question.bookmark) {
       this.bookmarksRef.child(this.state.userId).child(question.key).remove()
     }else {
@@ -152,7 +208,7 @@ export default class Exams extends Component {
       style={customStyles.listItem}
       >
       <Text style={[customStyles.listText, styles.textColor]}>{index+1}. {item.question}</Text>
-      <View style={{flex:1, flexDirection:'row', justifyContent:'center', alignItems:'center'}}>
+      <View style={{flex:1, justifyContent:'center', alignItems:'center'}}>
         <View style={[customStyles.actionsContainer]}>
           <Text style={[customStyles.actions, styles.textColor]}>Suggested Answer: {item.answer}</Text>
         </View>
@@ -236,6 +292,15 @@ export default class Exams extends Component {
                 styleDisabled={{color: 'red'}}
                 onPress={()=>this.restart()}>
                 Another One!
+              </Button>
+            </View>
+            <View style={[styles.buttonContainer,customStyles.buttonContainer]}>
+              <Button
+                containerStyle={[styles.secondaryButton, customStyles.secondaryButton]}
+                style={customStyles.addButton}
+                styleDisabled={{color: 'red'}}
+                onPress={()=>Actions.pop({refresh: {done: true}})}>
+                Return Home
               </Button>
             </View>
           </View>
