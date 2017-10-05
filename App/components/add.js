@@ -62,7 +62,7 @@ export default class Add extends Component {
     </View>
       <View style={addStyles.buttonContainer}>
         <Button
-          containerStyle={styles.secondaryButton}
+          containerStyle={[styles.secondaryButton, addStyles.secondaryButton]}
           style={addStyles.addButton}
           styleDisabled={{color: 'red'}}
           onPress={()=>this.setState({modalVisible:!this.state.modalVisible})}>
@@ -70,7 +70,7 @@ export default class Add extends Component {
         </Button>
       </View>
    </View>
-  </Modal>
+ </Modal>
     )
   }
 
@@ -92,7 +92,7 @@ export default class Add extends Component {
        </View>
          <View style={addStyles.buttonContainer}>
            <Button
-             containerStyle={styles.secondaryButton}
+             containerStyle={[styles.secondaryButton, addStyles.secondaryButton]}
              style={addStyles.addButton}
              styleDisabled={{color: 'red'}}
              onPress={()=>this.setState({modalVisible2:!this.state.modalVisible2})}>
