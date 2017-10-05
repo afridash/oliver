@@ -27,6 +27,8 @@ export default class Home extends Component {
       code:'',
       data:[],
       refreshing: false,
+      noCourses:true,
+      isLoading:true,
     }
     this.data = this.state.data
     this.renderItem = this.renderItem.bind(this)
@@ -42,8 +44,8 @@ export default class Home extends Component {
   }
 
   async retrieveCoursesOffline () {
-  //Retrieved and parse stored data in AsyncStorage
-  //If no such data, read courses from firebase, then store them locally
+    //Retrieved and parse stored data in AsyncStorage
+    //If no such data, read courses from firebase, then store them locally
     var courses = []
     var stored = await AsyncStorage.getItem("user_courses")
     if (stored !== null) courses = JSON.parse(stored)
@@ -51,7 +53,7 @@ export default class Home extends Component {
       this.readAddCourses()
     }else{
       this.data = courses
-      this.setState({data:courses})
+      this.setState({data:courses, noCourses:false, isLoading:false})
     }
   }
 
@@ -59,15 +61,16 @@ export default class Home extends Component {
       /* 1. Set courses to empty before reloading online data to avoid duplicate entries
         2. Retrieve users courses from firebase and store them locally using AsyncStorage */
     this.data = []
-    this.setState({user_courses:[], refreshing:true})
-  firebase.database().ref().child('user_courses').child(this.state.userId).once('value', (snapshot)=>{
-    snapshot.forEach((course)=>{
-    this.data.push({key:course.key, show:false, name:course.val().name, code:course.val().code})
-    this.setState({data:this.data, refreshing:false})
+    this.setState({refreshing:true})
+    firebase.database().ref().child('user_courses').child(this.state.userId).once('value', (snapshot)=>{
+      if (snapshot.val() === null) this.setState({refreshing:false, noCourses:true,isLoading:false})
+      snapshot.forEach((course)=>{
+        this.data.push({key:course.key, show:false, name:course.val().name, code:course.val().code})
+        this.setState({data:this.data, refreshing:false,noCourses:false, isLoading:false})
       AsyncStorage.setItem('user_courses', JSON.stringify(this.data))
-  })
-})
-}
+      })
+    })
+  }
   handleSwipeClick () {
     //Delete row that has been clicked on after swiping
     var rem = this.state.data.splice(this.state.activeRow,1)
@@ -91,21 +94,21 @@ export default class Home extends Component {
         <TouchableHighlight underlayColor={'transparent'}  onPress={()=>this._onPressItem(index)}
           style={{flex:1}}>
           <View style={{flex:1, flexDirection:'row', justifyContent:'space-between'}}>
-            <Text style={[customStyles.listText, styles.textColor]}> {item.name}</Text>
+            <Text style={[customStyles.listText, styles.textColor]}> {item.name} ({item.code})</Text>
             {!item.show ? <Image source={require('../assets/images/arrow_right.png')} style={[styles.iconColor, customStyles.icon]} resizeMode={'contain'}/> : <Image source={require('../assets/images/arrow_down.png')} style={[styles.iconColor, customStyles.icon]} resizeMode={'contain'}/>}
           </View>
         </TouchableHighlight>
-      {item.show && <View style={{flex:1}}>
-        <View style={customStyles.actionsContainer}>
-        <Text style={[customStyles.actions, styles.textColor]}>Study Theory Questions</Text>
-      </View>
-      <View style={customStyles.actionsContainer}>
-        <Text onPress={Actions.start_exam} style={[customStyles.actions, styles.textColor]}>Practice Exam</Text>
-      </View>
-      </View>
-    }
-    </Swipeable>
-  </View>
+          {item.show && <View style={{flex:1}}>
+            <View style={customStyles.actionsContainer}>
+            <Text onPress={()=>Actions.theory({courseId:item.key, courseCode:item.code})} style={[customStyles.actions, styles.textColor]}>Study Theory Questions</Text>
+          </View>
+          <View style={customStyles.actionsContainer}>
+            <Text onPress={()=>Actions.start_exam({courseId:item.key, courseCode:item.code})} style={[customStyles.actions, styles.textColor]}>Practice Exam</Text>
+          </View>
+          </View>
+        }
+      </Swipeable>
+    </View>
       )
    }
    searchcourses (text) {
@@ -126,7 +129,22 @@ export default class Home extends Component {
        </View>
      )
    }
-  render () {
+   renderFlatList () {
+     return (
+       <FlatList
+         data={this.state.data}
+         ItemSeparatorComponent={()=><View style={customStyles.separator}></View>}
+         renderItem={this.renderItem}
+         refreshControl={
+          <RefreshControl
+          refreshing={this.state.refreshing}
+             onRefresh={this.readAddCourses.bind(this)}
+         />
+        }
+    />
+     )
+   }
+   render () {
     return (
       <View style={styles.container}>
         <StatusBar
@@ -137,17 +155,18 @@ export default class Home extends Component {
           <View style={customStyles.container}>
             <View style={{flex:1, flexDirection:'row'}}>{this.renderHeader()}</View>
             <View style={{flex:6, flexDirection:'row'}}>
-              <FlatList
-                data={this.state.data}
-                ItemSeparatorComponent={()=><View style={customStyles.separator}></View>}
-                renderItem={this.renderItem}
-                refreshControl={
-                 <RefreshControl
-                 refreshing={this.state.refreshing}
-                    onRefresh={this.readAddCourses.bind(this)}
-                />
-               }
-           />
+              {(()=>{
+                if (this.state.isLoading) return (
+                  <View style={{flex:1, justifyContent:'center', alignItems:'center'}}>
+                    <Text style={[customStyles.listText, styles.textColor]}>Loading...</Text></View>
+                )
+                else if (this.state.noCourses) return (
+                  <View style={{flex:1, justifyContent:'center', alignItems:'center'}}>
+                  <Text style={[customStyles.listText, styles.textColor]}>Click Below To Add A Course</Text></View>
+                )
+                else return this.renderFlatList()
+              })()
+            }
             </View>
           </View>
           <View style={[styles.buttonContainer,customStyles.buttonContainer]}>

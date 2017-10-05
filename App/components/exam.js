@@ -13,25 +13,55 @@ import {
 import {Actions} from 'react-native-router-flux'
 import theme, { styles } from 'react-native-theme'
 import Button from 'react-native-button'
+import Firebase from '../auth/firebase'
+const firebase = require('firebase')
 
 import NavBar from './navBar'
 export default class Exams extends Component {
   constructor (props) {
     super (props)
     this.state = {
-      questions:[{question:'What is the definition of an atom? Where in the world is mount everest found? Who discovered the river nile?', optionA:'Angiosperms', optionB:'Gymnosperms', optionC:'Monocotyledons', optionD:'Dicotyledons', selected:'', answer:'B'},
-                {question:'What is the definition of an atom? ', optionA:'Angio', optionB:'Gymno', optionC:'Mono', optionD:'Dico', selected:'', answer:'B'},
-              {question:'Where in the world is mount everest found? Who discovered the river nile?', optionA:'None', optionB:'True', optionC:'Maybe', optionD:'All', selected:'', answer:'B'},
-            {question:'What is the definition of an atom? Who discovered the river nile?', optionA:'Lagos', optionB:'Kano', optionC:'Kaduna', optionD:'Abuja', selected:'', answer:'B'}],
+      questions:[],
       index:0,
       title:'Course Code',
       finished:false,
       modalVisible:false,
       correct:0,
+      noQuestions:false,
+      isLoading:true
     }
+    this.ref = firebase.database().ref().child('questions').child(this.props.courseId)
   }
   componentWillMount () {
     theme.setRoot(this)
+    this.retrieveQuestionsOffline()
+  }
+  async retrieveQuestionsOffline () {
+    //Retrieved and parse stored data in AsyncStorage
+    //If no such data, read questions from firebase, then store them locally
+    var questions = []
+    var stored = await AsyncStorage.getItem(this.props.courseId+'obj')
+    if (stored !== null) questions = JSON.parse(stored)
+    if (questions.length === 0 || questions === null) {
+      this.retrieveQuestionsOnline ()
+    }else{
+      this.data = questions
+      this.setState({questions:questions, noQuestions:false,isLoading:false, total:questions.length})
+    }
+  }
+  retrieveQuestionsOnline () {
+    this.data = []
+    this.ref.orderByChild('type').equalTo('objective').once('value',(snapshot)=>{
+      if (snapshot.val()  === null ) this.setState({noQuestions:true,isLoading:false})
+      snapshot.forEach((snap)=>{
+        if (snap.val().answered) {
+          this.data.push({key:snap.key, question:snap.val().question, optionA:snap.val().optionA, optionB:snap.val().optionB, optionC:snap.val().optionC, optionD:snap.val().optionD, selected:'', answer:snap.val().answer, show:false,})
+          this.setState({questions:this.data, total:this.state.total+1, noQuestions:false,isLoading:false})
+          AsyncStorage.setItem(this.props.courseId+'obj', JSON.stringify(this.data))
+        }
+      })
+    })
+
   }
   restart () {
     this.setState({index:0, finished:false})
@@ -58,7 +88,7 @@ export default class Exams extends Component {
     var question = this.state.questions[this.state.index]
     return (
       <View style={{flex:1}}>
-        <View style={{flex:1, flexDirection:'row', justifyContent:'space-between', margin:10, padding:15,}}>
+        <View style={{flex:1, flexDirection:'row', justifyContent:'center', margin:10, padding:15,}}>
           <Text style={[customStyles.question, styles.textColor]}>{question.question}</Text>
           <Button onPress={()=>this.bookmrkQuestion()}><Image source={require('../assets/images/bookmark.png')} style={[styles.iconColor, {width:25, height:25, margin:10}]} resizeMode={'contain'}/></Button>
         </View>
@@ -159,10 +189,19 @@ export default class Exams extends Component {
   render () {
     return (
       <View style={styles.container}>
-        <NavBar title={this.state.title} progress={this.state.index+1 + '/' + this.state.questions.length} />
+        <NavBar backButton={true} title={this.props.courseCode} progress={this.state.index+1 + '/' + this.state.questions.length} />
         {!this.state.finished &&
           <View style={{flex:1}}>
-            {this.showQuestion()}
+            {(()=>{
+              if (this.state.isLoading) return (
+                <View style={{flex:1, justifyContent:'center', alignItems:'center'}}>
+                  <Text style={[customStyles.listText, styles.textColor]}>Loading...</Text></View>
+              )
+              else if (this.state.noQuestions) return (<View style={{flex:1, justifyContent:'center', alignItems:'center'}}>
+                <Text style={[customStyles.listText, styles.textColor]}>:( No Objectives...Check Back Later</Text></View>)
+              else return this.showQuestion()
+            })()
+          }
             <View style={[{flex:0.1,flexDirection:'row', justifyContent:'space-between', alignItems:'center'}, styles.progress]}>
               <Button onPress={()=>this.showPrevQuestion()}  ><Image source={require('../assets/images/left.png')} style={[customStyles.icons, styles.iconColor]} /></Button>
               <Button onPress={()=>this.showAlert()}><Image source={require('../assets/images/cancel.png')} style={[styles.iconColor, {width:25,height:25, padding:10}]} resizeMode={'contain'} /></Button>
