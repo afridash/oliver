@@ -1,3 +1,6 @@
+/*
+*@author Richard Igbiriki October 5, 2017
+*/
 import React, {Component} from 'react'
 import {
   View,
@@ -11,6 +14,7 @@ import {
 } from 'react-native'
 import {Actions} from 'react-native-router-flux'
 import theme, { styles } from 'react-native-theme'
+import Button from 'react-native-button'
 import Firebase from '../auth/firebase'
 const firebase = require('firebase')
 
@@ -28,11 +32,14 @@ export default class Theories extends Component {
     }
     this.renderItem = this.renderItem.bind(this)
     this.ref = firebase.database().ref().child('questions').child(this.props.courseId)
+    this.bookmarksRef = firebase.database().ref().child('bookmarks')
   }
-
-  componentWillMount () {
+  async componentWillMount () {
     //Set theme styles
     theme.setRoot(this)
+    //Retrieve user key
+    var key = await AsyncStorage.getItem('myKey')
+    this.setState({userId:key})
     //Start component lifecycle with call to loading questions stored offline
     this.retrieveQuestionsOffline()
   }
@@ -69,6 +76,17 @@ export default class Theories extends Component {
     })
 
   }
+  bookmarkQuestion (question, index) {
+    if (question.bookmark) {
+      this.bookmarksRef.child(this.state.userId).child(question.key).remove()
+    }else {
+      this.bookmarksRef.child(this.state.userId).child(question.key).update(question)
+    }
+    question.bookmark = !question.bookmark
+    var clone = this.state.questions
+    clone[index] = question
+    this.setState({questions:clone})
+  }
   _onPressItem (index) {
     //Indicate what question has been marked to show/hide the answer
     var clone = this.state.questions
@@ -86,6 +104,12 @@ export default class Theories extends Component {
       </View>
       {item.show && <View style={{flex:1}}>
         <View style={customStyles.actionsContainer}>
+          <View style={{flex:0.1, justifyContent:'center', alignItems:'center'}}>
+            <Button onPress={()=>this.bookmarkQuestion(item, index)}>
+              {item.bookmark ? <Image source={require('../assets/images/bookmark.png')} style={[{width:25, height:25, margin:10, tintColor:'red'}]} resizeMode={'contain'}/>:
+            <Image source={require('../assets/images/bookmark.png')} style={[styles.iconColor, {width:25, height:25, margin:10}]} resizeMode={'contain'}/>}
+            </Button>
+          </View>
         <Text style={[customStyles.actions, styles.textColor]}>Answer: {item.answer}</Text>
       </View>
       </View>
@@ -93,7 +117,7 @@ export default class Theories extends Component {
     </View>
       )
    }
-   renderFlatList () {
+  renderFlatList () {
      return (
        <FlatList
          data={this.state.questions}
@@ -108,7 +132,7 @@ export default class Theories extends Component {
     />
      )
    }
-   render () {
+  render () {
     return (
       <View style={styles.container}>
         <NavBar progress={''+this.state.total} title={this.props.courseCode} backButton={true}/>

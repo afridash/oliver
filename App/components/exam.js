@@ -9,6 +9,7 @@ import {
   FlatList,
   Alert,
   TouchableHighlight,
+  ScrollView,
 } from 'react-native'
 import {Actions} from 'react-native-router-flux'
 import theme, { styles } from 'react-native-theme'
@@ -31,9 +32,12 @@ export default class Exams extends Component {
       isLoading:true
     }
     this.ref = firebase.database().ref().child('questions').child(this.props.courseId)
+    this.bookmarksRef = firebase.database().ref().child('bookmarks')
   }
-  componentWillMount () {
+  async componentWillMount () {
     theme.setRoot(this)
+    var key = await AsyncStorage.getItem('myKey')
+    this.setState({userId:key})
     this.retrieveQuestionsOffline()
   }
   async retrieveQuestionsOffline () {
@@ -90,27 +94,40 @@ export default class Exams extends Component {
       <View style={{flex:1}}>
         <View style={{flex:1, flexDirection:'row', justifyContent:'center', margin:10, padding:15,}}>
           <Text style={[customStyles.question, styles.textColor]}>{question.question}</Text>
-          <Button onPress={()=>this.bookmrkQuestion()}><Image source={require('../assets/images/bookmark.png')} style={[styles.iconColor, {width:25, height:25, margin:10}]} resizeMode={'contain'}/></Button>
+          <Button onPress={()=>this.bookmarkQuestion(question)}>
+            {question.bookmark ? <Image source={require('../assets/images/bookmark.png')} style={[{width:25, height:25, margin:10, tintColor:'red'}]} resizeMode={'contain'}/>:
+          <Image source={require('../assets/images/bookmark.png')} style={[styles.iconColor, {width:25, height:25, margin:10}]} resizeMode={'contain'}/>}
+          </Button>
         </View>
         <View style={{flex:1.5, margin:20,}}>
-          <View style={[customStyles.actionsContainer,{backgroundColor:question.selected === 'A' ? '#607d8b' : 'transparent'}]}>
-          <Text onPress={()=>this.selectOption('A')} style={[customStyles.actions, styles.textColor]}>{question.optionA}</Text>
-        </View>
-        <View style={[customStyles.actionsContainer, {backgroundColor:question.selected === 'B' ? '#607d8b' : 'transparent'}]}>
-          <Text onPress={()=>this.selectOption('B')} style={[customStyles.actions, styles.textColor]}>{question.optionB}</Text>
-        </View>
-        <View style={[customStyles.actionsContainer, {backgroundColor:question.selected === 'C' ? '#607d8b' : 'transparent'}]}>
-          <Text onPress={()=>this.selectOption('C')} style={[customStyles.actions, styles.textColor]}>{question.optionC}</Text>
-        </View>
-        <View style={[customStyles.actionsContainer, {backgroundColor:question.selected === 'D' ? '#607d8b' : 'transparent'}]}>
-          <Text onPress={()=>this.selectOption('D')} style={[customStyles.actions, styles.textColor]}>{question.optionD}</Text>
-        </View>
+          <ScrollView >
+            <View style={[customStyles.actionsContainer,{backgroundColor:question.selected === 'A' ? '#607d8b' : 'transparent'}]}>
+            <Text onPress={()=>this.selectOption('A')} style={[customStyles.actions, styles.textColor]}>{question.optionA}</Text>
+          </View>
+          <View style={[customStyles.actionsContainer, {backgroundColor:question.selected === 'B' ? '#607d8b' : 'transparent'}]}>
+            <Text onPress={()=>this.selectOption('B')} style={[customStyles.actions, styles.textColor]}>{question.optionB}</Text>
+          </View>
+          <View style={[customStyles.actionsContainer, {backgroundColor:question.selected === 'C' ? '#607d8b' : 'transparent'}]}>
+            <Text onPress={()=>this.selectOption('C')} style={[customStyles.actions, styles.textColor]}>{question.optionC}</Text>
+          </View>
+          <View style={[customStyles.actionsContainer, {backgroundColor:question.selected === 'D' ? '#607d8b' : 'transparent'}]}>
+            <Text onPress={()=>this.selectOption('D')} style={[customStyles.actions, styles.textColor]}>{question.optionD}</Text>
+          </View>
+          </ScrollView>
         </View>
       </View>
     )
   }
-  bookmrkQuestion () {
-    console.log('Bokmarking question')
+  bookmarkQuestion (question) {
+    if (question.bookmark) {
+      this.bookmarksRef.child(this.state.userId).child(question.key).remove()
+    }else {
+      this.bookmarksRef.child(this.state.userId).child(question.key).update(question)
+    }
+    question.bookmark = !question.bookmark
+    var clone = this.state.questions
+    clone[this.state.index] = question
+    this.setState({questions:clone})
   }
   showSummary () {
     return (
