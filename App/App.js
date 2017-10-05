@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, AsyncStorage} from 'react-native';
+import { StyleSheet, AsyncStorage, NetInfo} from 'react-native';
 import {
   Scene,
   Router,
@@ -39,7 +39,10 @@ const reducerCreate = params => {
   };
 };
 export default class App extends React.Component {
-
+  constructor (props) {
+    super (props)
+    this.handleEnter = this.handleEnter.bind(this)
+  }
   async componentWillMount () {
     theme.setRoot(this)
     var activeTheme = await AsyncStorage.getItem('theme')
@@ -51,6 +54,17 @@ export default class App extends React.Component {
     }else {
       theme.active()
     }
+    NetInfo.isConnected.addEventListener('connectionChange', this._handleConnectionChange);
+  }
+  _handleConnectionChange = (isConnected) => {
+    AsyncStorage.setItem('status', isConnected.toString())
+  }
+  componentWillUnmount() {
+    NetInfo.isConnected.removeEventListener('connectionChange', this._handleConnectionChange);
+  }
+  async handleEnter () {
+    var key = await AsyncStorage.getItem('myKey')
+    if (key !== null) Actions.home()
   }
   render() {
     return (
@@ -64,7 +78,7 @@ export default class App extends React.Component {
                 hideNavBar
                 key="root"
               >
-                <Scene key='index' initial component={Index} />
+                <Scene key='index' initial onEnter={this.handleEnter} component={Index} />
                 <Scene key='login' component={Login}  />
                 <Scene key='signup' component={SignUp} />
                 <Scene key='universities' component={Universities}  />

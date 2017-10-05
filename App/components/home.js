@@ -29,9 +29,11 @@ export default class Home extends Component {
       refreshing: false,
       noCourses:true,
       isLoading:true,
+      status:'',
     }
     this.data = this.state.data
     this.renderItem = this.renderItem.bind(this)
+    this.historyRef = firebase.database().ref().child('activities')
     this.rightButtons = [
       <Text onPress={()=>this.handleSwipeClick()} style={customStyles.swipeButton}>Delete</Text>,
     ]
@@ -39,17 +41,31 @@ export default class Home extends Component {
   async componentWillMount () {
     theme.setRoot(this)
     var key = await AsyncStorage.getItem('myKey')
-    this.setState({userId:key})
+    var status = await AsyncStorage.getItem('status')
+    this.setState({userId:key,status})
     this.retrieveCoursesOffline()
+    this.checkUnsavedActivities()
   }
-   componentWillReceiveProps (p) {
+  async checkUnsavedActivities () {
+    if (this.state.status === 'true') {
+      var stored = await AsyncStorage.getItem("savedActivities")
+      if (stored !== null && stored !== '1') {
+        var saved = JSON.parse(stored)
+        saved.map((course)=>{
+          this.historyRef.child(this.state.userId).push(course)
+        })
+        AsyncStorage.setItem('savedActivities','1')
+      }
+    }
+  }
+  componentWillReceiveProps (p) {
      this._setHighScore()
   }
-async _setHighScore () {
-  await this.data.map(async (course)=>{
-    course.high = await this.getHighScore(course.key)
-  })
-  this.setState({questions:this.data, noCourses:false, isLoading:false})
+  async _setHighScore () {
+    await this.data.map(async (course)=>{
+      course.high = await this.getHighScore(course.key)
+    })
+    this.setState({questions:this.data, noCourses:false, isLoading:false})
   }
   async retrieveCoursesOffline () {
     //Retrieved and parse stored data in AsyncStorage
@@ -67,7 +83,6 @@ async _setHighScore () {
       this.setState({data:this.data, noCourses:false, isLoading:false})
     }
   }
-
   async readAddCourses() {
       /* 1. Set courses to empty before reloading online data to avoid duplicate entries
         2. Retrieve users courses from firebase and store them locally using AsyncStorage */
@@ -112,10 +127,10 @@ async _setHighScore () {
     return result
   }
    renderItem({ item, index }) {
-   return (
-     <View
-      style={customStyles.listItem}
-    >
+     return (
+       <View
+         style={customStyles.listItem}
+         >
       <Swipeable onRightActionRelease={()=>this.setState({activeRow:index})} rightActionActivationDistance={100} onRef={ref => this.swipeable = ref} rightButtons={this.rightButtons}>
         <TouchableHighlight underlayColor={'transparent'}  onPress={()=>this._onPressItem(index)}
           style={{flex:1}}>
@@ -129,7 +144,7 @@ async _setHighScore () {
             <Text onPress={()=>Actions.theory({courseId:item.key, courseCode:item.code})} style={[customStyles.actions, styles.textColor]}>Study Theory Questions</Text>
           </View>
           <View style={customStyles.actionsContainer}>
-            <Text onPress={()=>Actions.start_exam({courseId:item.key, courseCode:item.code})} style={[customStyles.actions, styles.textColor]}>Practice Exam</Text>
+            <Text onPress={()=>Actions.start_exam({courseId:item.key, courseCode:item.code, course:item.name})} style={[customStyles.actions, styles.textColor]}>Practice Exam</Text>
           </View>
           <View style={customStyles.actionsContainer}>
             <Text style={[customStyles.actions, styles.textColor]}>High Score: {item.high}</Text>

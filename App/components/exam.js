@@ -32,18 +32,34 @@ export default class Exams extends Component {
       modalVisible:false,
       correct:0,
       noQuestions:false,
-      isLoading:true
+      isLoading:true,
+      status:''
     }
     //firebase realtime db references
     this.ref = firebase.database().ref().child('questions').child(this.props.courseId)
     this.bookmarksRef = firebase.database().ref().child('bookmarks')
+    this.historyRef = firebase.database().ref().child('activities')
   }
   async componentWillMount () {
     theme.setRoot(this)
-    //
+    //Retrieve user from local storage
     var key = await AsyncStorage.getItem('myKey')
-    this.setState({userId:key})
+    var status = await AsyncStorage.getItem('status')
+    this.setState({userId:key, status})
     this.retrieveQuestionsOffline()
+  }
+  async downloadQuestions () {
+    if (this.state.status === 'true') {
+      this.local = []
+      await this.ref.orderByChild('type').equalTo('objective').once('value',(snapshot)=>{
+        snapshot.forEach((snap)=>{
+          if (snap.val().answered) {
+            this.local.push({key:snap.key, question:snap.val().question, optionA:snap.val().optionA, optionB:snap.val().optionB, optionC:snap.val().optionC, optionD:snap.val().optionD, selected:'', answer:snap.val().answer, show:false,})
+            AsyncStorage.setItem(this.props.courseId+'obj', JSON.stringify(this.local))
+          }
+        })
+      })
+    }
   }
   async retrieveQuestionsOffline () {
     //Retrieved and parse stored data in AsyncStorage
@@ -57,6 +73,7 @@ export default class Exams extends Component {
       this.data = questions
       this.setState({questions:questions, noQuestions:false,isLoading:false,})
       this.randomizeQuestions()
+      this.downloadQuestions()
     }
   }
   async retrieveQuestionsOnline () {
@@ -121,17 +138,50 @@ export default class Exams extends Component {
     clone[this.state.index].selected = option
     this.setState({questions:clone})
   }
-  async showNextQuestion () {
+  showNextQuestion () {
     //Determine if going forward is possible (increase the index), else exam has concluded
     if (this.state.index < this.state.questions.length - 1)
     this.setState({index:this.state.index + 1})
     else {
-      var score = await AsyncStorage.getItem(this.props.courseId+'high')
-      if (score === null) AsyncStorage.setItem(this.props.courseId+'high',this.state.correct.toString())
-      else {
-        if (score < this.state.correct) AsyncStorage.setItem(this.props.courseId+'high',this.state.correct.toString())
-      }
+      this._saveHigh()
+      this._saveToHistory()
       this.setState(prevState =>({finished:!prevState.finished}))
+    }
+  }
+  _saveToHistory (){
+    var data = {
+      title:this.props.course,
+      code:this.props.courseCode,
+      createdAt:firebase.database.ServerValue.TIMESTAMP,
+      score:this.state.correct,
+      total:this.state.total,
+      percentage:(this.state.correct/this.state.total * 100).toFixed(2)
+    }
+    if (this.state.status === 'true') {
+        this.historyRef.child(this.state.userId).push(data)
+    }else {
+      this._saveActivities(data)
+    }
+  }
+  async _saveActivities (data) {
+    var previous = await AsyncStorage.getItem('savedActivities')
+    if (previous !== null && previous !== '1') {
+      previous = JSON.parse(previous)
+      previous.push(data)
+      AsyncStorage.setItem('savedActivities', JSON.stringify(previous))
+    }else{
+      var newActivity = []
+      newActivity.push(data)
+       AsyncStorage.setItem('savedActivities',JSON.stringify(newActivity))
+    }
+  }
+  async _saveHigh () {
+    //Determine if the user already has a high score, override it--if it is below the current score
+    //Save the current score if there is no current high score
+    var score = await AsyncStorage.getItem(this.props.courseId+'high')
+    if (score === null) AsyncStorage.setItem(this.props.courseId+'high',this.state.correct.toString())
+    else {
+      if (score < this.state.correct) AsyncStorage.setItem(this.props.courseId+'high',this.state.correct.toString())
     }
   }
   showPrevQuestion () {
@@ -204,7 +254,6 @@ export default class Exams extends Component {
   renderItem({ item, index }) {
    return (
      <View
-       key={item.id}
       style={customStyles.listItem}
       >
       <Text style={[customStyles.listText, styles.textColor]}>{index+1}. {item.question}</Text>

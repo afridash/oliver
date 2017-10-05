@@ -6,8 +6,6 @@ import theme, { styles } from 'react-native-theme'
 export default class Index extends React.Component {
   async componentWillMount () {
     theme.setRoot(this)
-    var key = await AsyncStorage.getItem('myKey')
-    if (key !== null) Actions.home()
   }
   render() {
     return (
