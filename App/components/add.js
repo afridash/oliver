@@ -1,6 +1,8 @@
 import React, {Component} from 'react'
-import {View,Text,AsyncStorage,Picker,Modal,TouchableHighlight, Platform, FlatList, Image} from 'react-native'
+import {View,Text,AsyncStorage,Picker,Modal,TouchableHighlight, Platform, FlatList, Image, Alert} from 'react-native'
 import Button from 'react-native-button'
+import Firebase from '../auth/firebase'
+const firebase = require('firebase')
 import {Actions} from 'react-native-router-flux'
 import theme, { styles } from 'react-native-theme'
 import NavBar from './navBar'
@@ -8,15 +10,10 @@ export default class Add extends Component {
   constructor (props) {
     super (props)
     this.state = {
-      faculty:[{key:'1',type:'faculty', show:false, name:"Richard Igbiriki",},
-            {key:'2', type:'faculty', show:false, name:"Adaka Iguniwei",},
-            {key:'3', type:'faculty', show:false, name:"Ikuromor Ogiriki",},
-            {key:'4', type:'faculty', show:false, name:"Donald Nyingifa",}],
-
-      department:[{key:'1', type:'department', show:false, name:"Richard Igbiriki",},
-      {key:'2', type:'department', show:false, name:"Adaka Iguniwei",},
-      {key:'3', type:'department', show:false, name:"Ikuromor Ogiriki",},
-      {key:'4', type:'department', show:false, name:"Donald Nyingifa",},],
+      faculty:[],
+      department:[],
+      name:'',
+      code:'',
       modalVisible:false,
       modalVisible2:false,
       pickedFaculty:'Faculty',
@@ -26,13 +23,40 @@ export default class Add extends Component {
     this.department = this.state.department
     this.renderItem = this.renderItem.bind(this)
   }
-  componentWillMount () {
-    theme.setRoot(this)
-  }
 
+  async componentWillMount () {
+    theme.setRoot(this)
+    var collegeId = await AsyncStorage.getItem('collegeId')
+    this.setState({collegeId:collegeId})
+    this.retrieveFaculty()
+  }
+  retrieveFaculty() {
+        // Retrieve users faculties from their respective college from firebase
+    this.faculty = []
+     firebase.database().ref().child('faculties').child(this.state.collegeId).once('value', (snapshot)=>{
+      snapshot.forEach((faculty)=>{
+        this.faculty.push({key:faculty.key, name:faculty.val(), type:'faculty'})
+        this.setState({faculty:this.faculty})
+      })
+    })
+  }
+  retrieveDepartment(faculty) {
+        // Retrieve users faculties from their respective college from firebase
+    this.faculty = []
+     firebase.database().ref().child('departments').child(faculty).once('value', (snapshot)=>{
+      snapshot.forEach((department)=>{
+        this.department.push({key:department.key, name:department.val()})
+        this.setState({department:this.department})
+      })
+    })
+  }
   _onPressItem (index, type) {
-    if (type ==='faculty') this.setState({pickedFaculty:this.state.faculty[index].name,modalVisible:false})
-    else this.setState({pickedDepartment:this.state.department[index].name, modalVisible2:false})
+    if (type ==='faculty')
+    {
+      this.retrieveDepartment(this.state.faculty[index].key)
+      this.setState({pickedFaculty:this.state.faculty[index].name, modalVisible:false})
+    }
+    else this.setState({pickedDepartment:this.state.department[index].name, selectedKey:this.state.department[index].key, modalVisible2:false})
   }
   renderItem({ item, index }) {
    return (
@@ -122,18 +146,19 @@ export default class Add extends Component {
                 underlayColor={'transparent'}
                 style={addStyles.boxItem} onPress={()=>this.setState({modalVisible2:!this.state.modalVisible2})}>
                   <View style={addStyles.itemContainer}>
-                    <Text style={addStyles.item}  >{this.state.pickedDepartment}</Text>
+                    <Text style={addStyles.item}>{this.state.pickedDepartment}</Text>
                     <Image source={require('../assets/images/arrow_right.png')} style={[addStyles.home]} />
                   </View>
               </TouchableHighlight>
-          <View style={addStyles.buttonContainer}>
-            <Button
+          <View
+            style={addStyles.buttonContainer}>
+             {this.state.pickedDepartment !== 'Department' && this.state.pickedFaculty !== 'Faculty' && <Button
               containerStyle={[styles.secondaryButton, addStyles.secondaryButton]}
               style={addStyles.addButton}
               styleDisabled={{color: 'red'}}
-              onPress={Actions.courses}>
+              onPress={()=> Actions.courses({department:this.state.pickedDepartment, departmentKey:this.state.selectedKey})}>
               Continue
-            </Button>
+            </Button>}
           </View>
           </View>
           <View style={addStyles.header}></View>

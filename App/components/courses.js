@@ -26,6 +26,7 @@ export default class Courses extends Component {
       code:'',
       data:[],
       refreshing: false,
+      department:[],
     }
     this.data = []
     this.renderItem = this.renderItem.bind(this)
@@ -37,7 +38,9 @@ export default class Courses extends Component {
     this.setState({userId:key, collegeId:collegeId})
     this.retrieveCoursesOffline()
   }
+
   async retrieveCoursesOffline () {
+    // Retrieves the courses when there's no internet
     var courses = []
     var stored = await AsyncStorage.getItem("courses")
     if (stored !== null) courses = JSON.parse(stored)
@@ -46,19 +49,23 @@ export default class Courses extends Component {
     }else{
       this.data = courses
       this.setState({data:courses})
+      this.filterByDepartment()
     }
   }
-  retrieveCoursesOnline () {
+  async retrieveCoursesOnline () {
+    //1.Retrieve users courses from faculties in firebase and store them locally using AsyncStorage
+    //Also filters the courses by department using the department Key
     this.data = []
     this.setState({courses:[], refreshing:true})
-    firebase.database().ref().child('faculties').child(this.state.collegeId).once('value', (snapshots)=>{
+     firebase.database().ref().child('faculties').child(this.state.collegeId).once('value', (snapshots)=>{
       snapshots.forEach((childSnap)=>{
         firebase.database().ref().child('departments').child(childSnap.key).once('value', (snapshot)=>{
           snapshot.forEach((department)=>{
             firebase.database().ref().child('courses').child(department.key).once('value', (snap)=>{
               snap.forEach((course)=>{
-                this.data.push({key:course.key, show:false, name:course.val().name, code:course.val().code})
+                this.data.push({key:course.key, show:false, name:course.val().name, code:course.val().code, department:department.key})
                 this.setState({data:this.data, refreshing:false})
+                this.filterByDepartment()
                 AsyncStorage.setItem('courses', JSON.stringify(this.data))
               })
             })
@@ -67,13 +74,27 @@ export default class Courses extends Component {
       })
     })
   }
-  writeAddCourses(item) {
-    firebase.database().ref().child('user_courses').child(this.state.userId).child(item.key).set({
-      name:item.name,
-      code:item.code,
-    })
-    Alert.alert(item.name, 'has been added to your list')
+  //Filters the department by the courses specific to that department
+  filterByDepartment (){
+      if (this.props.departmentKey){
+        this.remainder = this.state.data.filter((course)=> {
+          return course.department === this.props.departmentKey
+        })
+        if (this.remainder.length > 0)
+        this.setState({data:this.remainder, noSearchResult:false})
+        else this.setState({noSearchResult:true})
+      }
   }
+  //Add Course to firebase db only using their course name and code.
+  writeAddCourses(item) {
+  firebase.database().ref().child('user_courses').child(this.state.userId).child(item.key).set({
+    name:item.name,
+    code:item.code,
+  });
+  //Alerts the user when their entry has been inputted in firebase
+  Alert.alert(item.name, 'has been added to your list')
+}
+//Filters the search by the name
   searchcourses (text) {
     var clone = this.data
     this.result = clone.filter ((course) => { return course.name.toLowerCase().includes(text.toLowerCase()) === true || course.code.toLowerCase().includes(text.toLowerCase()) === true})
@@ -81,6 +102,8 @@ export default class Courses extends Component {
     this.setState({data:this.result, noSearchResult:false})
     else this.setState({noSearchResult:true})
   }
+
+
   renderHeader () {
     return  (
       <View style={customStyles.inputContainer} >
@@ -92,11 +115,13 @@ export default class Courses extends Component {
       </View>
     )
   }
+  //Function for whenever an item is pressed
   _onPressItem (index) {
     var clone = this.state.data
     clone[index].show = !clone[index].show
     this.setState({data:clone})
   }
+
   renderItem({ item, index }) {
    return (
      <View
@@ -122,7 +147,7 @@ export default class Courses extends Component {
   render () {
     return (
       <View style={styles.container}>
-        <NavBar title='All courses' />
+        <NavBar title={this.props.department ? this.props.department : 'All Courses'} />
         <View style={styles.secondaryContainer} >
           <View style={customStyles.container}>
             <View style={{flex:1, flexDirection:'row'}}>{this.renderHeader()}</View>
@@ -149,6 +174,8 @@ export default class Courses extends Component {
     )
   }
 }
+
+//Serves as the customized style for this entire page (All added styles for this page needs to be added here and not inside the code!!!)
 const customStyles = StyleSheet.create({
   container:{
     flex:10,
