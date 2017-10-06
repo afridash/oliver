@@ -24,8 +24,8 @@ export default class Courses extends Component {
     this.state = {
       name:'',
       code:'',
-        data:[],
-        refreshing: false,
+      data:[],
+      refreshing: false,
     }
     this.data = []
     this.renderItem = this.renderItem.bind(this)
