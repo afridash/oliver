@@ -31,6 +31,7 @@ export default class Home extends Component {
       isLoading:true,
       status:'',
     }
+    this.ref = firebase.database().ref().child('user_courses')
     this.data = this.state.data
     this.renderItem = this.renderItem.bind(this)
     this.historyRef = firebase.database().ref().child('activities')
@@ -41,12 +42,14 @@ export default class Home extends Component {
   async componentWillMount () {
     theme.setRoot(this)
     var key = await AsyncStorage.getItem('myKey')
-    var status = await AsyncStorage.getItem('status')
+    var status = await AsyncStorage.getItem('status') //Check the internet status
     this.setState({userId:key,status})
     this.retrieveCoursesOffline()
     this.checkUnsavedActivities()
   }
   async checkUnsavedActivities () {
+    //Save activities online if there are any unsaved
+    //Set to empty after uploading
     if (this.state.status === 'true') {
       var stored = await AsyncStorage.getItem("savedActivities")
       if (stored !== null && stored !== '1') {
@@ -88,7 +91,7 @@ export default class Home extends Component {
         2. Retrieve users courses from firebase and store them locally using AsyncStorage */
     this.data = []
     this.setState({refreshing:true})
-    await firebase.database().ref().child('user_courses').child(this.state.userId).once('value', (snapshot)=>{
+    await this.ref.child(this.state.userId).once('value', (snapshot)=>{
       if (snapshot.val() === null) this.setState({refreshing:false, noCourses:true,isLoading:false})
       snapshot.forEach((course)=>{
         this.data.push({key:course.key, show:false, name:course.val().name, code:course.val().code})
@@ -103,6 +106,7 @@ export default class Home extends Component {
     //Delete row that has been clicked on after swiping
     var rem = this.state.data.splice(this.state.activeRow,1)
     this.setState({data:this.state.data})
+    this.ref.child(this.state.userId).child(this.state.deleteRef).remove()
   }
   handleUserBeganScrollingParentView() {
     this.swipeable.recenter();
@@ -131,7 +135,7 @@ export default class Home extends Component {
        <View
          style={customStyles.listItem}
          >
-      <Swipeable onRightActionRelease={()=>this.setState({activeRow:index})} rightActionActivationDistance={100} onRef={ref => this.swipeable = ref} rightButtons={this.rightButtons}>
+      <Swipeable onRightActionRelease={()=>this.setState({activeRow:index, deleteRef:item.key})} rightActionActivationDistance={100} onRef={ref => this.swipeable = ref} rightButtons={this.rightButtons}>
         <TouchableHighlight underlayColor={'transparent'}  onPress={()=>this._onPressItem(index)}
           style={{flex:1}}>
           <View style={{flex:1, flexDirection:'row', justifyContent:'space-between'}}>
@@ -159,8 +163,10 @@ export default class Home extends Component {
      //Search for user entry using the second variable that the courses are stored in.
      //Filter each and return those that contain the searched string
      var clone = this.data
-     this.result = clone.filter ((course) => { return course.name.toLowerCase().includes(text.toLowerCase()) === true})
-     this.setState({data:this.result})
+     this.result = clone.filter ((course) => { return course.name.toLowerCase().includes(text.toLowerCase()) === true || course.code.toLowerCase().includes(text.toLowerCase()) === true })
+     if (this.result.length > 0)
+     this.setState({data:this.result, noSearchResult:false})
+     else this.setState({noSearchResult:true})
    }
    renderHeader () {
      return  (
@@ -207,6 +213,10 @@ export default class Home extends Component {
                 else if (this.state.noCourses) return (
                   <View style={{flex:1, justifyContent:'center', alignItems:'center'}}>
                   <Text style={[customStyles.listText, styles.textColor]}>Click Below To Add A Course</Text></View>
+                )
+                else if (this.state.noSearchResult) return (
+                  <View style={{flex:1, justifyContent:'center', alignItems:'center'}}>
+                  <Text style={[customStyles.listText, styles.textColor]}>:( Nothing Found</Text></View>
                 )
                 else return this.renderFlatList()
               })()

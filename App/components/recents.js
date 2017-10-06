@@ -15,6 +15,7 @@ import {
 import {Actions} from 'react-native-router-flux'
 import theme, { styles } from 'react-native-theme'
 import Button from 'react-native-button'
+import Swipeable from 'react-native-swipeable'
 import Firebase from '../auth/firebase'
 const firebase = require('firebase')
 import * as timestamp from '../auth/timestamp'
@@ -32,6 +33,9 @@ export default class Activity extends Component {
     }
     this.renderItem = this.renderItem.bind(this)
     this.ref = firebase.database().ref().child('activities')
+    this.rightButtons = [
+      <Text onPress={()=>this.handleSwipeClick()} style={customStyles.swipeButton}>Delete</Text>,
+    ]
   }
   async componentWillMount () {
     //Set theme styles
@@ -41,6 +45,12 @@ export default class Activity extends Component {
     this.setState({userId:key})
     //Start component lifecycle with call to loading questions stored offline
     this.retrieveActivitiesOffline()
+  }
+  handleSwipeClick () {
+    //Delete row that has been clicked on after swiping
+    var rem = this.state.activities.splice(this.state.activeRow,1)
+    this.setState({activities:this.state.activities})
+    this.ref.child(this.state.userId).child(this.state.deleteRef).remove()
   }
   async retrieveActivitiesOffline () {
     //Retrieved and parse stored data in AsyncStorage
@@ -75,6 +85,7 @@ export default class Activity extends Component {
      <View
       style={customStyles.listItem}
     >
+      <Swipeable onRightActionRelease={()=>this.setState({activeRow:index, deleteRef:item.key})} rightActionActivationDistance={100} onRef={ref => this.swipeable = ref} rightButtons={this.rightButtons}>
       <View style={{flex:1, flexDirection:'row', justifyContent:'space-between'}}>
         <Text style={[customStyles.listText, styles.textColor]}>{item.title}</Text>
         <Text style={[customStyles.listText, styles.textColor]}>{item.code}</Text>
@@ -88,6 +99,7 @@ export default class Activity extends Component {
         <Text style={[customStyles.actions, styles.textColor]}>{timestamp.timeSince(item.createdAt)}</Text>
       </View>
       </View>
+    </Swipeable>
     </View>
       )
    }
@@ -169,5 +181,17 @@ const customStyles = StyleSheet.create({
     width: 20,
     height: 20,
     alignItems:'flex-end',
+  },
+  swipeButton:{
+    color:'white',
+    fontSize:16,
+    marginLeft:20,
+    backgroundColor:'#ff1744',
+    overflow:'hidden',
+    padding:10,
+    borderRadius:10,
+    borderWidth:1,
+    borderColor:'white',
+    fontFamily:(Platform.OS === 'ios') ? 'Didot' : 'serif',
   },
 })

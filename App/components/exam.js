@@ -33,20 +33,34 @@ export default class Exams extends Component {
       correct:0,
       noQuestions:false,
       isLoading:true,
-      status:''
+      status:'',
+      college:'',
+      messages:[{key:1, message:'Want to beat my high score ?!'},
+                {key:2, message:'I just finished practicing! Want to try?'},
+                {key:3, message:'Hey all, check out my score!'},
+                {key:4, message:'Cool! I did great! Try it'} ]
     }
     //firebase realtime db references
     this.ref = firebase.database().ref().child('questions').child(this.props.courseId)
     this.bookmarksRef = firebase.database().ref().child('bookmarks')
     this.historyRef = firebase.database().ref().child('activities')
+    this.exploreRef = firebase.database().ref().child('explore')
   }
   async componentWillMount () {
     theme.setRoot(this)
+    //Retrieve user information stored locally
+    this.getInfo()
+    //Retrieve locally stored images or download questions if none
+    this.retrieveQuestionsOffline()
+  }
+  async getInfo () {
     //Retrieve user from local storage
     var key = await AsyncStorage.getItem('myKey')
     var status = await AsyncStorage.getItem('status')
-    this.setState({userId:key, status})
-    this.retrieveQuestionsOffline()
+    var college = await AsyncStorage.getItem('collegeId')
+    var username = await AsyncStorage.getItem('username')
+    var pic = await AsyncStorage.getItem('pPicture')
+    this.setState({userId:key, status, college, profilePicture:pic, username:username})
   }
   async downloadQuestions () {
     if (this.state.status === 'true') {
@@ -235,6 +249,35 @@ export default class Exams extends Component {
     clone[this.state.index] = question
     this.setState({questions:clone})
   }
+  shareToExplore () {
+    /*
+    * Select a random message,
+    * Get data about the user and course
+    * Save too explore and alert the user
+    * Go back home
+    */
+    var num = this.state.messages.length
+    var item = this.state.messages[Math.floor(Math.random()*num)]
+    var data = {
+        profilePicture:this.state.profilePicture,
+        username:this.state.username,
+        course:this.props.course,
+        courseCode:this.props.courseCode,
+        courseId:this.props.courseId,
+        createdAt:firebase.database.ServerValue.TIMESTAMP,
+        message: item.message,
+        percentage: (this.state.correct/this.state.total * 100).toFixed(2)
+    }
+    this.exploreRef.child(this.state.college).push(data)
+    Alert.alert(
+      'Shared!',
+      'Thank you for sharing to explore! Kudos',
+      [
+        {text: 'Ok', onPress: () => Actions.pop()},
+      ],
+      { cancelable: false }
+    )
+  }
   showSummary () {
     return (
       <View style={{flex:1}}>
@@ -351,6 +394,13 @@ export default class Exams extends Component {
                 onPress={()=>Actions.pop({refresh: {done: true}})}>
                 Return Home
               </Button>
+              <Button
+                containerStyle={[styles.secondaryButton, customStyles.secondaryButton]}
+                style={customStyles.addButton}
+                styleDisabled={{color: 'red'}}
+                onPress={()=>this.shareToExplore()}>
+                Share
+              </Button>
             </View>
           </View>
         }
@@ -393,7 +443,7 @@ const customStyles = {
     buttonContainer:{
       flex:0.1,
       flexDirection:'row',
-      justifyContent:'center',
+      justifyContent:'space-between',
       alignItems:'center',
       margin:5,
     },
@@ -422,6 +472,7 @@ const customStyles = {
       padding:10,
       flex:1,
       height:45,
+      margin:1,
       overflow:'hidden',
       borderRadius:10,
     },

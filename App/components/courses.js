@@ -67,20 +67,19 @@ export default class Courses extends Component {
       })
     })
   }
-
   writeAddCourses(item) {
-  firebase.database().ref().child('user_courses').child(this.state.userId).child(item.key).set({
-    name:item.name,
-    code:item.code,
-  });
-  Alert.alert(item.name, 'has been added to your list')
- //console.log(this.state.code)
-}
-
+    firebase.database().ref().child('user_courses').child(this.state.userId).child(item.key).set({
+      name:item.name,
+      code:item.code,
+    })
+    Alert.alert(item.name, 'has been added to your list')
+  }
   searchcourses (text) {
     var clone = this.data
-    this.result = clone.filter ((course) => { return course.name.toLowerCase().includes(text.toLowerCase()) === true})
-    this.setState({data:this.result})
+    this.result = clone.filter ((course) => { return course.name.toLowerCase().includes(text.toLowerCase()) === true || course.code.toLowerCase().includes(text.toLowerCase()) === true})
+    if (this.result.length > 0)
+    this.setState({data:this.result, noSearchResult:false})
+    else this.setState({noSearchResult:true})
   }
   renderHeader () {
     return  (
@@ -128,17 +127,21 @@ export default class Courses extends Component {
           <View style={customStyles.container}>
             <View style={{flex:1, flexDirection:'row'}}>{this.renderHeader()}</View>
             <View style={{flex:6, flexDirection:'row'}}>
-              <FlatList
-                data={this.state.data}
-                ItemSeparatorComponent={()=><View style={customStyles.separator}></View>}
-                renderItem={this.renderItem}
-                refreshControl={
-                 <RefreshControl
-                 refreshing={this.state.refreshing}
-                    onRefresh={this.retrieveCoursesOnline.bind(this)}
-          />
-        }
-           />
+              {this.state.noSearchResult ?
+                <View style={{flex:1, justifyContent:'center', alignItems:'center'}}>
+                  <Text style={[customStyles.listText, styles.textColor]}>:( Nothing Found</Text></View> :
+                  <FlatList
+                    data={this.state.data}
+                    ItemSeparatorComponent={()=><View style={customStyles.separator}></View>}
+                    renderItem={this.renderItem}
+                    refreshControl={
+                     <RefreshControl
+                     refreshing={this.state.refreshing}
+                        onRefresh={this.retrieveCoursesOnline.bind(this)}
+              />
+            }
+               />
+              }
             </View>
           </View>
         </View>
