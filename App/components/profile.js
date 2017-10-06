@@ -49,7 +49,9 @@ async componentWillReceiveProps (newprops) {
             <Image resizeMode={'cover'}  source={{uri: this.state.profilePicture}} style={customStyles.profile} blurRadius={20} >
             <View style={{flex:1}}>
               <View style={customStyles.profileContainer}>
-                  <Image resizeMode={'cover'}  source={{uri: this.state.profilePicture}} style={customStyles.profilePicture} />
+                  <TouchableHighlight onPress={Actions.view} underlayColor={'transparent'}>
+                    <Image resizeMode={'cover'}  source={{uri: this.state.profilePicture}} style={customStyles.profilePicture} />
+                  </TouchableHighlight>
            </View>
            <View style={{flex:0.1, alignItems:'flex-end', justifyContent:'flex-end'}}>
              <View style={{flex:1, flexDirection:'row'}}>

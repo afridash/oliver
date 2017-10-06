@@ -62,7 +62,7 @@ export default class DrawerContent extends React.Component {
             style={{flex:1}}>
             <View style={sidebar.profile}>
               <View style={sidebar.profileContainer}>
-              <Image resizeMode={'stretch'} source={{uri: this.state.profilePicture}} style={sidebar.profilePicture} />
+              <Image resizeMode={'cover'} source={{uri: this.state.profilePicture}} style={sidebar.profilePicture} />
            </View>
            <View style={sidebar.profileText}>
              <Text style={sidebar.profileName}>{this.state.name}</Text>
