@@ -7,37 +7,89 @@ import {
   Platform,
   FlatList,
   Image,
+  RefreshControl,
 } from 'react-native'
+import Firebase from '../auth/firebase'
+const firebase = require('firebase')
 import {Actions} from 'react-native-router-flux'
 import theme, { styles } from 'react-native-theme'
-
+import Button from 'react-native-button'
+import Swipeable from 'react-native-swipeable'
 import NavBar from './navBar'
-export default class Theories extends Component {
+
+export default class Bookmarks extends Component {
   constructor (props) {
     super (props)
     this.state = {
-      questions:[{question:'What is the definition of an atom? Where in the world is mount everest found? Who discovered the river nile?', answer:'I do not fully understand the question. Please rephrase'},
-                {question:'What is the definition of an atom? ',  answer:'Hmm, I see what\s happening here. You\'re face to face with greatness and it\'s strange! '},
-              {question:'Where in the world is mount everest found? Who discovered the river nile?', answer:'Lol ok, since that\'s how we want to play this game'},
-            {question:'What is the definition of an atom? Who discovered the river nile?', answer:'Finally, we can say we are done! Do not have to answer any dumb questions! '}],
-      index:0,
-      title:'Course Code',
+      data: [],
+      refreshing: false,
     }
+    this.data = []
     this.renderItem = this.renderItem.bind(this)
+    this.ref = firebase.database().ref().child('bookmarks')
+    this.rightButtons = [<Text onPress={()=>this.handleSwipeClick()} style={customStyles.swipeButton}>Delete</Text>,]
   }
-  componentWillMount () {
+  async componentWillMount () {
     theme.setRoot(this)
+    var key = await AsyncStorage.getItem('myKey')
+    this.setState({userId:key})
+    this.retrieveBookmarksOffline()
   }
   _onPressItem (index) {
-    var clone = this.state.questions
+    var clone = this.state.data
     clone[index].show = !clone[index].show
-    this.setState({questions:clone})
+    this.setState({data:clone})
   }
+
+  async retrieveBookmarksOffline () {
+    //Retrieve and parse stored data in AsyncStorage
+    //If no such data, read bookmarked questions from firebase, then store them locally
+    var bookmarks = []
+    var stored = await AsyncStorage.getItem("bookmarks")
+    if (stored !== null && stored !== '1') bookmarks = JSON.parse(stored)
+    if (bookmarks.length === 0 || bookmarks === null) {
+      this.retrieveBookmarksOnline()
+    }else{
+      this.data = bookmarks
+      this.setState({data:bookmarks})
+    }
+  }
+  retrieveBookmarksOnline () {
+    this.data = []
+    this.setState({bookmarks:[], refreshing:true})
+    this.ref.child(this.state.userId).once('value', (snapshots)=>{
+      snapshots.forEach((childSnap)=>{
+        if (childSnap.val().optionA === undefined) {
+          this.data.push({key:childSnap.key, question:childSnap.val().question, answer:childSnap.val().answer})
+          this.setState({data:this.data, refreshing:false})
+          AsyncStorage.setItem('bookmarks', JSON.stringify(this.data))
+        }else{
+          var answer
+          if (childSnap.val().answer === 'A') answer = childSnap.val().optionA
+          else if (childSnap.val().answer === 'B') answer = childSnap.val().optionB
+          else if (childSnap.val().answer === 'C') answer = childSnap.val().optionC
+          else answer = childSnap.val().optionD
+          this.data.push({key:childSnap.key, question:childSnap.val().question, answer:answer})
+          this.setState({data:this.data, refreshing:false})
+          AsyncStorage.setItem('bookmarks', JSON.stringify(this.data))
+        }
+      })
+    })
+  }
+
+  handleSwipeClick () {
+    //Delete row that has been clicked on after swiping
+    var rem = this.state.data.splice(this.state.activeRow,1)
+    this.setState({data:this.state.data})
+    this.ref.child(this.state.userId).child(this.state.deleteRef).remove()
+  }
+
   renderItem({ item, index }) {
    return (
      <View
       style={customStyles.listItem}
     >
+      <Swipeable onRightActionRelease={()=>this.setState({activeRow:index, deleteRef:item.key})} rightActionActivationDistance={100} onRef={ref => this.swipeable = ref} rightButtons={this.rightButtons}>
       <View style={{flex:1, flexDirection:'row', justifyContent:'space-between'}}>
         <Text onPress={()=>this._onPressItem(index)} style={[customStyles.listText, styles.textColor]}>{index+1} {item.question}</Text>
         {!item.show ? <Image source={require('../assets/images/arrow_right.png')} style={[styles.iconColor, customStyles.icon]} resizeMode={'contain'}/> : <Image source={require('../assets/images/arrow_down.png')} style={[styles.iconColor, customStyles.icon]} resizeMode={'contain'}/>}
@@ -48,6 +100,7 @@ export default class Theories extends Component {
       </View>
       </View>
     }
+    </Swipeable>
     </View>
       )
    }
@@ -58,9 +111,15 @@ export default class Theories extends Component {
         <View style={styles.secondaryContainer} >
           <View style={{flex:6, flexDirection:'row'}}>
             <FlatList
-              data={this.state.questions}
+              data={this.state.data}
               ItemSeparatorComponent={()=><View style={customStyles.separator}></View>}
               renderItem={this.renderItem}
+              refreshControl={
+               <RefreshControl
+               refreshing={this.state.refreshing}
+                  onRefresh={this.retrieveBookmarksOnline.bind(this)}
+              />
+             }
          />
           </View>
         </View>
@@ -68,6 +127,7 @@ export default class Theories extends Component {
     )
   }
 }
+
 const customStyles = StyleSheet.create({
   container:{
     flex:10,
@@ -102,12 +162,23 @@ const customStyles = StyleSheet.create({
     fontSize:18,
     fontFamily:(Platform.OS === 'ios') ? 'Didot' : 'serif',
     },
-
   icon:{
     marginTop:20,
     resizeMode: 'contain',
     width: 20,
     height: 20,
     alignItems:'flex-end',
+  },
+  swipeButton:{
+    color:'white',
+    fontSize:16,
+    marginLeft:20,
+    backgroundColor:'#ff1744',
+    overflow:'hidden',
+    padding:10,
+    borderRadius:10,
+    borderWidth:1,
+    borderColor:'white',
+    fontFamily:(Platform.OS === 'ios') ? 'Didot' : 'serif',
   },
 })
