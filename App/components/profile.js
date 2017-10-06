@@ -4,6 +4,10 @@ import { StyleSheet, Text, View, ViewPropTypes, Platform, Image, AsyncStorage,To
 import Button from 'react-native-button';
 import { Actions } from 'react-native-router-flux';
 import theme, { styles } from 'react-native-theme'
+import {ImagePicker} from 'expo'
+import Firebase from '../auth/firebase'
+const firebase = require('firebase')
+import b64 from 'base64-js'
 import NavBar from './navBar'
 
 export default class Profile extends React.Component {
@@ -24,11 +28,6 @@ export default class Profile extends React.Component {
     var username = await AsyncStorage.getItem('username')
    this.setState({email, college, username,profilePicture})
   }
-
-async componentWillReceiveProps (newprops) {
-  var pic = await AsyncStorage.getItem('pPicture')
-  this.setState({profilePicture:pic})
-}
   readAddCourses() {
     this.data = []
     this.setState({users:[]})
@@ -39,7 +38,33 @@ async componentWillReceiveProps (newprops) {
       })
     })
   }
-
+  _pickImage = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      base64:true,
+    })
+    if(!result.cancelled){
+      const byteArray = b64.toByteArray(result.base64)
+      const metadata = {contentType: 'image/jpeg'}
+      this.setState({profilePicture:result.uri})
+      var user = firebase.auth().currentUser
+      var ref = firebase.storage().ref().child('users').child('profilePictures').child(user.uid)
+      ref.put(byteArray, metadata).then(this.savePictureOnline.bind(this))
+      AsyncStorage.setItem('pPicture', result.uri)
+    }
+  }
+  savePictureOnline (snapshot) {
+    var user = firebase.auth().currentUser
+    if (user) {
+      user.updateProfile({
+        photoURL: snapshot.downloadURL,
+      }).then(function(){
+        console.log('Uploaded')
+      })
+      firebase.database().ref().child('users').child(user.uid).update({
+        profilePicture: snapshot.downloadURL,
+      })
+    }
+  }
   render() {
     return (
       <View style={styles.container}>
@@ -56,7 +81,7 @@ async componentWillReceiveProps (newprops) {
            <View style={{flex:0.1, alignItems:'flex-end', justifyContent:'flex-end'}}>
              <View style={{flex:1, flexDirection:'row'}}>
                <TouchableHighlight
-                 onPress={Actions.profilePicture}
+                 onPress={this._pickImage}
                   underlayColor={'transparent'}
                  >
                  <Image resizeMode={'contain'}  source={require('../assets/images/pencil.png')} style={[customStyles.pencil, styles.iconColor]} />
