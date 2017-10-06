@@ -73,12 +73,13 @@ export default class DrawerContent extends React.Component {
           <View style={sidebar.menu}>
             <Button style={[sidebar.secondaryContainer, styles.textColor]} onPress={Actions.home}><Image source={require('../assets/images/homeicon.png')} style={[sidebar.home, styles.iconColor]} />  Home</Button>
               <Button style={[sidebar.secondaryContainer, styles.textColor]} onPress={Actions.courses}><Image source={require('../assets/images/courses.png')} style={[sidebar.home, styles.iconColor]} /> Courses</Button>
-              <Button style={[sidebar.secondaryContainer, styles.textColor]} onPress={Actions.bookmark} onPress={Actions.bookmarks} ><Image source={require('../assets/images/bookmark.png')} style={[sidebar.home, styles.iconColor]} />  Bookmarks</Button>
+              <Button style={[sidebar.secondaryContainer, styles.textColor]} onPress={Actions.bookmarks} ><Image source={require('../assets/images/bookmark.png')} style={[sidebar.home, styles.iconColor]} />  Bookmarks</Button>
+              <Button style={[sidebar.secondaryContainer, styles.textColor]} onPress={Actions.recents} ><Image source={require('../assets/images/recents.png')} style={[sidebar.home, styles.iconColor]} />  Recent Activities</Button>
           </View>
 
         </View>
         <View style={{flex:1, justifyContent:'flex-end', alignItems:'center', borderTopWidth:3, borderColor:'white'}}>
-          <Button style={[sidebar.secondaryContainer, styles.textColor]} onPress={Actions.themes}>Themes</Button>
+          <Button style={[sidebar.secondaryContainer, styles.textColor]} onPress={Actions.themes}><Image source={require('../assets/images/themes.png')} style={[sidebar.home, styles.iconColor]} />Themes</Button>
             <Button onPress={()=>this.logout()} style={[sidebar.secondaryContainer, styles.textColor]}><Image source={require('../assets/images/logout.png')} style={[sidebar.home, styles.iconColor]} />Logout</Button>
       </View>
     </View>

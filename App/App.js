@@ -31,6 +31,7 @@ import * as main from './assets/styles/main.js'
 import NavBar from './components/navBar'
 import DrawerContent from './components/sideDrawer'
 import Themes from './components/themes'
+import Recents from './components/recents'
 import MenuIcon from './assets/images/menu_burger.png';
 
 const reducerCreate = params => {
@@ -105,6 +106,7 @@ export default class App extends React.Component {
                       <Scene key="courses" component={Courses} />
                       <Scene key="profile" component={Profile} />
                       <Scene key="profilePicture" component={ProfilePicture} />
+                      <Scene key="recents" component={Recents} />
                   </Scene>
                 </Drawer>
               </Stack>

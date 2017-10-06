@@ -7,6 +7,8 @@ const firebase = require('firebase')
 import * as validate from '../auth/validations'
 import theme, { styles } from 'react-native-theme'
 import Button from 'react-native-button'
+
+import NavBar from './navBar'
 export default class Reset extends React.Component {
   constructor (props) {
     super (props)
@@ -17,9 +19,6 @@ export default class Reset extends React.Component {
   }
   componentWillMount () {
     theme.setRoot(this)
-  }
-  _handlePress = () => {
-    Alert.alert('Clicked')
   }
   async sendEmail () {
     this.auth = firebase.auth()
@@ -48,6 +47,7 @@ export default class Reset extends React.Component {
       contentContainerStyle={styles.container}
       scrollEnabled={false}
     >
+        <NavBar backButton={true} />
         <View style={customStyles.title}><Text style={[customStyles.header, styles.header]}>Reset Password</Text></View>
         <View style={customStyles.secondaryContainer}>
           <View style={customStyles.box}>

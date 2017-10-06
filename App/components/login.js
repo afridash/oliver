@@ -7,6 +7,7 @@ import Button from 'react-native-button'
 import Firebase from '../auth/firebase'
 const firebase = require('firebase')
 
+import NavBar from './navBar'
 export default class Login extends React.Component {
   constructor (props) {
     super (props)
@@ -57,6 +58,7 @@ export default class Login extends React.Component {
       contentContainerStyle={styles.container}
       scrollEnabled={false}
     >
+      <NavBar backButton={true} />
         <View style={customStyles.title}><Text style={[customStyles.header, styles.header]}>Log In</Text></View>
         <View style={customStyles.secondaryContainer}>
           <View style={customStyles.box}>

@@ -6,7 +6,9 @@ import Button from 'react-native-button'
 import theme, { styles } from 'react-native-theme'
 import Firebase from '../auth/firebase'
 const firebase = require('firebase')
+
 import * as validate from '../auth/validations'
+import NavBar from './navBar'
 export default class SignUp extends Component {
   constructor (props) {
     super (props)
@@ -86,6 +88,7 @@ export default class SignUp extends Component {
         contentContainerStyle={styles.container}
         scrollEnabled
       >
+        <NavBar backButton={true} />
         <View style={customStyles.title}><Text style={[customStyles.header, styles.header]}>Sign Up</Text></View>
         <View style={customStyles.secondaryContainer}>
           <View style={customStyles.box}>
