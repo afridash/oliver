@@ -1,3 +1,6 @@
+/*
+*@author Richard Igbiriki & Ikuromor Ogiriki, October 2017
+*/
 import React, {Component} from 'react'
 import {
   View,
@@ -42,9 +45,15 @@ export default class Home extends Component {
   async componentWillMount () {
     theme.setRoot(this)
     var key = await AsyncStorage.getItem('myKey')
+    var currentUser = await AsyncStorage.getItem('currentUser')
     var status = await AsyncStorage.getItem('status') //Check the internet status
     this.setState({userId:key,status})
+    //Determine if the user wasn't the previously signed in user
+    //Download directly from online if the user just signed
+    if (currentUser === key)
     this.retrieveCoursesOffline()
+    else this.readAddCourses()
+
     this.checkUnsavedActivities()
   }
   async checkUnsavedActivities () {

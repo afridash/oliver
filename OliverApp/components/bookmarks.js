@@ -32,8 +32,12 @@ export default class Bookmarks extends Component {
   async componentWillMount () {
     theme.setRoot(this)
     var key = await AsyncStorage.getItem('myKey')
+    var currentUser = await AsyncStorage.getItem('currentUser')
     this.setState({userId:key})
+    if (currentUser === key)
     this.retrieveBookmarksOffline()
+    else this.retrieveBookmarksOnline()
+
   }
   _onPressItem (index) {
     var clone = this.state.data

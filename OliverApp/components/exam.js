@@ -209,14 +209,16 @@ export default class Exams extends Component {
     var question = this.state.questions[this.state.index]
     return (
       <View style={{flex:1}}>
-        <View style={{flex:1, flexDirection:'row', justifyContent:'center', margin:10, padding:15,}}>
-          <Text style={[customStyles.question, styles.textColor]}>{question.question}</Text>
-          <Button onPress={()=>this.bookmarkQuestion(question)}>
-            {question.bookmark ? <Image source={require('../assets/images/bookmark.png')} style={[{width:25, height:25, margin:10, tintColor:'red'}]} resizeMode={'contain'}/>:
-          <Image source={require('../assets/images/bookmark.png')} style={[styles.iconColor, {width:25, height:25, margin:10}]} resizeMode={'contain'}/>}
-          </Button>
-        </View>
-        <View style={{flex:1.5, margin:20,}}>
+        <ScrollView style={{flex:1}}>
+          <View style={{flex:1, flexDirection:'row', justifyContent:'center', margin:10, padding:15,}}>
+            <Text style={[customStyles.question, styles.textColor]}>{question.question}</Text>
+            <Button onPress={()=>this.bookmarkQuestion(question)}>
+              {question.bookmark ? <Image source={require('../assets/images/bookmark.png')} style={[{width:25, height:25, margin:10, tintColor:'red'}]} resizeMode={'contain'}/>:
+            <Image source={require('../assets/images/bookmark.png')} style={[styles.iconColor, {width:25, height:25, margin:10}]} resizeMode={'contain'}/>}
+            </Button>
+          </View>
+        </ScrollView>
+        <View style={{flex:2, margin:20,}}>
           <ScrollView >
             <View style={[customStyles.actionsContainer,{backgroundColor:question.selected === 'A' ? '#607d8b' : 'transparent'}]}>
             <Text onPress={()=>this.selectOption('A')} style={[customStyles.actions, styles.textColor]}>{question.optionA}</Text>

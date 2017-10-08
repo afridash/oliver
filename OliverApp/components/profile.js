@@ -1,6 +1,14 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { StyleSheet, Text, View, ViewPropTypes, Platform, Image, AsyncStorage,TouchableHighlight } from 'react-native';
+import { StyleSheet,
+  Text,
+  View,
+  ViewPropTypes,
+  Platform,
+  Image,
+  AsyncStorage,
+  TouchableHighlight,
+  ImageBackground } from 'react-native';
 import Button from 'react-native-button';
 import { Actions } from 'react-native-router-flux'
 import theme, { styles } from 'react-native-theme'
@@ -45,16 +53,19 @@ export default class Profile extends React.Component {
       email:'',
       college:'',
       username:'',
-      profilePicture:'none'
+      profilePicture:'none',
+      userId:''
     }
   }
   async componentWillMount () {
     theme.setRoot(this)
     var email = await AsyncStorage.getItem('email')
+    var userId = await AsyncStorage.getItem('myKey')
     var profilePicture = await AsyncStorage.getItem('pPicture')
     var college = await AsyncStorage.getItem('college')
     var username = await AsyncStorage.getItem('username')
-   this.setState({email, college, username,profilePicture})
+   this.setState({email, college, username,profilePicture, userId})
+    this.user = firebase.auth().currentUser
   }
   readAddCourses() {
     this.data = []
@@ -98,17 +109,16 @@ export default class Profile extends React.Component {
   }
   async saveImage (uri) {
     var picture
-    var user = firebase.auth().currentUser
-    var ref = firebase.storage().ref().child('users').child('profile').child(user.uid)
+    var ref = firebase.storage().ref().child('users').child('profile').child(this.state.userId)
     await uploadImage(uri, ref, 'image/jpeg').then(url => {
       picture = url
     })
       .catch(error => console.log(error))
     if (picture !== '') {
-      user.updateProfile({
+        this.user.updateProfile({
         photoURL: picture,
       })
-      firebase.database().ref('users/' + user.uid).update({
+      firebase.database().ref('users/' + this.state.userId).update({
         profilePicture: picture,
       })
     }
@@ -119,7 +129,7 @@ export default class Profile extends React.Component {
         <NavBar title='Profile' />
         <View style={customStyles.container}>
           <View style={{flex:3, backgroundColor:'transparent'}}>
-            <Image resizeMode={'cover'}  source={{uri: this.state.profilePicture}} style={customStyles.profile} blurRadius={20} >
+            <ImageBackground resizeMode={'cover'}  source={{uri: this.state.profilePicture}} style={customStyles.profile} blurRadius={20} >
             <View style={{flex:1}}>
               <View style={customStyles.profileContainer}>
                   <TouchableHighlight onPress={Actions.view} underlayColor={'transparent'}>
@@ -137,7 +147,7 @@ export default class Profile extends React.Component {
              </View>
            </View>
          </View>
-       </Image>
+       </ImageBackground>
           </View>
 
           <View style={customStyles.menu}>

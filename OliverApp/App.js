@@ -21,7 +21,6 @@ import Reset from './components/reset'
 import Home from './components/home'
 import Add from './components/add'
 import Profile from './components/profile'
-import ProfilePicture from './components/profilePicture'
 import Exams from './components/exam'
 import Bookmarks from './components/bookmarks'
 import Theories from './components/theories'
@@ -107,7 +106,6 @@ export default class App extends React.Component {
                       <Scene key="theory" component={Theories} />
                       <Scene key="courses" component={Courses} />
                       <Scene key="profile" component={Profile} />
-                      <Scene key="profilePicture" component={ProfilePicture} />
                       <Scene key="recents" component={Recents} />
                       <Scene key="view" component={ViewFull} />
                       <Scene key="explore" component={Explore} />

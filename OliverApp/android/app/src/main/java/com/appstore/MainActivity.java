@@ -1,4 +1,4 @@
-package com.appstore;
+package com.afridash.oliver;
 
 import com.facebook.react.ReactActivity;
 

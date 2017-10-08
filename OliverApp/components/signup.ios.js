@@ -76,6 +76,7 @@ export default class SignUp extends Component {
     await AsyncStorage.multiSet([["email", this.state.email],
                                  ['name', this.state.firstName+" "+this.state.lastName],
                                   ['myKey', userID],
+                                  ['currentUser', userID],
                                   ['pPicture',this.picture],
                                   ['username',this.state.username],
                                 ])

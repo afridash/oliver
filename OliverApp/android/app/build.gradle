@@ -98,11 +98,11 @@ android {
     buildToolsVersion "23.0.1"
 
     defaultConfig {
-        applicationId "com.appstore"
+        applicationId "com.afridash.oliver"
         minSdkVersion 16
         targetSdkVersion 22
-        versionCode 1
-        versionName "1.0"
+        versionCode 3
+        versionName "1.2"
         ndk {
             abiFilters "armeabi-v7a", "x86"
         }
@@ -137,8 +137,8 @@ android {
 }
 
 dependencies {
-    compile project(':react-native-fetch-blob')
     compile project(':react-native-image-picker')
+    compile project(':react-native-fetch-blob')
     compile fileTree(dir: "libs", include: ["*.jar"])
     compile "com.android.support:appcompat-v7:23.0.1"
     compile "com.facebook.react:react-native:+"  // From node_modules

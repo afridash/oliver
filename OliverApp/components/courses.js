@@ -33,10 +33,13 @@ export default class Courses extends Component {
   }
   async componentWillMount () {
     theme.setRoot(this)
-    var key = await AsyncStorage.getItem('myKey')
     var collegeId = await AsyncStorage.getItem('collegeId')
+    var key = await AsyncStorage.getItem('myKey')
+    var currentUser = await AsyncStorage.getItem('currentUser')
     this.setState({userId:key, collegeId:collegeId})
+    if (currentUser === key)
     this.retrieveCoursesOffline()
+    else this.retrieveCoursesOnline()
   }
 
   async retrieveCoursesOffline () {
@@ -102,8 +105,6 @@ export default class Courses extends Component {
     this.setState({data:this.result, noSearchResult:false})
     else this.setState({noSearchResult:true})
   }
-
-
   renderHeader () {
     return  (
       <View style={customStyles.inputContainer} >
@@ -137,7 +138,7 @@ export default class Courses extends Component {
         <Text onPress={()=>this.writeAddCourses(item)} style={[customStyles.actions, styles.textColor]}>Add To My Courses</Text>
       </View>
       <View style={customStyles.actionsContainer}>
-        <Text onPress={Actions.start_exam} style={[customStyles.actions, styles.textColor]}>Practice Exam</Text>
+        <Text onPress={()=>Actions.start_exam({courseCode:item.code, courseId:item.key, course:item.name})} style={[customStyles.actions, styles.textColor]}>Practice Exam</Text>
       </View>
       </View>
     }

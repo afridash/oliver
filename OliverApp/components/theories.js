@@ -39,9 +39,12 @@ export default class Theories extends Component {
     theme.setRoot(this)
     //Retrieve user key
     var key = await AsyncStorage.getItem('myKey')
+    var currentUser = await AsyncStorage.getItem('currentUser')
     this.setState({userId:key})
     //Start component lifecycle with call to loading questions stored offline
+    if (currentUser === key)
     this.retrieveQuestionsOffline()
+    else this.retrieveQuestionsOnline()
   }
   async retrieveQuestionsOffline () {
     //Retrieved and parse stored data in AsyncStorage

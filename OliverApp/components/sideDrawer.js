@@ -35,12 +35,14 @@ export default class DrawerContent extends React.Component {
     sceneStyle: ViewPropTypes.style,
     title: PropTypes.string,
   }
-  logout () {
+  async logout () {
     firebase.auth().signOut().then(function () {
   // Sign-out successful.
     }, function (error) {
   // An error happened.
     })
+    var current = await AsyncStorage.getItem('myKey')
+    AsyncStorage.setItem('currentUser', current)
     let keys = ['email', 'myKey', 'name', 'pPicture',]
     AsyncStorage.multiRemove(keys, (err) => {
       return Actions.index()

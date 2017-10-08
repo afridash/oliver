@@ -38,7 +38,8 @@ const customStyles = StyleSheet.create({
     fontFamily:(Platform.OS === 'ios') ? 'Didot' : 'serif',
   },
   subtitleInfo: {
-    fontSize:35,
+    fontSize:32,
+    textAlign:'center',
     textShadowColor:'#01579b',
     textShadowOffset: {width: 2, height: 2},
     textShadowRadius:2,
