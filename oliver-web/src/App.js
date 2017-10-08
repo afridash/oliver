@@ -5,13 +5,6 @@ export default class App extends Component {
   render() {
     return (
       <div>
-        <div classNameName="spn_hol">
-            <div className="spinner">
-                <div className="bounce1"></div>
-                <div className="bounce2"></div>
-                <div className="bounce3"></div>
-            </div>
-        </div>
         <section className="header parallax home-parallax page" id="HOME">
             <h2></h2>
             <div className="section_overlay">
@@ -43,17 +36,10 @@ export default class App extends Component {
 
                 <div className="container home-container">
                     <div className="row">
-                        <div className="col-md-12">
-                            <div className="logo text-center">
-                                <img width="125" height="55" src="images/logo.png" alt="" />
-                            </div>
-                        </div>
-                    </div>
-                    <div className="row">
                         <div className="col-md-8 col-sm-8">
                             <div className="home_text">
-                                <h1>Brilliant Landing Page Design. Executed for Your App</h1>
-                                <p>Now create a beautiful, app landing page.</p>
+                                <h1>Oliver</h1>
+                                <p>Exam Prep Simplified</p>
 
                                 <div className="download-btn">
                                     <a className="btn home-btn wow fadeInLeft" href="#DOWNLOAD">Download</a>
