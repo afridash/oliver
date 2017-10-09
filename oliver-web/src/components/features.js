@@ -10,7 +10,7 @@ export default class Features extends Component {
 
                     <div className="section_title wow fadeIn" data-wow-duration="1s">
                         <h2>Features</h2>
-                        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip.</p>
+                        <p>To ensure you maximize the best out of this App, we created a UI so easy to understand from it relatable contents, icons to it's colors to ensure easy navigation across the entire App. Take a look at some other features.</p>
                     </div>
 
                 </div>
@@ -27,24 +27,26 @@ export default class Features extends Component {
 
                             <div><span className="pe-7s-like"></span></div>
 
-                            <h3>Creative Design<span>/</span></h3>
-                            <p>Lorem ipsum dolor, consectetur sed do adipisicing elit, sed do eiusmod tempor incididunt</p>
+                            <h3>Offline Capabilities<span>/</span></h3>
+                            <p>Saving you from having to be online to retrieve questions and courses was one of our major focus, and we did it! You can view courses, bookmarks, questions, and activities offline...once you have downloaded them the first time.
+</p>
                         </div>
 
                         <div className="left_single_feature">
 
                             <div><span className="pe-7s-science"></span></div>
 
-                            <h3>Modern Look<span>/</span></h3>
-                            <p>Lorem ipsum dolor, consectetur sed do adipisicing elit, sed do eiusmod tempor incididunt</p>
+                            <h3>Activities<span>/</span></h3>
+                            <p>We help you keep track of your activities in practice exams. Recent activities is our way of saying...great job!</p>
                         </div>
 
 
                         <div className="left_single_feature">
                             <div><span className="pe-7s-look"></span></div>
 
-                            <h3>Minimal Layout<span>/</span></h3>
-                            <p>Lorem ipsum dolor, consectetur sed do adipisicing elit, sed do eiusmod tempor incididunt</p>
+                            <h3>Explore<span>/</span></h3>
+                            <p>You did great, you want others to be inspired, or challenged? Share to EXPLORE. Users across your campus will be able see your performance and be challenged to do the same. On EXPLORE, you can search for other users to see what they've shared, or search for a course to see all EXPLORERS from that course.
+</p>
                         </div>
 
                     </div>
@@ -58,24 +60,24 @@ export default class Features extends Component {
                         <div className="right_single_feature">
                             <div><span className="pe-7s-monitor"></span></div>
 
-                            <h3><span>/</span>Retina ready</h3>
-                            <p>Lorem ipsum dolor, consectetur sed do adipisicing elit, sed do eiusmod tempor incididunt</p>
+                            <h3><span>/</span>Exams</h3>
+                            <p>We have developed a practice exam environment that randomizes questions so you are never bored of practicing. The more questions we have, the more fun and random your experience will be. And we strive to add more questions everyday! </p>
                         </div>
 
                         <div className="right_single_feature">
 
                             <div><span className="pe-7s-phone"></span></div>
 
-                            <h3><span>/</span>Responsive Ready</h3>
-                            <p>Lorem ipsum dolor, consectetur sed do adipisicing elit, sed do eiusmod tempor incididunt</p>
+                            <h3><span>/</span>Theme</h3>
+                            <p>Want a more customizable interface that fits your every mood? Dont worry we also have that covered. Guess what? you also get to change it as many times as you want for FREE!</p>
                         </div>
 
                         <div className="right_single_feature">
 
-                            <div><span className="pe-7s-gleam"></span></div>
+                            <div><span className="fa fa-bookmark-o"></span></div>
 
-                            <h3><span>/</span>Clean Code</h3>
-                            <p>Lorem ipsum dolor, consectetur sed do adipisicing elit, sed do eiusmod tempor incididunt</p>
+                            <h3><span>/</span>bookmarks</h3>
+                            <p>Seen a question you want to remember later? Just Bookmark IT! and when on the rush with no internet you can also view those specially bookmarked questions OFFLINE too!</p>
                         </div>
                     </div>
                 </div>
@@ -86,10 +88,10 @@ export default class Features extends Component {
         <div className="container">
             <div className="row wow fadeInLeftBig" data-wow-duration="1s">
                 <div className="col-md-9">
-                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et olore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip.</p>
+                    <p>Want to know more about the app or try some of the listed features, and find other EXPLORERS from your school? then download the App.</p>
                 </div>
                 <div className="col-md-3">
-                    <a className="btn btn-primary btn-action" href="#" role="button">Download Now</a>
+                    <a className="btn btn-primary btn-action" href="https://play.google.com/store/apps/details?id=com.afridash.oliver" target='_blank' role="button">Download Now</a>
                 </div>
             </div>
         </div>
