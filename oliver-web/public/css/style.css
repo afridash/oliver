@@ -158,7 +158,7 @@ p {
     text-align: right;
 }
 .home-iphone img{
-    width: 100%;
+    width: 150%;
 }
 
 @media (max-width: 768px){
