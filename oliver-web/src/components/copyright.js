@@ -9,8 +9,7 @@ export default class CopyRight extends Component {
             <div className="row">
                 <div className="col-md-6">
                     <div className="copy_right_text">
-                        <p>Copyright &copy; 2017. All Rights Reserved.</p>
-                        <p>A theme by <a href="https://dcrazed.com/">Dcrazed</a></p>
+                        <p>Copyright &copy; 2017 Afridash Inc. All Rights Reserved.</p>
                     </div>
 
                 </div>

@@ -14,7 +14,7 @@ export default class Downloads extends Component {
                 <div className="col-md-6">
                     <div className="available_title">
                         <h2>Available on</h2>
-                        <p>Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. </p>
+                        <p>Join the community, download Oliver from your favorite stores </p>
                     </div>
                 </div>
 
@@ -31,7 +31,7 @@ export default class Downloads extends Component {
                             </div>
                         </a>
                         <div className="col-md-4 no_padding">
-                            <a href="">
+                            <a href="https://play.google.com/store/apps/details?id=com.afridash.oliver" target='_blank'>
                                 <div className="single_store">
                                     <i className="fa fa-android"></i>
                                     <div className="store_inner">

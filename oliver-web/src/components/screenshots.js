@@ -9,7 +9,7 @@ export default class Screenshots extends Component {
                     <div className="col-md-10 col-md-offset-1 wow fadeInBig" data-wow-duration="1s">
                         <div className="section_title">
                             <h2>Screenshots</h2>
-                            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip.</p>
+                            <p>Here is a sneak peek at Oliver. With emphasis on creating an intuitive, and simple to use User Interface, we can only hope you like it as much as we do! </p>
                         </div>
 
                     </div>

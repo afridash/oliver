@@ -1,5 +1,30 @@
 import React, { Component } from 'react'
+const firebase = require('firebase')
+var config = {
+    apiKey: "AIzaSyBp4grSHwH49z__gfdAuAGOTt05J_qWRr8",
+    authDomain: "oliver-web.firebaseapp.com",
+    databaseURL: "https://oliver-web.firebaseio.com",
+    projectId: "oliver-web",
+    storageBucket: "oliver-web.appspot.com",
+    messagingSenderId: "1053184240125"
+  };
+  firebase.initializeApp(config);
 export default class Subscribe extends Component {
+  constructor (props) {
+    super (props)
+    this.state = {
+      email:'',
+      message:''
+    }
+  }
+  handleChange = (event) => {
+    this.setState({[event.target.name]:event.target.value})
+  }
+  submit =(event) => {
+    event.preventDefault()
+    firebase.database().ref().child('subscribers').push(this.state.email)
+    this.setState({email:'', message:'Kudos! We will remember you when something great happens at Afridash!'})
+  }
   render() {
     return (
   <div>
@@ -11,7 +36,7 @@ export default class Subscribe extends Component {
 
                         <div className="section_title">
                             <h2>SUBSCRIBE US</h2>
-                            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip.</p>
+                            <p>Keep track of what we are doing...We won't bug you with unnecessary emails.</p>
                         </div>
                     </div>
                 </div>
@@ -20,15 +45,13 @@ export default class Subscribe extends Component {
             <div className="container">
                 <div className="row  wow lightSpeedIn">
                     <div className="col-md-6 col-md-offset-3">
-                        <div className="subscription-success"></div>
+                        <div className="subscription-success">{this.state.message}</div>
                         <div className="subscription-error"></div>
-                        <form id="mc-form" action="https://designscrazed.us8.list-manage.com/subscribe/post" method="POST" className="subscribe_form">
-                        <input type="hidden" name="u" value="6908378c60c82103f3d7e8f1c" />
-                        <input type="hidden" name="id" value="8c5074025d" />
+                        <form onSubmit={this.submit} id="mc-form" className="subscribe_form">
                             <div className="form-group">
-                                <input type="email" autocapitalize="off" autocorrect="off" name="MERGE0" className="required email form-control" id="mce-EMAIL" placeholder="Enter Email Address" value="" />
+                                <input onChange={this.handleChange} type="email" autocapitalize="off" autocorrect="off" name="email" className="required email form-control" id="mce-EMAIL" placeholder="Enter Email Address" value={this.state.email} />
                             </div>
-                            <button type="submit" className="btn btn-default subs-btn">Submit</button>
+                            <button type="submit" className="btn btn-default subs-btn">Subscribe!</button>
                         </form>
 
 
