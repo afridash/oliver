@@ -327,7 +327,7 @@ export default class Exams extends Component {
             <View style={{flex:1,justifyContent:'flex-start',alignItems:'flex-end'}}>
               <TouchableHighlight onPress={() =>
                 this.setState({modalVisible:!this.state.modalVisible})}>
-                <Text style={[styles.textColor,{padding:1, fontSize:20, fontFamily:'Didot'}]}>Done</Text>
+                <Text style={[styles.textColor,{padding:1, fontSize:20, fontFamily:'verdana'}]}>Done</Text>
               </TouchableHighlight>
             </View>
             <View style={{flex:12}}>
@@ -414,9 +414,9 @@ export default class Exams extends Component {
 }
 const customStyles = {
   question:{
-    fontSize:20,
+    fontSize:16,
     padding:10,
-    fontFamily:(Platform.OS === 'ios') ? 'Didot' : 'serif',
+    fontFamily:(Platform.OS === 'ios') ? 'verdana' : 'serif',
   },
   actionsContainer:{
     borderColor:'white',
@@ -430,7 +430,7 @@ const customStyles = {
   actions:{
     padding:15,
     fontSize:18,
-    fontFamily:(Platform.OS === 'ios') ? 'Didot' : 'serif',
+    fontFamily:(Platform.OS === 'ios') ? 'verdana' : 'serif',
     },
     icons:{
       margin: 10,
@@ -453,11 +453,11 @@ const customStyles = {
     addButton : {
       fontSize: 20,
       color: 'white',
-      fontFamily:(Platform.OS === 'ios') ? 'Didot' : 'serif',
+      fontFamily:(Platform.OS === 'ios') ? 'verdana' : 'serif',
     },
     result:{
       fontSize:30,
-      fontFamily:(Platform.OS === 'ios') ? 'Didot' : 'serif',
+      fontFamily:(Platform.OS === 'ios') ? 'verdana' : 'serif',
       padding:10,
       fontWeight:'bold',
       textAlign:'center',
@@ -466,9 +466,9 @@ const customStyles = {
       padding:20,
     },
     listText:{
-      fontSize:20,
+      fontSize:18,
       fontWeight:'500',
-      fontFamily:(Platform.OS === 'ios') ? 'Didot' : 'serif',
+      fontFamily:(Platform.OS === 'ios') ? 'verdana' : 'serif',
       margin:5,
     },
     secondaryButton: {

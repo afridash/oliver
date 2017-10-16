@@ -58,8 +58,8 @@ const customStyles = {
     padding:15,
   },
   title:{
-    fontSize:20,
-    fontFamily:(Platform.OS === 'ios') ? 'Didot' : 'serif',
+    fontSize:18,
+    fontFamily:(Platform.OS === 'ios') ? 'verdana' : 'serif',
     fontWeight:'700',
   },
   titleContainer:{

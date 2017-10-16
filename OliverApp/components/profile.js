@@ -173,7 +173,7 @@ const customStyles = {
   text:{
     fontSize: 18,
     flex:1,
-    fontFamily:(Platform.OS === 'ios') ? 'Didot' : 'sans-serif',
+    fontFamily:(Platform.OS === 'ios') ? 'verdana' : 'sans-serif',
   },
   container:{
     flex:2,

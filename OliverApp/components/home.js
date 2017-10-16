@@ -267,15 +267,14 @@ const customStyles = StyleSheet.create({
   addButton : {
     fontSize: 20,
     color: 'white',
-    fontFamily:(Platform.OS === 'ios') ? 'Didot' : 'serif',
+    fontFamily:(Platform.OS === 'ios') ? 'verdana' : 'serif',
   },
   listItem:{
     padding:20,
   },
   listText:{
-    fontSize:20,
-    fontWeight:'500',
-    fontFamily:(Platform.OS === 'ios') ? 'Didot' : 'serif',
+    fontSize:18,
+    fontFamily:(Platform.OS === 'ios') ? 'verdana' : 'serif',
     margin:5,
   },
   actionsContainer:{
@@ -289,8 +288,8 @@ const customStyles = StyleSheet.create({
   },
   actions:{
     padding:15,
-    fontSize:18,
-    fontFamily:(Platform.OS === 'ios') ? 'Didot' : 'serif',
+    fontSize:14,
+    fontFamily:(Platform.OS === 'ios') ? 'verdana' : 'serif',
     },
   input: {
   height: 50,
@@ -298,7 +297,7 @@ const customStyles = StyleSheet.create({
   fontSize: 16,
   color:'black',
   backgroundColor: '#fafafa',
-  fontFamily:(Platform.OS === 'ios') ? 'Didot' : 'serif',
+  fontFamily:(Platform.OS === 'ios') ? 'verdana' : 'serif',
   borderRadius: 10,
   textAlign: 'center'
   },
@@ -326,7 +325,7 @@ const customStyles = StyleSheet.create({
     borderRadius:10,
     borderWidth:1,
     borderColor:'white',
-    fontFamily:(Platform.OS === 'ios') ? 'Didot' : 'serif',
+    fontFamily:(Platform.OS === 'ios') ? 'verdana' : 'serif',
   },
   secondaryButton: {
     padding:10,

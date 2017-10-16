@@ -119,7 +119,7 @@ const customStyles = StyleSheet.create({
     textAlign: 'center',
     color: 'black',
     fontSize: 14,
-    fontFamily:(Platform.OS === 'ios') ? 'Didot' : 'sans-serif',
+    fontFamily:(Platform.OS === 'ios') ? 'verdana' : 'sans-serif',
   },
   emailDIV: {
     flex: 3,
@@ -143,7 +143,7 @@ const customStyles = StyleSheet.create({
     fontSize:40,
     textDecorationLine:'underline',
     textDecorationColor:'white',
-    fontFamily:(Platform.OS === 'ios') ? 'Didot' : 'serif',
+    fontFamily:(Platform.OS === 'ios') ? 'verdana' : 'serif',
     color:'#fafafa',
   },
   box: {
@@ -154,7 +154,7 @@ const customStyles = StyleSheet.create({
   },
   information: {
     fontSize:20,
-    fontFamily:(Platform.OS === 'ios') ? 'Didot' : 'sans-serif',
+    fontFamily:(Platform.OS === 'ios') ? 'verdana' : 'sans-serif',
     color:'#f5f5f5',
     padding:10,
     color:'black',
@@ -173,7 +173,7 @@ const customStyles = StyleSheet.create({
     padding:10,
     textAlign:'center',
     color:'white',
-    fontFamily:(Platform.OS === 'ios') ? 'Didot' : 'serif',
+    fontFamily:(Platform.OS === 'ios') ? 'verdana' : 'serif',
     margin:5,
     borderColor:'#fafafa',
   },

@@ -87,8 +87,8 @@ export default class DrawerContent extends React.Component {
 }
 const sidebar = {
   secondaryContainer:{
-    fontSize: 25,
-    fontFamily:(Platform.OS === 'ios') ? 'Didot' : 'sans-serif',
+    fontSize: 18,
+    fontFamily:(Platform.OS === 'ios') ? 'verdana' : 'sans-serif',
   },
   container:{
     flex:2,

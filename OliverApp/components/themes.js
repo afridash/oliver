@@ -180,6 +180,6 @@ const customStyles = StyleSheet.create({
     flex:1,
     fontSize: 20,
     color: 'white',
-    fontFamily:(Platform.OS === 'ios') ? 'Didot' : 'serif',
+    fontFamily:(Platform.OS === 'ios') ? 'verdana' : 'serif',
   },
 })

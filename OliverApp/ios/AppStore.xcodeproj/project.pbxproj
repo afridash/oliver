@@ -22,8 +22,8 @@
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		140ED2AC1D01E1AD002B40FF /* libReact.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 146834041AC3E56700842450 /* libReact.a */; };
 		146834051AC3E58100842450 /* libReact.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 146834041AC3E56700842450 /* libReact.a */; };
-		213EEEB61F8949E200399780 /* 189 x 144.png in Resources */ = {isa = PBXBuildFile; fileRef = 213EEEB51F8949E200399780 /* 189 x 144.png */; };
 		21402F9D16A046CDB6FE4FBA /* libRNImagePicker.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4494ACEFDB084934B8539F1C /* libRNImagePicker.a */; };
+		21B075E81F94B58100F22984 /* 189 x 144.png in Resources */ = {isa = PBXBuildFile; fileRef = 21B075E71F94B58100F22984 /* 189 x 144.png */; };
 		2896A898354F4C09AA840B00 /* libRNFetchBlob.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 53ED639687264543995137AF /* libRNFetchBlob.a */; };
 		2D02E4BC1E0B4A80006451C7 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.m */; };
 		2D02E4BD1E0B4A84006451C7 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
@@ -112,20 +112,6 @@
 			proxyType = 2;
 			remoteGlobalIDString = ADD01A681E09402E00F6D226;
 			remoteInfo = "RCTBlob-tvOS";
-		};
-		21879F511F88257B007FF8AD /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 139FDEE61B06529A00C62182 /* RCTWebSocket.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 3DBE0D001F3B181A0099AA32;
-			remoteInfo = fishhook;
-		};
-		21879F531F88257B007FF8AD /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 139FDEE61B06529A00C62182 /* RCTWebSocket.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 3DBE0D0D1F3B181C0099AA32;
-			remoteInfo = "fishhook-tvOS";
 		};
 		21879F841F882CAB007FF8AD /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -324,7 +310,7 @@
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = AppStore/Info.plist; sourceTree = "<group>"; };
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = AppStore/main.m; sourceTree = "<group>"; };
 		146833FF1AC3E56700842450 /* React.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = React.xcodeproj; path = "../node_modules/react-native/React/React.xcodeproj"; sourceTree = "<group>"; };
-		213EEEB51F8949E200399780 /* 189 x 144.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "189 x 144.png"; path = "../../../../../Downloads/189 x 144.png"; sourceTree = "<group>"; };
+		21B075E71F94B58100F22984 /* 189 x 144.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "189 x 144.png"; sourceTree = "<group>"; };
 		2D02E47B1E0B4A5D006451C7 /* AppStore-tvOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "AppStore-tvOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2D02E4901E0B4A5D006451C7 /* AppStore-tvOSTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "AppStore-tvOSTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		4494ACEFDB084934B8539F1C /* libRNImagePicker.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRNImagePicker.a; sourceTree = "<group>"; };
@@ -466,8 +452,6 @@
 			children = (
 				139FDEF41B06529B00C62182 /* libRCTWebSocket.a */,
 				3DAD3E991DF850E9000B6D8A /* libRCTWebSocket-tvOS.a */,
-				21879F521F88257B007FF8AD /* libfishhook.a */,
-				21879F541F88257B007FF8AD /* libfishhook-tvOS.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -475,7 +459,7 @@
 		13B07FAE1A68108700A75B9A /* AppStore */ = {
 			isa = PBXGroup;
 			children = (
-				213EEEB51F8949E200399780 /* 189 x 144.png */,
+				21B075E71F94B58100F22984 /* 189 x 144.png */,
 				008F07F21AC5B25A0029DE68 /* main.jsbundle */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
 				13B07FB01A68108700A75B9A /* AppDelegate.m */,
@@ -851,20 +835,6 @@
 			remoteRef = 21879F3F1F88257B007FF8AD /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		21879F521F88257B007FF8AD /* libfishhook.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = libfishhook.a;
-			remoteRef = 21879F511F88257B007FF8AD /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		21879F541F88257B007FF8AD /* libfishhook-tvOS.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = "libfishhook-tvOS.a";
-			remoteRef = 21879F531F88257B007FF8AD /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
 		21879F851F882CAB007FF8AD /* libthird-party.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
@@ -1049,7 +1019,7 @@
 			files = (
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				13B07FBD1A68108700A75B9A /* LaunchScreen.xib in Resources */,
-				213EEEB61F8949E200399780 /* 189 x 144.png in Resources */,
+				21B075E81F94B58100F22984 /* 189 x 144.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -128,7 +128,7 @@ const customStyles = StyleSheet.create({
     padding:10,
     textAlign:'center',
     color:'white',
-    fontFamily:(Platform.OS === 'ios') ? 'Didot' : 'serif',
+    fontFamily:(Platform.OS === 'ios') ? 'verdana' : 'serif',
     margin:5,
     borderColor:'#fafafa',
   },

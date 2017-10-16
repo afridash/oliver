@@ -43,7 +43,7 @@ export default StyleSheet.create({
     marginBottom: 20,
     marginLeft: 10,
     fontSize: 16,
-    fontFamily: 'Didot',
+    fontFamily: 'verdana',
     textAlign: 'center'
   },
   menu: {

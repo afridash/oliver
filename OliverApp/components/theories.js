@@ -172,9 +172,8 @@ const customStyles = StyleSheet.create({
     padding:20,
   },
   listText:{
-    fontSize:20,
-    fontWeight:'500',
-    fontFamily:(Platform.OS === 'ios') ? 'Didot' : 'serif',
+    fontSize:18,
+    fontFamily:(Platform.OS === 'ios') ? 'verdana' : 'serif',
     margin:5,
   },
   actionsContainer:{
@@ -188,8 +187,8 @@ const customStyles = StyleSheet.create({
   },
   actions:{
     padding:15,
-    fontSize:18,
-    fontFamily:(Platform.OS === 'ios') ? 'Didot' : 'serif',
+    fontSize:16,
+    fontFamily:(Platform.OS === 'ios') ? 'verdana' : 'serif',
     },
 
   icon:{

@@ -54,7 +54,7 @@ export default class Courses extends Component {
       this.retrieveCoursesOnline()
     }else{
       this.data = courses
-      this.setState({data:courses})
+      this.addSection(this.data)
       this.filterByDepartment()
     }
   }
@@ -71,17 +71,9 @@ export default class Courses extends Component {
               let tempData = []
               snap.forEach((course)=>{
                 this.data.push({key:course.key, show:false, name:course.val().name, code:course.val().code, department:department.key, title:department.val()})
-                tempData = _.groupBy(this.data, d => d.title)
-                tempData = _.reduce(tempData, (acc, next, index)=>{
-                  acc.push({
-                    key:index,
-                    data:next
-                  })
-                  return acc
-                }, [])
-                this.setState({data:tempData, refreshing:false})
+                this.addSection(this.data)
                 this.filterByDepartment()
-                AsyncStorage.setItem('courses', JSON.stringify(tempData))
+                AsyncStorage.setItem('courses', JSON.stringify(this.data))
               })
             })
           })
@@ -89,14 +81,27 @@ export default class Courses extends Component {
       })
     })
   }
+  addSection(data) {
+    tempData = _.groupBy(data, d => d.title)
+    tempData = _.reduce(tempData, (acc, next, index)=>{
+      acc.push({
+        key:index,
+        data:next
+      })
+      return acc
+    }, [])
+    this.setState({data:tempData, refreshing:false})
+  }
   //Filters the department by the courses specific to that department
   filterByDepartment (){
       if (this.props.departmentKey){
-        this.remainder = this.state.data.filter((course)=> {
+        this.remainder = this.data.filter((course)=> {
           return course.department === this.props.departmentKey
         })
-        if (this.remainder.length > 0)
-        this.setState({data:this.remainder, noSearchResult:false})
+        if (this.remainder.length > 0){
+          this.addSection(this.remainder)
+          this.setState({noSearchResult:false})
+        }
         else this.setState({noSearchResult:true})
       }
   }
@@ -113,8 +118,10 @@ export default class Courses extends Component {
   searchcourses (text) {
     var clone = this.data
     this.result = clone.filter ((course) => { return course.name.toLowerCase().includes(text.toLowerCase()) === true || course.code.toLowerCase().includes(text.toLowerCase()) === true})
-    if (this.result.length > 0)
-    this.setState({data:this.result, noSearchResult:false})
+    if (this.result.length > 0){
+      this.addSection(this.result)
+      this.setState({noSearchResult:false})
+    }
     else this.setState({noSearchResult:true})
   }
   renderHeader () {
@@ -173,7 +180,7 @@ export default class Courses extends Component {
                   <SectionList
                     sections={this.state.data}
                     ItemSeparatorComponent={()=><View style={customStyles.separator}></View>}
-                    renderSectionHeader={({section}) => <Text style={[{fontSize:20, fontFamily:'Didot', padding:5}, styles.textColor, styles.progress]}>{section.key}</Text>}
+                    renderSectionHeader={({section}) => <Text style={[{fontSize:20, fontFamily:'verdana', padding:5}, styles.textColor, styles.progress]}>{section.key}</Text>}
                     renderItem={this.renderItem}
                     refreshControl={
                      <RefreshControl
@@ -208,7 +215,7 @@ const customStyles = StyleSheet.create({
   },
   listText:{
     fontSize:18,
-    fontFamily:(Platform.OS === 'ios') ? 'Didot' : 'serif',
+    fontFamily:(Platform.OS === 'ios') ? 'verdana' : 'serif',
     margin:5,
   },
   actionsContainer:{
@@ -222,8 +229,8 @@ const customStyles = StyleSheet.create({
   },
   actions:{
     padding:15,
-    fontSize:15,
-    fontFamily:(Platform.OS === 'ios') ? 'Didot' : 'serif',
+    fontSize:14,
+    fontFamily:(Platform.OS === 'ios') ? 'verdana' : 'serif',
     },
   input: {
     height: 50,
@@ -231,7 +238,7 @@ const customStyles = StyleSheet.create({
     fontSize: 16,
     color:'black',
     backgroundColor: '#fafafa',
-    fontFamily:(Platform.OS === 'ios') ? 'Didot' : 'serif',
+    fontFamily:(Platform.OS === 'ios') ? 'verdana' : 'serif',
     borderRadius: 10,
     textAlign: 'center'
   },

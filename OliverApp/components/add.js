@@ -217,13 +217,13 @@ const addStyles ={
     flexDirection:'row',
     borderRadius:7,
     margin:5,
-    fontSize:18,
-    fontFamily:(Platform.OS === 'ios') ? 'Didot' : 'serif',
+    fontSize:16,
+    fontFamily:(Platform.OS === 'ios') ? 'verdana' : 'serif',
   },
   listText:{
-    fontSize:20,
+    fontSize:18,
     fontWeight:'400',
-    fontFamily:(Platform.OS === 'ios') ? 'Didot' : 'serif',
+    fontFamily:(Platform.OS === 'ios') ? 'verdana' : 'serif',
     margin:5,
   },
   listItem:{
@@ -238,9 +238,9 @@ const addStyles ={
     flex:8,
   },
   addButton:{
-    fontSize: 20,
+    fontSize: 18,
     color: 'white',
-    fontFamily:(Platform.OS === 'ios') ? 'Didot' : 'serif',
+    fontFamily:(Platform.OS === 'ios') ? 'verdana' : 'serif',
   },
   icon:{
     marginTop:20,

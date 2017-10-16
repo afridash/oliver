@@ -50,7 +50,7 @@ export default class Explore extends Component {
       if (snapshot.val()  !== null ) this.setState({refreshing:false, noActivity:false,isLoading:false})
       else this.setState({refreshing:false, noActivity:true,isLoading:false})
       snapshot.forEach((snap)=>{
-          this.data.push({key:snap.key,courseId:snap.val().courseId, code:snap.val().courseCode, title:snap.val().course,percentage:snap.val().percentage,
+          this.data.unshift({key:snap.key,courseId:snap.val().courseId, code:snap.val().courseCode, title:snap.val().course,percentage:snap.val().percentage,
                           createdAt:snap.val().createdAt, message:snap.val().message, username:snap.val().username, profilePicture:snap.val().profilePicture})
           this.setState({activities:this.data})
       })
@@ -169,7 +169,7 @@ const customStyles = StyleSheet.create({
   },
   timestamp:{
     fontSize:12,
-    fontFamily:(Platform.OS === 'ios') ? 'Didot' : 'serif',
+    fontFamily:(Platform.OS === 'ios') ? 'verdana' : 'serif',
   },
   usernameContainer:{
     flex:1,
@@ -186,18 +186,18 @@ const customStyles = StyleSheet.create({
   username:{
     marginLeft:10,
     fontSize:16,
-    fontFamily:(Platform.OS === 'ios') ? 'Didot' : 'serif',
+    fontFamily:(Platform.OS === 'ios') ? 'verdana' : 'serif',
   },
   message:{
     marginLeft:5,
     fontSize:16,
-    fontFamily:(Platform.OS === 'ios') ? 'Didot' : 'serif',
+    fontFamily:(Platform.OS === 'ios') ? 'verdana' : 'serif',
     padding:5
   },
   actions:{
     padding:15,
     fontSize:18,
-    fontFamily:(Platform.OS === 'ios') ? 'Didot' : 'serif',
+    fontFamily:(Platform.OS === 'ios') ? 'verdana' : 'serif',
     },
 
   icon:{
@@ -213,7 +213,7 @@ const customStyles = StyleSheet.create({
     fontSize: 16,
     color:'black',
     backgroundColor: '#fafafa',
-    fontFamily:(Platform.OS === 'ios') ? 'Didot' : 'serif',
+    fontFamily:(Platform.OS === 'ios') ? 'verdana' : 'serif',
     borderRadius: 10,
     textAlign: 'center'
   },
@@ -225,9 +225,9 @@ const customStyles = StyleSheet.create({
     backgroundColor: 'transparent'
   },
   addButton : {
-    fontSize: 20,
+    fontSize: 18,
     color: 'white',
-    fontFamily:(Platform.OS === 'ios') ? 'Didot' : 'serif',
+    fontFamily:(Platform.OS === 'ios') ? 'verdana' : 'serif',
   },
   secondaryButton: {
     padding:10,

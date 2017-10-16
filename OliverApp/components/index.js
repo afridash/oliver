@@ -35,7 +35,7 @@ const customStyles = StyleSheet.create({
   sliderInfo: {
     fontSize:20,
     padding:10,
-    fontFamily:(Platform.OS === 'ios') ? 'Didot' : 'serif',
+    fontFamily:(Platform.OS === 'ios') ? 'verdana' : 'serif',
   },
   subtitleInfo: {
     fontSize:32,
@@ -43,18 +43,18 @@ const customStyles = StyleSheet.create({
     textShadowColor:'#01579b',
     textShadowOffset: {width: 2, height: 2},
     textShadowRadius:2,
-    fontFamily:(Platform.OS === 'ios') ? 'Didot' : 'serif',
+    fontFamily:(Platform.OS === 'ios') ? 'verdana' : 'serif',
   },
   headerInfo: {
     fontSize:100,
-    fontFamily:(Platform.OS === 'ios') ? 'Didot' : 'serif',
+    fontFamily:(Platform.OS === 'ios') ? 'verdana' : 'serif',
   },
   primaryButton: {
     fontSize:20,
     padding:10,
     textAlign:'center',
     color:'white',
-    fontFamily:(Platform.OS === 'ios') ? 'Didot' : 'serif',
+    fontFamily:(Platform.OS === 'ios') ? 'verdana' : 'serif',
     margin:5,
     borderColor:'#fafafa',
   },

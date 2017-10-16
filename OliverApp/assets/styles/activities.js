@@ -27,14 +27,14 @@ export default StyleSheet.create({
     color: 'blue',
     marginTop: 12,
     fontSize: 16,
-    fontFamily: 'Didot'
+    fontFamily: 'verdana'
   },
   inputFields: {
     flex: 1,
     alignItems: 'stretch',
     textAlign: 'left',
     fontSize: 15,
-    fontFamily: 'Didot'
+    fontFamily: 'verdana'
   },
   inputDIV: {
     flex: 1,
@@ -59,7 +59,7 @@ export default StyleSheet.create({
 
   textInfo: {
     color: 'black',
-    fontFamily: 'Didot',
+    fontFamily: 'verdana',
     fontSize: 14,
     margin: 10
   },

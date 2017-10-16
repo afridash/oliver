@@ -97,7 +97,7 @@ const customStyles = StyleSheet.create({
   listText:{
     fontSize:20,
     fontWeight:'500',
-    fontFamily:(Platform.OS === 'ios') ? 'Didot' : 'serif',
+    fontFamily:(Platform.OS === 'ios') ? 'verdana' : 'serif',
     margin:5,
   },
   actionsContainer:{
@@ -112,7 +112,7 @@ const customStyles = StyleSheet.create({
   actions:{
     padding:15,
     fontSize:18,
-    fontFamily:(Platform.OS === 'ios') ? 'Didot' : 'serif',
+    fontFamily:(Platform.OS === 'ios') ? 'verdana' : 'serif',
   },
   header:{
     marginTop:50,
@@ -120,7 +120,7 @@ const customStyles = StyleSheet.create({
     padding:20,
     textDecorationLine:'underline',
     textDecorationColor:'white',
-    fontFamily:(Platform.OS === 'ios') ? 'Didot' : 'serif',
+    fontFamily:(Platform.OS === 'ios') ? 'verdana' : 'serif',
     color:'#fafafa',
   },
   title: {
