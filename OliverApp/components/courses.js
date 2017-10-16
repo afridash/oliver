@@ -4,6 +4,7 @@ import {
   Text,
   Platform,
   FlatList,
+  SectionList,
   StyleSheet,
   TextInput,
   Image,
@@ -14,6 +15,7 @@ import {
 } from 'react-native'
 import {Actions} from 'react-native-router-flux'
 import theme, { styles } from 'react-native-theme'
+import _ from 'lodash'
 import Firebase from '../auth/firebase'
 import NavBar from './navBar'
 const firebase = require('firebase')
@@ -39,7 +41,8 @@ export default class Courses extends Component {
     this.setState({userId:key, collegeId:collegeId})
     if (currentUser === key)
     this.retrieveCoursesOffline()
-    else this.retrieveCoursesOnline()
+    else
+    this.retrieveCoursesOnline()
   }
 
   async retrieveCoursesOffline () {
@@ -65,11 +68,20 @@ export default class Courses extends Component {
         firebase.database().ref().child('departments').child(childSnap.key).once('value', (snapshot)=>{
           snapshot.forEach((department)=>{
             firebase.database().ref().child('courses').child(department.key).once('value', (snap)=>{
+              let tempData = []
               snap.forEach((course)=>{
-                this.data.push({key:course.key, show:false, name:course.val().name, code:course.val().code, department:department.key})
-                this.setState({data:this.data, refreshing:false})
+                this.data.push({key:course.key, show:false, name:course.val().name, code:course.val().code, department:department.key, title:department.val()})
+                tempData = _.groupBy(this.data, d => d.title)
+                tempData = _.reduce(tempData, (acc, next, index)=>{
+                  acc.push({
+                    key:index,
+                    data:next
+                  })
+                  return acc
+                }, [])
+                this.setState({data:tempData, refreshing:false})
                 this.filterByDepartment()
-                AsyncStorage.setItem('courses', JSON.stringify(this.data))
+                AsyncStorage.setItem('courses', JSON.stringify(tempData))
               })
             })
           })
@@ -90,12 +102,12 @@ export default class Courses extends Component {
   }
   //Add Course to firebase db only using their course name and code.
   writeAddCourses(item) {
-  firebase.database().ref().child('user_courses').child(this.state.userId).child(item.key).set({
-    name:item.name,
-    code:item.code,
-  });
-  //Alerts the user when their entry has been inputted in firebase
-  Alert.alert(item.name, 'has been added to your list')
+    firebase.database().ref().child('user_courses').child(this.state.userId).child(item.key).set({
+      name:item.name,
+      code:item.code,
+    });
+    //Alerts the user when their entry has been inputted in firebase
+    Alert.alert(item.name, 'has been added to your list')
 }
 //Filters the search by the name
   searchcourses (text) {
@@ -117,17 +129,19 @@ export default class Courses extends Component {
     )
   }
   //Function for whenever an item is pressed
-  _onPressItem (index) {
-    var clone = this.state.data
-    clone[index].show = !clone[index].show
-    this.setState({data:clone})
+  _onPressItem (index, item) {
+    item.show = !item.show
+    this.setState({data:this.state.data})
+    //var clone = this.state.data
+    //clone[index].show = !clone[index].show
+    //this.setState({data:clone})
   }
 
   renderItem({ item, index }) {
    return (
      <View
       style={customStyles.listItem}
-    ><TouchableHighlight onPress={()=>this._onPressItem(index)} style={{flex:1}}>
+    ><TouchableHighlight onPress={()=>this._onPressItem(index, item)} style={{flex:1}} underlayColor={'transparent'}>
       <View style={{flex:1, flexDirection:'row', justifyContent:'space-between'}}>
           <Text style={[customStyles.listText, styles.textColor]}> {item.name} ({item.code})</Text>
           {!item.show ? <Image source={require('../assets/images/arrow_right.png')} style={[styles.iconColor, customStyles.icon]} resizeMode={'contain'}/> : <Image source={require('../assets/images/arrow_down.png')} style={[styles.iconColor, customStyles.icon]} resizeMode={'contain'}/>}
@@ -156,9 +170,10 @@ export default class Courses extends Component {
               {this.state.noSearchResult ?
                 <View style={{flex:1, justifyContent:'center', alignItems:'center'}}>
                   <Text style={[customStyles.listText, styles.textColor]}>:( Nothing Found</Text></View> :
-                  <FlatList
-                    data={this.state.data}
+                  <SectionList
+                    sections={this.state.data}
                     ItemSeparatorComponent={()=><View style={customStyles.separator}></View>}
+                    renderSectionHeader={({section}) => <Text style={[{fontSize:20, fontFamily:'Didot', padding:5}, styles.textColor, styles.progress]}>{section.key}</Text>}
                     renderItem={this.renderItem}
                     refreshControl={
                      <RefreshControl
@@ -192,8 +207,7 @@ const customStyles = StyleSheet.create({
     padding:20,
   },
   listText:{
-    fontSize:20,
-    fontWeight:'500',
+    fontSize:18,
     fontFamily:(Platform.OS === 'ios') ? 'Didot' : 'serif',
     margin:5,
   },
@@ -208,7 +222,7 @@ const customStyles = StyleSheet.create({
   },
   actions:{
     padding:15,
-    fontSize:18,
+    fontSize:15,
     fontFamily:(Platform.OS === 'ios') ? 'Didot' : 'serif',
     },
   input: {
