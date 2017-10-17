@@ -72,7 +72,7 @@ export default class Activity extends Component {
       if (snapshot.val()  !== null ) this.setState({refreshing:false, noActivity:false,isLoading:false})
       else this.setState({refreshing:false, noActivity:true,isLoading:false})
       snapshot.forEach((snap)=>{
-          this.data.push({key:snap.key,code:snap.val().code, title:snap.val().title,total:snap.val().total,
+          this.data.unshift({key:snap.key,code:snap.val().code, title:snap.val().title,total:snap.val().total,
                           score:snap.val().score, createdAt:snap.val().createdAt, show:false, percentage:snap.val().percentage})
           this.setState({activities:this.data})
           AsyncStorage.setItem('activities', JSON.stringify(this.data))
@@ -155,8 +155,7 @@ const customStyles = StyleSheet.create({
     padding:20,
   },
   listText:{
-    fontSize:20,
-    fontWeight:'500',
+    fontSize:16,
     fontFamily:(Platform.OS === 'ios') ? 'verdana' : 'serif',
     margin:5,
   },
@@ -171,7 +170,7 @@ const customStyles = StyleSheet.create({
   },
   actions:{
     padding:15,
-    fontSize:18,
+    fontSize:12,
     fontFamily:(Platform.OS === 'ios') ? 'verdana' : 'serif',
     },
 

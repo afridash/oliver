@@ -14,6 +14,9 @@ import {
   TouchableHighlight,
   ScrollView,
 } from 'react-native'
+import {
+  AdMobInterstitial,
+ } from 'react-native-admob'
 import {Actions} from 'react-native-router-flux'
 import theme, { styles } from 'react-native-theme'
 import Button from 'react-native-button'
@@ -53,6 +56,10 @@ export default class Exams extends Component {
     this.getInfo()
     //Retrieve locally stored images or download questions if none
     this.retrieveQuestionsOffline()
+  }
+  componentDidMount () {
+    AdMobInterstitial.setTestDevices(['EMULATOR']);
+    AdMobInterstitial.setAdUnitID('ca-app-pub-1090704049569053/9261698690');
   }
   async getInfo () {
     //Retrieve user from local storage
@@ -164,6 +171,11 @@ export default class Exams extends Component {
     }
   }
   _saveToHistory (){
+      AdMobInterstitial.requestAd().then(function(){
+         AdMobInterstitial.showAd()
+      }).catch((e)=>{
+        console.log(e)
+      });
     var data = {
       title:this.props.course,
       code:this.props.courseCode,

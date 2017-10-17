@@ -17,6 +17,9 @@ import {
 } from 'react-native'
 import {Actions} from 'react-native-router-flux'
 import theme, { styles } from 'react-native-theme'
+import {
+  AdMobBanner,
+ } from 'react-native-admob'
 import Button from 'react-native-button'
 import Swipeable from 'react-native-swipeable'
 import Firebase from '../auth/firebase'
@@ -203,6 +206,9 @@ export default class Home extends Component {
     />
      )
    }
+   bannerError = (error) => {
+     console.log(error)
+   }
    render () {
     return (
       <View style={styles.container}>
@@ -220,8 +226,15 @@ export default class Home extends Component {
                     <Text style={[customStyles.listText, styles.textColor]}>Loading...</Text></View>
                 )
                 else if (this.state.noCourses) return (
-                  <View style={{flex:1, justifyContent:'center', alignItems:'center'}}>
-                  <Text style={[customStyles.listText, styles.textColor]}>Click Below To Add A Course</Text></View>
+                  <View style={[styles.buttonContainer,customStyles.buttonContainer]}>
+                    <Button
+                      containerStyle={[styles.secondaryButton, customStyles.secondaryButton]}
+                      style={customStyles.addButton}
+                      styleDisabled={{color: 'red'}}
+                      onPress={Actions.add_course}>
+                      Add Course
+                    </Button>
+                  </View>
                 )
                 else if (this.state.noSearchResult) return (
                   <View style={{flex:1, justifyContent:'center', alignItems:'center'}}>
@@ -231,15 +244,16 @@ export default class Home extends Component {
               })()
             }
             </View>
-          </View>
-          <View style={[styles.buttonContainer,customStyles.buttonContainer]}>
-            <Button
-              containerStyle={[styles.secondaryButton, customStyles.secondaryButton]}
-              style={customStyles.addButton}
-              styleDisabled={{color: 'red'}}
-              onPress={Actions.add_course}>
-              Add Course
-            </Button>
+            {Platform.OS === 'ios' ? <AdMobBanner
+              adSize="smartBannerPortrait"
+              adUnitID="ca-app-pub-1090704049569053/1792603919"
+              testDeviceID="EMULATOR"
+              didFailToReceiveAdWithError={this.bannerError} />
+            : <AdMobBanner
+              adSize="fullBanner"
+              adUnitID="ca-app-pub-1090704049569053/1792603919"
+              testDeviceID="EMULATOR"
+              didFailToReceiveAdWithError={this.bannerError} /> }
           </View>
         </View>
       </View>
