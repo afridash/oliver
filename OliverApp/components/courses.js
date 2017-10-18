@@ -194,16 +194,11 @@ export default class Courses extends Component {
                />
               }
             </View>
-            {Platform.OS === 'ios' ? <AdMobBanner
+            <AdMobBanner
               adSize="smartBannerPortrait"
               adUnitID="ca-app-pub-1090704049569053/1792603919"
               testDeviceID="EMULATOR"
               didFailToReceiveAdWithError={this.bannerError} />
-            : <AdMobBanner
-              adSize="banner"
-              adUnitID="ca-app-pub-1090704049569053/1792603919"
-              testDeviceID="EMULATOR"
-              didFailToReceiveAdWithError={this.bannerError} /> }
 
           </View>
         </View>

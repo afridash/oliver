@@ -33,6 +33,7 @@ import Themes from './components/themes'
 import Recents from './components/recents'
 import ViewFull from './components/view'
 import Explore from './components/explore'
+import Theory from './components/viewTheory'
 import MenuIcon from './assets/images/menu_burger.png';
 
 const reducerCreate = params => {
@@ -109,6 +110,7 @@ export default class App extends React.Component {
                       <Scene key="recents" component={Recents} />
                       <Scene key="view" component={ViewFull} />
                       <Scene key="explore" component={Explore} />
+                      <Scene key="viewTheory" component={Theory} />
                   </Scene>
                 </Drawer>
               </Stack>

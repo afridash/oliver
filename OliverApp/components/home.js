@@ -244,16 +244,11 @@ export default class Home extends Component {
               })()
             }
             </View>
-            {Platform.OS === 'ios' ? <AdMobBanner
+            <AdMobBanner
               adSize="smartBannerPortrait"
               adUnitID="ca-app-pub-1090704049569053/1792603919"
               testDeviceID="EMULATOR"
               didFailToReceiveAdWithError={this.bannerError} />
-            : <AdMobBanner
-              adSize="fullBanner"
-              adUnitID="ca-app-pub-1090704049569053/1792603919"
-              testDeviceID="EMULATOR"
-              didFailToReceiveAdWithError={this.bannerError} /> }
           </View>
         </View>
       </View>

@@ -35,7 +35,6 @@ export default class Theories extends Component {
     }
     this.renderItem = this.renderItem.bind(this)
     this.ref = firebase.database().ref().child('questions').child(this.props.courseId)
-    this.bookmarksRef = firebase.database().ref().child('bookmarks')
   }
   async componentWillMount () {
     //Set theme styles
@@ -70,28 +69,17 @@ export default class Theories extends Component {
       else this.setState({refreshing:false, noQuestions:true,isLoading:false})
       snapshot.forEach((snap)=>{
         if (snap.val().answered) {
-          this.data.push({key:snap.key, question:snap.val().question, answer:snap.val().answer, show:false,})
+          this.data.push({key:snap.key, question:snap.val().question, answered:true, answer:snap.val().answer, show:false,})
           this.setState({questions:this.data, total:this.state.total+1})
           AsyncStorage.setItem(this.props.courseId, JSON.stringify(this.data))
         }else {
-          this.data.push({key:snap.key, question:snap.val().question, answer:':( Sorry, No Answer Yet...But We Are Working On It! ', show:false,})
+          this.data.push({key:snap.key, question:snap.val().question, answered:false, answer:':( Sorry, No Answer Yet...But We Are Working On It! ', show:false,})
           this.setState({questions:this.data, total:this.state.total+1})
           AsyncStorage.setItem(this.props.courseId, JSON.stringify(this.data))
         }
       })
     })
 
-  }
-  bookmarkQuestion (question, index) {
-    if (question.bookmark) {
-      this.bookmarksRef.child(this.state.userId).child(question.key).remove()
-    }else {
-      this.bookmarksRef.child(this.state.userId).child(question.key).update(question)
-    }
-    question.bookmark = !question.bookmark
-    var clone = this.state.questions
-    clone[index] = question
-    this.setState({questions:clone})
   }
   _onPressItem (index) {
     //Indicate what question has been marked to show/hide the answer
@@ -105,8 +93,8 @@ export default class Theories extends Component {
       style={customStyles.listItem}
     >
       <View style={{flex:1, flexDirection:'row', justifyContent:'space-between'}}>
-        <Text onPress={()=>this._onPressItem(index)} style={[customStyles.listText, styles.textColor]}>{index+1}.  {item.question}</Text>
-        {!item.show ? <Image source={require('../assets/images/arrow_right.png')} style={[styles.iconColor, customStyles.icon]} resizeMode={'contain'}/> : <Image source={require('../assets/images/arrow_down.png')} style={[styles.iconColor, customStyles.icon]} resizeMode={'contain'}/>}
+        <Text onPress={()=>Actions.viewTheory({courseCode:this.props.courseCode, question:item.question, questionId:item.key, answer:item.answered ? item.answer : ""})} style={[customStyles.listText, styles.textColor]}>{index+1}.  {item.question}</Text>
+       <Image source={require('../assets/images/arrow_right.png')} style={[styles.iconColor, customStyles.icon]} resizeMode={'contain'}/>
       </View>
       {item.show && <View style={{flex:1}}>
         <View style={customStyles.actionsContainer}>
@@ -155,16 +143,11 @@ export default class Theories extends Component {
             })()
           }
           </View>
-          {Platform.OS === 'ios' ? <AdMobBanner
+           <AdMobBanner
             adSize="smartBannerPortrait"
             adUnitID="ca-app-pub-1090704049569053/1792603919"
             testDeviceID="EMULATOR"
             didFailToReceiveAdWithError={this.bannerError} />
-          : <AdMobBanner
-            adSize="fullBanner"
-            adUnitID="ca-app-pub-1090704049569053/1792603919"
-            testDeviceID="EMULATOR"
-            didFailToReceiveAdWithError={this.bannerError} /> }
         </View>
       </View>
     )
