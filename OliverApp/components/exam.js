@@ -53,7 +53,7 @@ export default class Exams extends Component {
   async componentWillMount () {
     theme.setRoot(this)
     //Retrieve user information stored locally
-    this.getInfo()
+    await this.getInfo()
     //Retrieve locally stored images or download questions if none
     this.retrieveQuestionsOffline()
   }
@@ -67,17 +67,26 @@ export default class Exams extends Component {
     var status = await AsyncStorage.getItem('status')
     var college = await AsyncStorage.getItem('collegeId')
     var username = await AsyncStorage.getItem('username')
-    var profilePicture = firebase.auth().currentUser.photoURL
+    var profilePicture = await AsyncStorage.getItem('pPicture')
     this.setState({userId:key, status, college, profilePicture, username:username})
   }
   async downloadQuestions () {
     if (this.state.status === 'true') {
-      this.local = []
+      this.data = []
       await this.ref.orderByChild('type').equalTo('objective').once('value',(snapshot)=>{
         snapshot.forEach((snap)=>{
           if (snap.val().answered) {
-            this.local.push({key:snap.key, question:snap.val().question, optionA:snap.val().optionA, optionB:snap.val().optionB, optionC:snap.val().optionC, optionD:snap.val().optionD, selected:'', answer:snap.val().answer, show:false,})
-            AsyncStorage.setItem(this.props.courseId+'obj', JSON.stringify(this.local))
+            var answer
+            if (snap.val().answer.toUpperCase() === 'A') answer = snap.val().optionA
+            else if (snap.val().answer.toUpperCase() === 'B') answer = snap.val().optionB
+            else if (snap.val().answer.toUpperCase() === 'C') answer = snap.val().optionC
+            else answer = snap.val().optionD
+            this.data.push({key:snap.key,
+              question:snap.val().question,
+              optionA:snap.val().optionA, optionB:snap.val().optionB,
+              optionC:snap.val().optionC, optionD:snap.val().optionD, selected:'',
+              answer:snap.val().answer.toUpperCase(), show:false,textAnswer:answer})
+            AsyncStorage.setItem(this.props.courseId+'obj', JSON.stringify(this.data))
           }
         })
       })
@@ -109,7 +118,13 @@ export default class Exams extends Component {
       if (snapshot.val()  === null ) this.setState({noQuestions:true,isLoading:false})
       snapshot.forEach((snap)=>{
         if (snap.val().answered) {
-          this.data.push({key:snap.key, question:snap.val().question, optionA:snap.val().optionA, optionB:snap.val().optionB, optionC:snap.val().optionC, optionD:snap.val().optionD, selected:'', answer:snap.val().answer, show:false,})
+          if (snap.val().answer.toUpperCase() === 'A') answer = snap.val().optionA
+          else if (snap.val().answer.toUpperCase() === 'B') answer = snap.val().optionB
+          else if (snap.val().answer.toUpperCase() === 'C') answer = snap.val().optionC
+          else answer = snap.val().optionD
+          this.data.push({key:snap.key, question:snap.val().question, optionA:snap.val().optionA, optionB:snap.val().optionB,
+            optionC:snap.val().optionC, optionD:snap.val().optionD, selected:'', answer:snap.val().answer.toUpperCase(), show:false,
+            textAnswer:answer})
           this.setState({questions:this.data, noQuestions:false,isLoading:false})
           AsyncStorage.setItem(this.props.courseId+'obj', JSON.stringify(this.data))
         }
@@ -146,7 +161,7 @@ export default class Exams extends Component {
     this.setState({index:0, finished:false,correct:0})
     this.retrieveQuestionsOffline()
   }
-  selectOption (option) {
+  selectOption (option, text) {
     /*
     * Determine if the selected option is right (increase the score)
     * Determine if the selected option is the wrong answer after a correct option has been previously selected (decrease the score)
@@ -157,6 +172,7 @@ export default class Exams extends Component {
     this.setState({correct:this.state.correct + 1})
     else if (clone[this.state.index].selected === clone[this.state.index].answer && option !== clone[this.state.index].answer )
     this.setState({correct:this.state.correct - 1})
+    clone[this.state.index].textSelected = text
     clone[this.state.index].selected = option
     this.setState({questions:clone})
   }
@@ -189,6 +205,7 @@ export default class Exams extends Component {
     }else {
       this._saveActivities(data)
     }
+    this.setState({percentage:(this.state.correct/this.state.total * 100).toFixed(2)})
   }
   async _saveActivities (data) {
     var previous = await AsyncStorage.getItem('savedActivities')
@@ -233,16 +250,16 @@ export default class Exams extends Component {
         <View style={{flex:2, margin:20,}}>
           <ScrollView >
             <View style={[customStyles.actionsContainer,{backgroundColor:question.selected === 'A' ? '#607d8b' : 'transparent'}]}>
-            <Text onPress={()=>this.selectOption('A')} style={[customStyles.actions, styles.textColor]}>{question.optionA}</Text>
+            <Text onPress={()=>this.selectOption('A', question.optionA)} style={[customStyles.actions, styles.textColor]}>{question.optionA}</Text>
           </View>
           <View style={[customStyles.actionsContainer, {backgroundColor:question.selected === 'B' ? '#607d8b' : 'transparent'}]}>
-            <Text onPress={()=>this.selectOption('B')} style={[customStyles.actions, styles.textColor]}>{question.optionB}</Text>
+            <Text onPress={()=>this.selectOption('B', question.optionB)} style={[customStyles.actions, styles.textColor]}>{question.optionB}</Text>
           </View>
           <View style={[customStyles.actionsContainer, {backgroundColor:question.selected === 'C' ? '#607d8b' : 'transparent'}]}>
-            <Text onPress={()=>this.selectOption('C')} style={[customStyles.actions, styles.textColor]}>{question.optionC}</Text>
+            <Text onPress={()=>this.selectOption('C', question.optionC)} style={[customStyles.actions, styles.textColor]}>{question.optionC}</Text>
           </View>
           <View style={[customStyles.actionsContainer, {backgroundColor:question.selected === 'D' ? '#607d8b' : 'transparent'}]}>
-            <Text onPress={()=>this.selectOption('D')} style={[customStyles.actions, styles.textColor]}>{question.optionD}</Text>
+            <Text onPress={()=>this.selectOption('D', question.optionD)} style={[customStyles.actions, styles.textColor]}>{question.optionD}</Text>
           </View>
           </ScrollView>
         </View>
@@ -300,7 +317,7 @@ export default class Exams extends Component {
           <Text style={[customStyles.result, styles.textColor]}>Result</Text>
         </View>
         <View style={{flex:1.5, margin:20,}}>
-        <Text style={[customStyles.result, styles.textColor]}>Score: {this.state.correct}/{this.state.questions.length}</Text>
+        <Text style={[customStyles.result, styles.textColor]}>Score: {this.state.correct}/{this.state.questions.length} ({this.state.percentage})</Text>
         <View style={[customStyles.actionsContainer]}>
           <Text onPress={()=>this.setState({modalVisible:!this.state.modalVisible})} style={[customStyles.actions, styles.textColor]}>Show Summary</Text>
         </View>
@@ -317,10 +334,10 @@ export default class Exams extends Component {
       <Text style={[customStyles.listText, styles.textColor]}>{index+1}. {item.question}</Text>
       <View style={{flex:1, justifyContent:'center', alignItems:'center'}}>
         <View style={[customStyles.actionsContainer]}>
-          <Text style={[customStyles.actions, styles.textColor]}>Suggested Answer: {item.answer}</Text>
+          <Text style={[customStyles.actions, styles.textColor]}>Suggested Answer: {item.textAnswer} ({item.answer})</Text>
         </View>
         <View style={[customStyles.actionsContainer, {borderColor:item.selected === item.answer ? '#004d40' : 'red'}]}>
-          <Text style={[customStyles.actions, styles.textColor]}>Selected: {item.selected}</Text>
+          <Text style={[customStyles.actions, styles.textColor]}>Selected: {item.textSelected} ({item.selected})</Text>
         </View>
       </View>
     </View>

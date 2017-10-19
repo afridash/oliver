@@ -118,6 +118,7 @@ export default class Home extends Component {
     //Delete row that has been clicked on after swiping
     var rem = this.state.data.splice(this.state.activeRow,1)
     this.setState({data:this.state.data})
+    AsyncStorage.setItem('user_courses', JSON.stringify(this.state.data))
     this.ref.child(this.state.userId).child(this.state.deleteRef).remove()
   }
   handleUserBeganScrollingParentView() {
@@ -207,7 +208,7 @@ export default class Home extends Component {
      )
    }
    bannerError = (error) => {
-     console.log(error)
+     //Failed to load banner
    }
    render () {
     return (

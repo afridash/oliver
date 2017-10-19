@@ -53,6 +53,7 @@ export default class Activity extends Component {
     //Delete row that has been clicked on after swiping
     var rem = this.state.activities.splice(this.state.activeRow,1)
     this.setState({activities:this.state.activities})
+    AsyncStorage.setItem('activities', JSON.stringify(this.state.activities))
     this.ref.child(this.state.userId).child(this.state.deleteRef).remove()
   }
   async retrieveActivitiesOffline () {

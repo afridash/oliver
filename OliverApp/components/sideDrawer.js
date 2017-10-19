@@ -70,7 +70,7 @@ export default class DrawerContent extends React.Component {
           </TouchableHighlight>
           <View style={sidebar.menu}>
             <Button style={[sidebar.secondaryContainer, styles.textColor]} onPress={Actions.home}><Image source={require('../assets/images/homeicon.png')} style={[sidebar.home, styles.iconColor]} />  Home</Button>
-              <Button style={[sidebar.secondaryContainer, styles.textColor]} onPress={Actions.courses}><Image source={require('../assets/images/courses.png')} style={[sidebar.home, styles.iconColor]} /> Courses</Button>
+              <Button style={[sidebar.secondaryContainer, styles.textColor]} onPress={Actions.courses}><Image source={require('../assets/images/courses.png')} style={[sidebar.home, styles.iconColor]} />  Find Courses</Button>
               <Button style={[sidebar.secondaryContainer, styles.textColor]} onPress={Actions.bookmarks} ><Image source={require('../assets/images/bookmark.png')} style={[sidebar.home, styles.iconColor]} />  Bookmarks</Button>
               <Button style={[sidebar.secondaryContainer, styles.textColor]} onPress={Actions.recents} ><Image source={require('../assets/images/recents.png')} style={[sidebar.home, styles.iconColor]} />  Recent Activities</Button>
               <Button style={[sidebar.secondaryContainer, styles.textColor]} onPress={Actions.explore} ><Image source={require('../assets/images/explore.png')} style={[sidebar.home, styles.iconColor]} />  Explore</Button>

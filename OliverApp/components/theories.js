@@ -63,7 +63,7 @@ export default class Theories extends Component {
   }
   retrieveQuestionsOnline () {
     this.data = []
-    this.setState({refreshing:true,isLoading:false,noQuestions:false})
+    this.setState({refreshing:true,isLoading:false,noQuestions:false, total:0})
     this.ref.orderByChild('type').equalTo('theory').once('value',(snapshot)=>{
       if (snapshot.val()  !== null ) this.setState({refreshing:false, noQuestions:false,isLoading:false})
       else this.setState({refreshing:false, noQuestions:true,isLoading:false})

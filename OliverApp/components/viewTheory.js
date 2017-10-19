@@ -194,7 +194,7 @@ export default class Theory extends Component {
    }
   renderFlatList () {
      return (
-       <View>
+       <View style={{flex:1, flexDirection:'row'}}>
          <FlatList
            data={this.state.comments}
            ItemSeparatorComponent={()=><View style={customStyles.separator}></View>}
@@ -224,16 +224,14 @@ export default class Theory extends Component {
    }
    _onChangeHeight = (before, after) => {
   }
+  bannerError = (e) => {
+    //Failed to load banner
+  }
   render () {
     return (
       <KeyboardAvoidingView behavior= {(Platform.OS === 'ios')? "padding" : null} style={styles.container}>
         <NavBar title={this.props.courseCode} backButton={true}/>
         <View style={styles.secondaryContainer} >
-          <AdMobBanner
-            adSize="smartBannerPortrait"
-            adUnitID="ca-app-pub-1090704049569053/1792603919"
-            testDeviceID="EMULATOR"
-            didFailToReceiveAdWithError={this.bannerError} />
           <Text style={[customStyles.listText, styles.textColor]}>{this.props.question}</Text>
           <View style={{flex:0.5, justifyContent:'center', alignItems:'center'}}>
             <Button onPress={()=>this.bookmarkQuestion()}>
@@ -242,7 +240,12 @@ export default class Theory extends Component {
             </Button>
           </View>
             {this.props.answer !== '' && <Text style={[customStyles.answer, styles.textColor]}>Suggested Answer: {this.props.answer}</Text>}
-          <View style={{flex:6, }}>
+            <AdMobBanner
+              adSize="smartBannerPortrait"
+              adUnitID="ca-app-pub-1090704049569053/1792603919"
+              testDeviceID="EMULATOR"
+              didFailToReceiveAdWithError={this.bannerError} />
+          <View style={{flex:6,flexDirection:'row'}}>
             {(()=>{
               if (this.state.isLoading) return (
                 <View style={{flex:1, justifyContent:'center', alignItems:'center'}}>

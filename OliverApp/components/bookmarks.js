@@ -88,6 +88,7 @@ export default class Bookmarks extends Component {
     //Delete row that has been clicked on after swiping
     var rem = this.state.data.splice(this.state.activeRow,1)
     this.setState({data:this.state.data})
+    AsyncStorage.setItem('bookmarks', JSON.stringify(this.state.data))
     this.ref.child(this.state.userId).child(this.state.deleteRef).remove()
   }
   showTheory (item, index) {
@@ -127,6 +128,9 @@ export default class Bookmarks extends Component {
   renderItem({ item, index }) {
     if (item.type === 'theory') return this.showTheory(item, index)
     else return this.showObjective(item, index)
+   }
+   bannerError = (e) => {
+     //Failed to load banner
    }
   render () {
     return (
