@@ -13,6 +13,9 @@ import Button from 'react-native-button';
 import { Actions } from 'react-native-router-flux'
 import theme, { styles } from 'react-native-theme'
 var ImagePicker = require('react-native-image-picker')
+import {
+  AdMobBanner,
+ } from 'react-native-admob'
 import Firebase from '../auth/firebase'
 const firebase = require('firebase')
 import NavBar from './navBar'
@@ -88,13 +91,9 @@ export default class Profile extends React.Component {
       }
     };
     ImagePicker.launchImageLibrary(options, (response)  => {
-      console.log('Response = ', response);
-
         if (response.didCancel) {
-          console.log('User cancelled image picker')
         }
         else if (response.error) {
-          console.log('ImagePicker Error: ', response.error)
         }
         else {
           let source = { uri: response.uri }
@@ -128,7 +127,7 @@ export default class Profile extends React.Component {
       <View style={styles.container}>
         <NavBar title='Profile' />
         <View style={customStyles.container}>
-          <View style={{flex:3, backgroundColor:'transparent'}}>
+          <View style={{flex:6, backgroundColor:'transparent'}}>
             <ImageBackground resizeMode={'cover'}  source={{uri: this.state.profilePicture}} style={customStyles.profile} blurRadius={20} >
             <View style={{flex:1}}>
               <View style={customStyles.profileContainer}>
@@ -149,21 +148,34 @@ export default class Profile extends React.Component {
          </View>
        </ImageBackground>
           </View>
-
           <View style={customStyles.menu}>
-            <View style={{flex:1, borderBottomWidth:1, flexDirection:'row', justifyContent:'flex-end', alignItems:'flex-end'}}>
+            <View style={customStyles.menuItem}>
             <Text style={[customStyles.text]} > Email</Text>
               <Text style={[customStyles.text]} >{this.state.email} </Text>
           </View>
-          <View style={{flex:1, borderBottomWidth:1, flexDirection:'row', justifyContent:'flex-end', alignItems:'flex-end'}}>
-              <Text style={[customStyles.text]}>College</Text>
-                <Text style={[customStyles.text]} > {this.state.college}</Text>
-            </View>
-            <View style={{flex:1, borderBottomWidth:1, flexDirection:'row', justifyContent:'flex-end', alignItems:'flex-end'}}>
+          <TouchableHighlight underlayColor={'transparent'} style={customStyles.menuItem} onPress={()=>Actions.universities({calling:true})}>
+            <View style={{flex:1, flexDirection:'row', justifyContent:'space-between', alignItems:'flex-end'}} >
+              <View style={{flexDirection:'row',}}>
+                <Text style={customStyles.college} >College</Text>
+              </View>
+              <View style={{flexDirection:'row', alignItems:'flex-end', justifyContent:'center'}}>
+                <Text style={customStyles.college} > {this.state.college}</Text>
+                <Image source={require('../assets/images/arrow_right.png')} style={[customStyles.icon]} resizeMode={'contain'}/>
+              </View>
+              </View>
+          </TouchableHighlight>
+            <View style={customStyles.menuItem}>
               <Text style={[customStyles.text]} > Username</Text>
                 <Text style={[customStyles.text]} >{this.state.username}</Text>
             </View>
         </View>
+        <View style={{flex:2, backgroundColor:'white'}}>
+        </View>
+        <AdMobBanner
+         adSize="smartBannerPortrait"
+         adUnitID="ca-app-pub-1090704049569053/1792603919"
+         testDeviceID="EMULATOR"
+         didFailToReceiveAdWithError={this.bannerError} />
       </View>
     </View>
     );
@@ -171,8 +183,12 @@ export default class Profile extends React.Component {
 }
 const customStyles = {
   text:{
-    fontSize: 18,
+    fontSize: 15,
     flex:1,
+    fontFamily:(Platform.OS === 'ios') ? 'verdana' : 'sans-serif',
+  },
+  college:{
+    fontSize: 15,
     fontFamily:(Platform.OS === 'ios') ? 'verdana' : 'sans-serif',
   },
   container:{
@@ -236,4 +252,18 @@ const customStyles = {
     borderRadius:50,
     borderWidth:3,
   },
+  menuItem:{
+    flex:1,
+    borderBottomWidth:1,
+     flexDirection:'row',
+     justifyContent:'flex-end',
+      alignItems:'flex-end'
+    },
+    icon:{
+      marginTop:10,
+      resizeMode: 'contain',
+      width: 20,
+      height: 20,
+      alignItems:'flex-end',
+    },
 }

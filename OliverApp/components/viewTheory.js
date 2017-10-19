@@ -1,5 +1,5 @@
 /*
-*@author Richard Igbiriki October 5, 2017
+*@author Richard Igbiriki October 2017
 */
 import React, {Component} from 'react'
 import {
@@ -24,9 +24,10 @@ import {
   AdMobBanner,
  } from 'react-native-admob'
 import Firebase from '../auth/firebase'
-const firebase = require('firebase')
+import * as Notifications from '../auth/notifications'
 import * as timestamp from '../auth/timestamp'
 import NavBar from './navBar'
+const firebase = require('firebase')
 export default class Theory extends Component {
   constructor (props) {
     super (props)
@@ -93,28 +94,38 @@ export default class Theory extends Component {
     })
   }
   upvote (item, index) {
+    //If the user has not previously upvoted the answer
     if (!item.upvoted) {
+      //Set value for upvote to true for user
      this.upvoteRef.child(item.key).child(this.state.userId).set(true)
+     //If the user had previously downvoted the answer, increase number of votes by 2
      if (item.downvoted) {
        item.votes = item.votes + 2
+       //Update number of votes by 2
        var ref = this.commentsRef.child(item.key).child('votes').once('value', (votes)=>{
          votes.ref.set(votes.val() + 2)
        })
      }
      else {
+       //If the user is just upvoting without previously downvoting
+       //Update records by 1
        item.votes = item.votes + 1
        var ref = this.commentsRef.child(item.key).child('votes').once('value', (votes)=>{
          votes.ref.set(votes.val() + 1)
        })
      }
+     //Update the UI to reflect changes in data
      item.upvoted = !item.upvoted
      item.downvoted = false
      var clone = this.state.comments
      clone[index] = item
      this.setState({comments:clone})
+     //Send notification to user
+     Notifications.sendNotification(item.userId, 'upvote', item.key, this.props.question,this.props.questionId,this.props.courseCode)
     }
   }
   downvote (item, index) {
+    //See upvote for comments
     if (!item.downvoted) {
       this.upvoteRef.child(item.key).child(this.state.userId).set(false)
       if (item.upvoted) {
@@ -133,17 +144,22 @@ export default class Theory extends Component {
       var clone = this.state.comments
       clone[index] = item
       this.setState({comments:clone})
+      //Send notification to user
+      Notifications.sendNotification(item.userId, 'downvote', item.key, this.props.question, this.props.questionId, this.props.courseCode)
     }
   }
   deleteComment (key) {
     this.commentsRef.child(key).remove()
-    var remainder = this.state.comments.filter((comment)=> { return comment.key !== key})
-    this.setState({comments:remainder})
+    this.data = this.state.comments.filter((comment)=> { return comment.key !== key})
+    this.setState({comments:this.data})
   }
   bookmarkQuestion () {
+    //Check if question has been previously bookmarked, if so remove it
+    //Bookmark new questions
     if (this.state.bookmark) {
       this.bookmarksRef.child(this.state.userId).child(this.props.questionId).remove()
     }else {
+      //Set data structure for bookmarked question
       var data = {
         courseCode:this.props.courseCode,
         answer:this.props.answer !== '' ? this.props.answer : '',

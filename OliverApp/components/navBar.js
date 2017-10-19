@@ -58,7 +58,7 @@ const customStyles = {
     padding:15,
   },
   title:{
-    fontSize:18,
+    fontSize:16,
     fontFamily:(Platform.OS === 'ios') ? 'verdana' : 'serif',
     fontWeight:'700',
   },

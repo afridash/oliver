@@ -33,6 +33,7 @@ export default class Activity extends Component {
       isLoading:true,
       noActivity:false,
       refreshing:false,
+      swipingStarted:false,
     }
     this.renderItem = this.renderItem.bind(this)
     this.ref = firebase.database().ref().child('activities')
@@ -89,7 +90,9 @@ export default class Activity extends Component {
      <View
       style={customStyles.listItem}
     >
-      <Swipeable onRightActionRelease={()=>this.setState({activeRow:index, deleteRef:item.key})} rightActionActivationDistance={100} onRef={ref => this.swipeable = ref} rightButtons={this.rightButtons}>
+      <Swipeable onRightActionRelease={()=>this.setState({activeRow:index, deleteRef:item.key})}
+        rightActionActivationDistance={100} onRef={ref => this.swipeable = ref} rightButtons={this.rightButtons}
+        onSwipeStart={()=>this.setState(prevState =>({swipingStarted:!prevState.swipingStarted}))} onSwipeComplete={()=>this.setState(prevState =>({swipingStarted:!prevState.swipingStarted}))}>
       <View style={{flex:1, flexDirection:'row', justifyContent:'space-between'}}>
         <Text style={[customStyles.listText, styles.textColor]}>{item.title}</Text>
         <Text style={[customStyles.listText, styles.textColor]}>{item.code}</Text>
@@ -110,6 +113,7 @@ export default class Activity extends Component {
   renderFlatList () {
      return (
        <FlatList
+         scrollEnabled={!this.state.swipingStarted}
          data={this.state.activities}
          ItemSeparatorComponent={()=><View style={customStyles.separator}></View>}
          renderItem={this.renderItem}

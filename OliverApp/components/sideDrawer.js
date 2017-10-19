@@ -14,22 +14,26 @@ export default class DrawerContent extends React.Component {
       name:'',
       email:'',
       profilePicture:'none',
-
+      badges:0,
+      userId:''
     }
+    this.ref = firebase.database().ref().child('badges')
   }
   async componentWillMount () {
     theme.setRoot(this)
     var name = await AsyncStorage.getItem('name')
     var email = await AsyncStorage.getItem('email')
+    var userId = await AsyncStorage.getItem('myKey')
+    this.ref.child(userId).child('notificationsBadges').once('value', (badges)=>{
+      if (badges.exists()) this.setState({badges:badges.val()})
+    })
     var profilePicture = await AsyncStorage.getItem('pPicture')
-   this.setState({email, name, profilePicture})
+   this.setState({email, name, profilePicture, userId})
   }
-
   async componentWillReceiveProps (newprops) {
     var pic = await AsyncStorage.getItem('pPicture')
     this.setState({profilePicture:pic})
   }
-
   static propTypes = {
     name: PropTypes.string,
     sceneStyle: ViewPropTypes.style,
@@ -37,19 +41,22 @@ export default class DrawerContent extends React.Component {
   }
   async logout () {
     firebase.auth().signOut().then(function () {
-  // Sign-out successful.
-    }, function (error) {
-  // An error happened.
+      // Sign-out successful.
+      }, function (error) {
+        // An error happened.
     })
     var current = await AsyncStorage.getItem('myKey')
     AsyncStorage.setItem('currentUser', current)
     let keys = ['email', 'myKey', 'name', 'pPicture',]
     AsyncStorage.multiRemove(keys, (err) => {
-      return Actions.index()
+      return Actions.reset('index')
     })
   }
-
-
+  loadNotifcations () {
+    this.ref.child(this.state.userId).child('notificationsBadges').remove()
+    this.setState({badges:0})
+    return Actions.replace('notifications')
+  }
   render() {
     return (
       <View style={styles.container}>
@@ -69,29 +76,37 @@ export default class DrawerContent extends React.Component {
             </View>
           </TouchableHighlight>
           <View style={sidebar.menu}>
-            <Button style={[sidebar.secondaryContainer, styles.textColor]} onPress={Actions.home}><Image source={require('../assets/images/homeicon.png')} style={[sidebar.home, styles.iconColor]} />  Home</Button>
-              <Button style={[sidebar.secondaryContainer, styles.textColor]} onPress={Actions.courses}><Image source={require('../assets/images/courses.png')} style={[sidebar.home, styles.iconColor]} />  Find Courses</Button>
-              <Button style={[sidebar.secondaryContainer, styles.textColor]} onPress={Actions.bookmarks} ><Image source={require('../assets/images/bookmark.png')} style={[sidebar.home, styles.iconColor]} />  Bookmarks</Button>
-              <Button style={[sidebar.secondaryContainer, styles.textColor]} onPress={Actions.recents} ><Image source={require('../assets/images/recents.png')} style={[sidebar.home, styles.iconColor]} />  Recent Activities</Button>
-              <Button style={[sidebar.secondaryContainer, styles.textColor]} onPress={Actions.explore} ><Image source={require('../assets/images/explore.png')} style={[sidebar.home, styles.iconColor]} />  Explore</Button>
+            <Button style={[sidebar.secondaryContainer, styles.textColor]} onPress={()=>Actions.replace('home')}>
+              <Image source={require('../assets/images/homeicon.png')} style={[sidebar.home, styles.iconColor]} />  Home</Button>
+              <Button style={[sidebar.secondaryContainer, styles.textColor]} onPress={()=>Actions.replace('courses')}>
+                <Image source={require('../assets/images/courses.png')} style={[sidebar.home, styles.iconColor]} />  Find Courses</Button>
+              <Button style={[sidebar.secondaryContainer, styles.textColor]} onPress={()=>Actions.replace('bookmarks')} >
+                <Image source={require('../assets/images/bookmark.png')} style={[sidebar.home, styles.iconColor]} />  Bookmarks</Button>
+              <Button style={[sidebar.secondaryContainer, styles.textColor]} onPress={()=>Actions.replace('recents')} >
+                <Image source={require('../assets/images/recents.png')} style={[sidebar.home, styles.iconColor]} />  Recent Activities</Button>
+                <Button style={[sidebar.secondaryContainer, styles.textColor]} onPress={()=>this.loadNotifcations()} >
+                  <Image source={require('../assets/images/bell.png')} style={[sidebar.home, styles.iconColor]} />  Notifications
+                  {this.state.badges !== 0 && <View style={sidebar.badge}><Text style={{color:'white', textAlign:'center'}}>{this.state.badges}</Text></View>}
+                </Button>
+                  <Button style={[sidebar.secondaryContainer, styles.textColor]} onPress={()=>Actions.replace('explore')} >
+                    <Image source={require('../assets/images/explore.png')} style={[sidebar.home, styles.iconColor]} />  Explore</Button>
           </View>
-
         </View>
         <View style={{flex:1, justifyContent:'flex-end', alignItems:'center', borderTopWidth:3, borderColor:'white'}}>
-          <Button style={[sidebar.secondaryContainer, styles.textColor]} onPress={Actions.themes}><Image source={require('../assets/images/themes.png')} style={[sidebar.home, styles.iconColor]} />Themes</Button>
-            <Button onPress={()=>this.logout()} style={[sidebar.secondaryContainer, styles.textColor]}><Image source={require('../assets/images/logout.png')} style={[sidebar.home, styles.iconColor]} />Logout</Button>
+          <Button style={[sidebar.secondaryContainer, styles.textColor]} onPress={()=>Actions.replace('themes')}><Image source={require('../assets/images/themes.png')} style={[sidebar.home, styles.iconColor]} />Themes</Button>
+          <Button onPress={()=>this.logout()} style={[sidebar.secondaryContainer, styles.textColor]}><Image source={require('../assets/images/logout.png')} style={[sidebar.home, styles.iconColor]} />Logout</Button>
       </View>
     </View>
     );
+    }
   }
-}
 const sidebar = {
   secondaryContainer:{
     fontSize: 18,
     fontFamily:(Platform.OS === 'ios') ? 'verdana' : 'sans-serif',
   },
   container:{
-    flex:2,
+    flex:3,
     marginTop:25,
 
   },
@@ -147,4 +162,12 @@ const sidebar = {
     color:'grey',
     marginTop:5,
   },
+  badge:{backgroundColor:'red',
+  height:25, width:25,
+  borderRadius:12,
+  overflow:'hidden',
+  flexWrap:'nowrap', flex:0,
+  justifyContent:'center',
+  alignItems:'center'
+},
 }

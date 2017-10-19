@@ -27,6 +27,7 @@ export default class Bookmarks extends Component {
     this.state = {
       data: [],
       refreshing: false,
+      swipingStarted:false,
     }
     this.data = []
     this.renderItem = this.renderItem.bind(this)
@@ -96,7 +97,9 @@ export default class Bookmarks extends Component {
       <View
        style={customStyles.listItem}
      >
-       <Swipeable onRightActionRelease={()=>this.setState({activeRow:index, deleteRef:item.key})} rightActionActivationDistance={100} onRef={ref => this.swipeable = ref} rightButtons={this.rightButtons}>
+       <Swipeable onRightActionRelease={()=>this.setState({activeRow:index, deleteRef:item.key})}
+         rightActionActivationDistance={100} onRef={ref => this.swipeable = ref} rightButtons={this.rightButtons}
+         onSwipeStart={()=>this.setState(prevState =>({swipingStarted:!prevState.swipingStarted}))} onSwipeComplete={()=>this.setState(prevState =>({swipingStarted:!prevState.swipingStarted}))}>
          <View style={{flex:1, flexDirection:'row', justifyContent:'space-between'}}>
            <Text onPress={()=>Actions.viewTheory({question:item.question, questionId:item.key, answer:item.answer})} style={[customStyles.listText, styles.textColor]}>{index+1} {item.question}</Text>
             <Image source={require('../assets/images/arrow_right.png')} style={[styles.iconColor, customStyles.icon]} resizeMode={'contain'}/>
@@ -110,7 +113,9 @@ export default class Bookmarks extends Component {
      <View
       style={customStyles.listItem}
     >
-      <Swipeable onRightActionRelease={()=>this.setState({activeRow:index, deleteRef:item.key})} rightActionActivationDistance={100} onRef={ref => this.swipeable = ref} rightButtons={this.rightButtons}>
+      <Swipeable onRightActionRelease={()=>this.setState({activeRow:index, deleteRef:item.key})}
+        rightActionActivationDistance={100} onRef={ref => this.swipeable = ref} rightButtons={this.rightButtons}
+        onSwipeStart={()=>this.setState(prevState =>({swipingStarted:!prevState.swipingStarted}))} onSwipeComplete={()=>this.setState(prevState =>({swipingStarted:!prevState.swipingStarted}))}>
       <View style={{flex:1, flexDirection:'row', justifyContent:'space-between'}}>
         <Text onPress={()=>this._onPressItem(index)} style={[customStyles.listText, styles.textColor]}>{index+1} {item.question}</Text>
         {!item.show ? <Image source={require('../assets/images/arrow_right.png')} style={[styles.iconColor, customStyles.icon]} resizeMode={'contain'}/> : <Image source={require('../assets/images/arrow_down.png')} style={[styles.iconColor, customStyles.icon]} resizeMode={'contain'}/>}
@@ -139,6 +144,7 @@ export default class Bookmarks extends Component {
         <View style={styles.secondaryContainer} >
           <View style={{flex:6, flexDirection:'row'}}>
             <FlatList
+              scrollEnabled={!this.state.swipingStarted}
               data={this.state.data}
               ItemSeparatorComponent={()=><View style={customStyles.separator}></View>}
               renderItem={this.renderItem}
@@ -176,8 +182,7 @@ const customStyles = StyleSheet.create({
     padding:20,
   },
   listText:{
-    fontSize:20,
-    fontWeight:'500',
+    fontSize:16,
     fontFamily:(Platform.OS === 'ios') ? 'verdana' : 'serif',
     margin:5,
   },

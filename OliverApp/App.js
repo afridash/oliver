@@ -34,6 +34,7 @@ import Recents from './components/recents'
 import ViewFull from './components/view'
 import Explore from './components/explore'
 import Theory from './components/viewTheory'
+import Notifications from './components/notifications'
 import MenuIcon from './assets/images/menu_burger.png';
 
 const reducerCreate = params => {
@@ -68,7 +69,7 @@ export default class App extends React.Component {
   }
   async handleEnter () {
     var key = await AsyncStorage.getItem('myKey')
-    if (key !== null) Actions.home()
+    if (key === null) Actions.reset('index')
   }
   render() {
     return (
@@ -82,12 +83,13 @@ export default class App extends React.Component {
                 hideNavBar
                 key="root"
               >
-                <Scene key='index' initial onEnter={this.handleEnter} component={Index} />
+                <Scene key='index' component={Index} />
                 <Scene key='login' component={Login}  />
                 <Scene key='signup' component={SignUp} />
                 <Scene key='universities' component={Universities}  />
                 <Scene key='resetpassword'  component={Reset} />
                 <Drawer
+                  initial
                   hideNavBar
                   key="drawer"
                   contentComponent={DrawerContent}
@@ -99,7 +101,7 @@ export default class App extends React.Component {
                   */}
 
                   <Scene hideNavBar>
-                    <Scene key="home" component={Home}  />
+                    <Scene key="home" component={Home} initial onEnter={this.handleEnter} />
                       <Scene key="start_exam" component={Exams}  />
                       <Scene key="add_course" component={Add} />
                       <Scene key="themes" component={Themes} />
@@ -111,6 +113,7 @@ export default class App extends React.Component {
                       <Scene key="view" component={ViewFull} />
                       <Scene key="explore" component={Explore} />
                       <Scene key="viewTheory" component={Theory} />
+                      <Scene key="notifications" component={Notifications} />
                   </Scene>
                 </Drawer>
               </Stack>

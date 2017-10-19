@@ -36,6 +36,7 @@ export default class Home extends Component {
       noCourses:true,
       isLoading:true,
       status:'',
+      swipingStarted:false
     }
     this.ref = firebase.database().ref().child('user_courses')
     this.data = this.state.data
@@ -148,12 +149,16 @@ export default class Home extends Component {
        <View
          style={customStyles.listItem}
          >
-      <Swipeable onRightActionRelease={()=>this.setState({activeRow:index, deleteRef:item.key})} rightActionActivationDistance={100} onRef={ref => this.swipeable = ref} rightButtons={this.rightButtons}>
+      <Swipeable onRightActionRelease={()=>this.setState({activeRow:index, deleteRef:item.key})}
+        rightActionActivationDistance={100} onRef={ref => this.swipeable = ref}
+        rightButtons={this.rightButtons} onSwipeStart={()=>this.setState(prevState =>({swipingStarted:!prevState.swipingStarted}))} onSwipeComplete={()=>this.setState(prevState =>({swipingStarted:!prevState.swipingStarted}))}>
         <TouchableHighlight underlayColor={'transparent'}  onPress={()=>this._onPressItem(index)}
           style={{flex:1}}>
           <View style={{flex:1, flexDirection:'row', justifyContent:'space-between'}}>
-            <Text style={[customStyles.listText, styles.textColor]}> {item.name} ({item.code})</Text>
-            {!item.show ? <Image source={require('../assets/images/arrow_right.png')} style={[styles.iconColor, customStyles.icon]} resizeMode={'contain'}/> : <Image source={require('../assets/images/arrow_down.png')} style={[styles.iconColor, customStyles.icon]} resizeMode={'contain'}/>}
+            <View style={{flex:1}}><Text style={[customStyles.listText, styles.textColor]}> {item.name} ({item.code})</Text></View>
+            <View>
+                {!item.show ? <Image source={require('../assets/images/arrow_right.png')} style={[styles.iconColor, customStyles.icon]} resizeMode={'contain'}/> : <Image source={require('../assets/images/arrow_down.png')} style={[styles.iconColor, customStyles.icon]} resizeMode={'contain'}/>}
+            </View>
           </View>
         </TouchableHighlight>
           {item.show && <View style={{flex:1}}>
@@ -195,6 +200,7 @@ export default class Home extends Component {
    renderFlatList () {
      return (
        <FlatList
+         scrollEnabled={!this.state.swipingStarted}
          data={this.state.data}
          ItemSeparatorComponent={()=><View style={customStyles.separator}></View>}
          renderItem={this.renderItem}

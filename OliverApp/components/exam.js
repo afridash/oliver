@@ -190,7 +190,6 @@ export default class Exams extends Component {
       AdMobInterstitial.requestAd().then(function(){
          AdMobInterstitial.showAd()
       }).catch((e)=>{
-        console.log(e)
       });
     var data = {
       title:this.props.course,
@@ -298,6 +297,7 @@ export default class Exams extends Component {
         courseId:this.props.courseId,
         createdAt:firebase.database.ServerValue.TIMESTAMP,
         message: item.message,
+        starCount:0,
         percentage: (this.state.correct/this.state.total * 100).toFixed(2)
     }
     this.exploreRef.child(this.state.college).push(data)

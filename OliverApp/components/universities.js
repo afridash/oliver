@@ -41,9 +41,11 @@ export default class Universities extends Component {
       })
     })
   }
-  _onPressItem (index) {
-    this.saveCollege(this.state.colleges[this.state.index])
-    return Actions.home()
+  async _onPressItem (index) {
+    await this.saveCollege(this.state.colleges[index])
+    if (this.props.calling)
+    return Actions.replace('profile')
+    else return Actions.reset('drawer')
   }
   saveCollege (college) {
     this.usersRef.child(this.userKey).update({collegeId:college.key, college:college.name})
