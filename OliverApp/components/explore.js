@@ -32,6 +32,7 @@ export default class Explore extends Component {
       activities:[],
       index:0,
       post:"",
+      likes:0,
       isLoading:true,
       noActivity:false,
       refreshing:false,
@@ -122,10 +123,11 @@ export default class Explore extends Component {
         <Text style={[styles.textColor, customStyles.message]}>{item.percentage}% in {item.title} ({item.code})</Text>
       </View>
       <View style={customStyles.menu}>
-          <Button style={[styles.textColor]} onPress={()=>this.onRowPress(index, item)}><Image source={require('../assets/images/heart.png')} style={[customStyles.home, styles.iconColor,{tintColor: !item.postLike ? '#2980b9' : 'red'}]} />
+          <Button style={[styles.textColor]} onPress={()=>this.onRowPress(index, item)}><Image source={require('../assets/images/heart2.png')} style={[customStyles.home,{tintColor: !item.postLike ? '#ffffff' : 'red' }]} />
           <Text>{item.likes !== 0 && item.likes }</Text>
         </Button>
-          <Button style={[styles.textColor]} onPress={Actions.home}><Image source={require('../assets/images/comment.png')} style={[customStyles.comment, styles.iconColor]} /></Button>
+          <Button style={[styles.textColor]} onPress={()=>Actions.viewTheory({question:item.message, questionId:item.key, courseCode:item.username, comments:true})}><Image source={require('../assets/images/comments.png')} style={[customStyles.comment, styles.iconColor, {tintColor:'#ffffff'}]} />
+        </Button>
       </View>
       <View>
         <Button
@@ -196,16 +198,11 @@ export default class Explore extends Component {
             })()
           }
           </View>
-          {Platform.OS === 'ios' ? <AdMobBanner
+         <AdMobBanner
             adSize="smartBannerPortrait"
             adUnitID="ca-app-pub-1090704049569053/1792603919"
             testDeviceID="EMULATOR"
             didFailToReceiveAdWithError={this.bannerError} />
-          : <AdMobBanner
-            adSize="fullBanner"
-            adUnitID="ca-app-pub-1090704049569053/1792603919"
-            testDeviceID="EMULATOR"
-            didFailToReceiveAdWithError={this.bannerError} /> }
         </View>
       </View>
     )

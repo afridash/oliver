@@ -8,10 +8,14 @@ import {
   FlatList,
   Image,
   RefreshControl,
+  TouchableWithoutFeedback,
 } from 'react-native'
 import Firebase from '../auth/firebase'
 const firebase = require('firebase')
 import {Actions} from 'react-native-router-flux'
+import {
+  AdMobBanner,
+ } from 'react-native-admob'
 import theme, { styles } from 'react-native-theme'
 import Button from 'react-native-button'
 import Swipeable from 'react-native-swipeable'
@@ -64,7 +68,7 @@ export default class Bookmarks extends Component {
     this.ref.child(this.state.userId).once('value', (snapshots)=>{
       snapshots.forEach((childSnap)=>{
         if (childSnap.val().optionA === undefined) {
-          this.data.push({key:childSnap.key, question:childSnap.val().question, answer:childSnap.val().answer})
+          this.data.push({key:childSnap.key, question:childSnap.val().question,type:'theory', answer:childSnap.val().answer})
           this.setState({data:this.data, refreshing:false})
           AsyncStorage.setItem('bookmarks', JSON.stringify(this.data))
         }else{
@@ -73,23 +77,35 @@ export default class Bookmarks extends Component {
           else if (childSnap.val().answer === 'B') answer = childSnap.val().optionB
           else if (childSnap.val().answer === 'C') answer = childSnap.val().optionC
           else answer = childSnap.val().optionD
-          this.data.push({key:childSnap.key, question:childSnap.val().question, answer:answer})
+          this.data.push({key:childSnap.key, question:childSnap.val().question, answer:answer, type:'objective'})
           this.setState({data:this.data, refreshing:false})
           AsyncStorage.setItem('bookmarks', JSON.stringify(this.data))
         }
       })
     })
   }
-
   handleSwipeClick () {
     //Delete row that has been clicked on after swiping
     var rem = this.state.data.splice(this.state.activeRow,1)
     this.setState({data:this.state.data})
     this.ref.child(this.state.userId).child(this.state.deleteRef).remove()
   }
-
-  renderItem({ item, index }) {
-   return (
+  showTheory (item, index) {
+    return (
+      <View
+       style={customStyles.listItem}
+     >
+       <Swipeable onRightActionRelease={()=>this.setState({activeRow:index, deleteRef:item.key})} rightActionActivationDistance={100} onRef={ref => this.swipeable = ref} rightButtons={this.rightButtons}>
+         <View style={{flex:1, flexDirection:'row', justifyContent:'space-between'}}>
+           <Text onPress={()=>Actions.viewTheory({question:item.question, questionId:item.key, answer:item.answer})} style={[customStyles.listText, styles.textColor]}>{index+1} {item.question}</Text>
+            <Image source={require('../assets/images/arrow_right.png')} style={[styles.iconColor, customStyles.icon]} resizeMode={'contain'}/>
+         </View>
+     </Swipeable>
+     </View>
+      )
+  }
+  showObjective (item, index) {
+    return (
      <View
       style={customStyles.listItem}
     >
@@ -107,6 +123,10 @@ export default class Bookmarks extends Component {
     </Swipeable>
     </View>
       )
+  }
+  renderItem({ item, index }) {
+    if (item.type === 'theory') return this.showTheory(item, index)
+    else return this.showObjective(item, index)
    }
   render () {
     return (
@@ -126,6 +146,11 @@ export default class Bookmarks extends Component {
              }
          />
           </View>
+          <AdMobBanner
+           adSize="smartBannerPortrait"
+           adUnitID="ca-app-pub-1090704049569053/1792603919"
+           testDeviceID="EMULATOR"
+           didFailToReceiveAdWithError={this.bannerError} />
         </View>
       </View>
     )
