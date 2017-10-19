@@ -27,22 +27,30 @@ import NavBar from './navBar'
 export default class Explore extends Component {
   constructor (props) {
     super (props)
+    this.user = firebase.auth().currentUser
     this.state = {
       activities:[],
       index:0,
+      post:"",
       isLoading:true,
       noActivity:false,
       refreshing:false,
+
     }
     this.renderItem = this.renderItem.bind(this)
     this.ref = firebase.database().ref().child('explore')
+    this.likesRef = firebase.database().ref('explore_likes')
+    this.postsRef = firebase.database().ref().child('posts')
   }
+
   async componentWillMount () {
     //Set theme styles
     theme.setRoot(this)
     //Retrieve user key
     var key = await AsyncStorage.getItem('collegeId')
-    this.setState({collegeId:key})
+    var userId= await AsyncStorage.getItem('myKey')
+    this.setState({collegeId:key, userId:userId})
+
     //Start component lifecycle with call to loading questions stored offline
     this.retrieveActivitiesOnline()
   }
@@ -53,10 +61,46 @@ export default class Explore extends Component {
       if (snapshot.val()  !== null ) this.setState({refreshing:false, noActivity:false,isLoading:false})
       else this.setState({refreshing:false, noActivity:true,isLoading:false})
       snapshot.forEach((snap)=>{
-          this.data.unshift({key:snap.key,courseId:snap.val().courseId, code:snap.val().courseCode, title:snap.val().course,percentage:snap.val().percentage,
-                          createdAt:snap.val().createdAt, message:snap.val().message, username:snap.val().username, profilePicture:snap.val().profilePicture})
-          this.setState({activities:this.data})
+        this.likesRef.child(snap.key).child(this.state.userId).once('value', (likeVal)=>{
+          if (likeVal.exists()){
+            this.data.unshift({key:snap.key,courseId:snap.val().courseId, likes:snap.val().starCount, code:snap.val().courseCode, title:snap.val().course,percentage:snap.val().percentage,
+                            createdAt:snap.val().createdAt, message:snap.val().message, username:snap.val().username, postLike:true, profilePicture:snap.val().profilePicture})
+            this.setState({activities:this.data})
+          }else{
+            this.data.unshift({key:snap.key,courseId:snap.val().courseId, likes:snap.val().starCount,postLike:false, code:snap.val().courseCode, title:snap.val().course,percentage:snap.val().percentage,
+                            createdAt:snap.val().createdAt, message:snap.val().message, username:snap.val().username, profilePicture:snap.val().profilePicture})
+            this.setState({activities:this.data})
+          }
+        })
+
       })
+    })
+  }
+
+  onRowPress(key, post){
+    if (post.postLike) {
+      this.unlikePost(post.key)
+      post.likes = post.likes - 1
+    } else {
+      this.likePost(post.key, post.userId)
+      post.likes = post.likes + 1
+    }
+    post.postLike =!post.postLike
+    var clone = this.state.activities
+    clone[key] = post
+    this.setState({posts:clone})
+  }
+  likePost (postId, userKey) {
+   this.likesRef.child(postId).child(this.state.userId).set(true)
+   var ref = this.ref.child(this.state.collegeId).child(postId).child('starCount').once('value', (likesCount)=>{
+      likesCount.ref.set(likesCount.val() + 1)
+    })
+    //Notifications.sendNotification(userKey, 'post_like', postId)
+  }
+  unlikePost (postId) {
+    this.likesRef.child(postId).child(this.state.userId).remove()
+    var ref = this.ref.child(this.state.collegeId).child(postId).child('starCount').once('value', (likesCount)=>{
+       likesCount.ref.set(likesCount.val() - 1)
     })
   }
   renderItem({ item, index }) {
@@ -76,6 +120,12 @@ export default class Explore extends Component {
        <View style={{flex:1, margin:5, padding:10}}>
         <Text style={[styles.textColor, customStyles.message]}>{item.message}</Text>
         <Text style={[styles.textColor, customStyles.message]}>{item.percentage}% in {item.title} ({item.code})</Text>
+      </View>
+      <View style={customStyles.menu}>
+          <Button style={[styles.textColor]} onPress={()=>this.onRowPress(index, item)}><Image source={require('../assets/images/heart.png')} style={[customStyles.home, styles.iconColor,{tintColor: !item.postLike ? '#2980b9' : 'red'}]} />
+          <Text>{item.likes !== 0 && item.likes }</Text>
+        </Button>
+          <Button style={[styles.textColor]} onPress={Actions.home}><Image source={require('../assets/images/comment.png')} style={[customStyles.comment, styles.iconColor]} /></Button>
       </View>
       <View>
         <Button
@@ -176,6 +226,32 @@ const customStyles = StyleSheet.create({
     flex:1,
     flexDirection:'row',
      padding:3
+   },
+   home:{
+     margin: 15,
+     resizeMode: 'contain',
+     width: 25,
+     height: 25,
+     alignItems:'flex-end',
+
+   },
+   comment:{
+     flex:1,
+     flexDirection:'row',
+     resizeMode: 'contain',
+     width: 20,
+     height: 20,
+     left:250,
+     alignItems:'flex-end',
+     justifyContent:'flex-end',
+
+   },
+   menu:{
+     flex:4,
+     justifyContent:'flex-start',
+     alignItems:'flex-start',
+     marginTop:10,
+    flexDirection:'row',
    },
   listItem:{
     padding:10,
