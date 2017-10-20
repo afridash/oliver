@@ -24,11 +24,13 @@ export default class DrawerContent extends React.Component {
     var name = await AsyncStorage.getItem('name')
     var email = await AsyncStorage.getItem('email')
     var userId = await AsyncStorage.getItem('myKey')
-    this.ref.child(userId).child('notificationsBadges').once('value', (badges)=>{
-      if (badges.exists()) this.setState({badges:badges.val()})
-    })
-    var profilePicture = await AsyncStorage.getItem('pPicture')
-   this.setState({email, name, profilePicture, userId})
+    if (userId !== null) {
+      this.ref.child(userId).child('notificationsBadges').once('value', (badges)=>{
+        if (badges.exists()) this.setState({badges:badges.val()})
+      })
+      var profilePicture = await AsyncStorage.getItem('pPicture')
+     this.setState({email, name, profilePicture, userId})
+    }
   }
   async componentWillReceiveProps (newprops) {
     var pic = await AsyncStorage.getItem('pPicture')

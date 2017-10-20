@@ -46,7 +46,6 @@ export default class Theory extends Component {
     this.renderItem = this.renderItem.bind(this)
     this.commentsRef = firebase.database().ref().child('answers').child(this.props.questionId)
     this.upvoteRef = firebase.database().ref().child('upvotes')
-    this.downvoteRef = firebase.database().ref().child('downvotes')
     this.bookmarksRef = firebase.database().ref().child('bookmarks')
   }
   async componentWillMount () {
@@ -121,7 +120,7 @@ export default class Theory extends Component {
      clone[index] = item
      this.setState({comments:clone})
      //Send notification to user
-     Notifications.sendNotification(item.userId, 'upvote', item.key, this.props.question,this.props.questionId,this.props.courseCode)
+     Notifications.sendNotification(item.userId, 'upvote', this.props.questionId, this.props.question, this.props.courseCode)
     }
   }
   downvote (item, index) {
@@ -145,10 +144,11 @@ export default class Theory extends Component {
       clone[index] = item
       this.setState({comments:clone})
       //Send notification to user
-      Notifications.sendNotification(item.userId, 'downvote', item.key, this.props.question, this.props.questionId, this.props.courseCode)
+      Notifications.sendNotification(item.userId, 'downvote', this.props.questionId, this.props.question,  this.props.courseCode)
     }
   }
   deleteComment (key) {
+    this.upvoteRef.child(key).remove()
     this.commentsRef.child(key).remove()
     this.data = this.state.comments.filter((comment)=> { return comment.key !== key})
     this.setState({comments:this.data})
@@ -237,6 +237,9 @@ export default class Theory extends Component {
      }
      this.commentsRef.push(data)
      this.setState({text: ''})
+     if (this.props.userId) {
+        Notifications.sendNotification(this.props.userId, 'comment', this.props.questionId, this.props.question, this.props.courseCode)
+     }
    }
    _onChangeHeight = (before, after) => {
   }
@@ -249,19 +252,19 @@ export default class Theory extends Component {
         <NavBar title={this.props.courseCode} backButton={true}/>
         <View style={styles.secondaryContainer} >
           <Text style={[customStyles.listText, styles.textColor]}>{this.props.question}</Text>
-          <View style={{flex:0.5, justifyContent:'center', alignItems:'center'}}>
-            <Button onPress={()=>this.bookmarkQuestion()}>
+          {!this.props.comments && <View style={{flex:0.5, justifyContent:'center', alignItems:'center'}}>
+             <Button onPress={()=>this.bookmarkQuestion()}>
               {this.state.bookmark ? <Image source={require('../assets/images/bookmark.png')} style={[{width:25, height:25, margin:10, tintColor:'red', padding:10}]} resizeMode={'contain'}/>:
             <Image source={require('../assets/images/bookmark.png')} style={[styles.iconColor, {width:25, height:25, margin:10, padding:10}]} resizeMode={'contain'}/>}
             </Button>
-          </View>
-            {this.props.answer !== '' && <Text style={[customStyles.answer, styles.textColor]}>Suggested Answer: {this.props.answer}</Text>}
+          </View>}
+            {this.props.answer !== ''&& !this.props.comments && <Text style={[customStyles.answer, styles.textColor]}>Suggested Answer: {this.props.answer}</Text>}
             <AdMobBanner
               adSize="smartBannerPortrait"
               adUnitID="ca-app-pub-1090704049569053/1792603919"
               testDeviceID="EMULATOR"
               didFailToReceiveAdWithError={this.bannerError} />
-          <View style={{flex:6,flexDirection:'row'}}>
+          <View style={{flex:6,flexDirection:'row' }}>
             {(()=>{
               if (this.state.isLoading) return (
                 <View style={{flex:1, justifyContent:'center', alignItems:'center'}}>
@@ -269,7 +272,7 @@ export default class Theory extends Component {
               )
               else {
                 if (this.state.comments.length === 0) return (<ScrollView contentContainerStyle={{flex:1, justifyContent:'center', alignItems:'center'}}>
-                  <Text style={[customStyles.listText, styles.textColor]}>No Answers Yet</Text></ScrollView>)
+                  <Text style={[customStyles.listText, styles.textColor]}>{this.props.comments ? 'No Comments' : 'No Answers Yet'}</Text></ScrollView>)
                 else return this.renderFlatList()
               }
             })()

@@ -68,8 +68,12 @@ export default class App extends React.Component {
     NetInfo.isConnected.removeEventListener('connectionChange', this._handleConnectionChange);
   }
   async handleEnter () {
-    var key = await AsyncStorage.getItem('myKey')
-    if (key === null) Actions.reset('index')
+    try {
+      var key = await AsyncStorage.getItem('myKey')
+      if (key === null) return Actions.reset('index')
+    } catch (e) {
+      return Actions.reset('index')
+    }
   }
   render() {
     return (
@@ -101,7 +105,7 @@ export default class App extends React.Component {
                   */}
 
                   <Scene hideNavBar>
-                    <Scene key="home" component={Home} initial onEnter={this.handleEnter} />
+                    <Scene key="home" initial component={Home} />
                       <Scene key="start_exam" component={Exams}  />
                       <Scene key="add_course" component={Add} />
                       <Scene key="themes" component={Themes} />

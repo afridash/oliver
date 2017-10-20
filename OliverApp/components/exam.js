@@ -298,6 +298,7 @@ export default class Exams extends Component {
         createdAt:firebase.database.ServerValue.TIMESTAMP,
         message: item.message,
         starCount:0,
+        userId:this.state.userId,
         percentage: (this.state.correct/this.state.total * 100).toFixed(2)
     }
     this.exploreRef.child(this.state.college).push(data)

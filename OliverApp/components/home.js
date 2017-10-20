@@ -49,16 +49,19 @@ export default class Home extends Component {
   async componentWillMount () {
     theme.setRoot(this)
     var key = await AsyncStorage.getItem('myKey')
-    var currentUser = await AsyncStorage.getItem('currentUser')
-    var status = await AsyncStorage.getItem('status') //Check the internet status
-    this.setState({userId:key,status})
-    //Determine if the user wasn't the previously signed in user
-    //Download directly from online if the user just signed
-    if (currentUser === key)
-    this.retrieveCoursesOffline()
-    else this.readAddCourses()
+    if (key === null) return Actions.reset('index')
+    else {
+      var currentUser = await AsyncStorage.getItem('currentUser')
+      var status = await AsyncStorage.getItem('status') //Check the internet status
+      this.setState({userId:key,status})
+      //Determine if the user wasn't the previously signed in user
+      //Download directly from online if the user just signed
+      if (currentUser === key)
+      this.retrieveCoursesOffline()
+      else this.readAddCourses()
 
-    this.checkUnsavedActivities()
+      this.checkUnsavedActivities()
+    }
   }
   async checkUnsavedActivities () {
     //Save activities online if there are any unsaved
@@ -100,6 +103,7 @@ export default class Home extends Component {
     }
   }
   async readAddCourses() {
+    AsyncStorage.setItem('currentUser', this.state.userId)
       /* 1. Set courses to empty before reloading online data to avoid duplicate entries
         2. Retrieve users courses from firebase and store them locally using AsyncStorage */
     this.data = []

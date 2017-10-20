@@ -28,6 +28,8 @@ export default class Bookmarks extends Component {
       data: [],
       refreshing: false,
       swipingStarted:false,
+      isLoading:true,
+      noBookmarks:false,
     }
     this.data = []
     this.renderItem = this.renderItem.bind(this)
@@ -60,13 +62,15 @@ export default class Bookmarks extends Component {
       this.retrieveBookmarksOnline()
     }else{
       this.data = bookmarks
-      this.setState({data:bookmarks})
+      this.setState({data:bookmarks, isLoading:false, noBookmarks:false})
     }
   }
   retrieveBookmarksOnline () {
+    AsyncStorage.setItem('currentUser', this.state.userId)
     this.data = []
-    this.setState({bookmarks:[], refreshing:true})
+    this.setState({bookmarks:[], refreshing:true, isLoading:true})
     this.ref.child(this.state.userId).once('value', (snapshots)=>{
+      if (!snapshots.exists()) this.setState({refreshing:false, isLoading:false, noBookmarks:true})
       snapshots.forEach((childSnap)=>{
         if (childSnap.val().optionA === undefined) {
           this.data.push({key:childSnap.key, question:childSnap.val().question,type:'theory', answer:childSnap.val().answer})

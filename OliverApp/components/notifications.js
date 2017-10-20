@@ -27,6 +27,9 @@ export default class Notifications extends Component {
     this.state = {
       data: [],
       refreshing: false,
+      swipingStarted:false,
+      isLoading:true,
+      noNotifications:false,
     }
     this.data = []
     this.renderItem = this.renderItem.bind(this)
@@ -52,13 +55,15 @@ export default class Notifications extends Component {
       this.retrieveNotificationsOnline()
     }else{
       this.data = notifications
-      this.setState({data:notifications})
+      this.setState({data:notifications, isLoading:false, noNotifications:false})
     }
   }
   retrieveNotificationsOnline () {
+    AsyncStorage.setItem('currentUser', this.state.userId)
     this.data = []
-    this.setState({notifications:[], refreshing:true})
+    this.setState({notifications:[], refreshing:true, isLoading:true})
     this.ref.child(this.state.userId).once('value', (snapshots)=>{
+      if (!snapshots.exists()) this.setState({refreshing:false, isLoading:false, noNotifications:true})
       snapshots.forEach((childSnap)=>{
           this.data.push({key:childSnap.key, displayName:childSnap.val().displayName,
             type:childSnap.val().type, postId:childSnap.val().postId,profilePicture:childSnap.val().profilePicture,
@@ -80,8 +85,10 @@ export default class Notifications extends Component {
      <View
       style={customStyles.listItem}
     >
-      <Swipeable onRightActionRelease={()=>this.setState({activeRow:index, deleteRef:item.key})} rightActionActivationDistance={100} onRef={ref => this.swipeable = ref} rightButtons={this.rightButtons}>
-      <TouchableWithoutFeedback onPress={()=>Actions.viewTheory({questionId:item.postId, question:item.post, courseCode:item.username})} style={{flex:1}}>
+      <Swipeable onRightActionRelease={()=>this.setState({activeRow:index, deleteRef:item.key})}
+        rightActionActivationDistance={100} onRef={ref => this.swipeable = ref} rightButtons={this.rightButtons}
+         onSwipeStart={()=>this.setState(prevState =>({swipingStarted:!prevState.swipingStarted}))} onSwipeComplete={()=>this.setState(prevState =>({swipingStarted:!prevState.swipingStarted}))}>
+      <TouchableWithoutFeedback onPress={()=>Actions.viewTheory({questionId:item.postId, question:item.post, courseCode:item.username, comments:true})} style={{flex:1}}>
         <View style={{flex:1, flexDirection:'row', justifyContent:'space-between'}}>
            <Image source={{uri:item.profilePicture}} style={customStyles.profilePicture} resizeMode={'contain'}/>
            <View style={{flex:1}}>
@@ -96,10 +103,28 @@ export default class Notifications extends Component {
   }
   renderItem({ item, index }) {
     if (item.type === 'upvote') return this.showvote(item, index, 'upvoted your comment')
-    else return this.showvote(item, index, 'downvoted your comment')
+    else if (item.type === 'downvote') return this.showvote(item, index, 'downvoted your comment')
+    else if (item.type === 'explore_like') return this.showvote(item, index, 'liked your post on explore')
+    else if (item.type === 'comment') return this.showvote(item, index, 'commented on your explore post')
    }
    bannerError = (e) => {
      //Failed to load banner
+   }
+   renderFlatList () {
+     return (
+       <FlatList
+         scrollEnabled={!this.state.swipingStarted}
+         data={this.state.data}
+         ItemSeparatorComponent={()=><View style={customStyles.separator}></View>}
+         renderItem={this.renderItem}
+         refreshControl={
+          <RefreshControl
+          refreshing={this.state.refreshing}
+             onRefresh={this.retrieveNotificationsOnline.bind(this)}
+         />
+        }
+    />
+     )
    }
   render () {
     return (
@@ -107,17 +132,20 @@ export default class Notifications extends Component {
         <NavBar title='Notifications' />
         <View style={styles.secondaryContainer} >
           <View style={{flex:6, flexDirection:'row'}}>
-            <FlatList
-              data={this.state.data}
-              ItemSeparatorComponent={()=><View style={customStyles.separator}></View>}
-              renderItem={this.renderItem}
-              refreshControl={
-               <RefreshControl
-               refreshing={this.state.refreshing}
-                  onRefresh={this.retrieveNotificationsOnline.bind(this)}
-              />
-             }
-         />
+            {(()=>{
+              if (this.state.isLoading) return (
+                <View style={{flex:1, justifyContent:'center', alignItems:'center'}}>
+                  <Text style={[customStyles.listText, styles.textColor]}>Loading...</Text></View>
+              )
+              else if (this.state.noNotifications) return (
+                <View style={[styles.buttonContainer,customStyles.buttonContainer]}>
+                  <View style={{flex:1, justifyContent:'center', alignItems:'center'}}>
+                    <Text style={[customStyles.listText, styles.textColor]}>No Notifications</Text></View>
+                </View>
+              )
+              else return this.renderFlatList()
+            })()
+          }
           </View>
           <AdMobBanner
            adSize="smartBannerPortrait"

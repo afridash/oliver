@@ -36,7 +36,7 @@ export default class Login extends React.Component {
       })
       this.saveLocal(user)
       this.setState({isLoading: false})
-      return Actions.reset('home')
+      return Actions.reset('drawer')
     } else {
       this.setState({isLoading: false})
     }

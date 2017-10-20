@@ -62,6 +62,7 @@ export default class Courses extends Component {
     }
   }
   async retrieveCoursesOnline () {
+    AsyncStorage.setItem('currentUser', this.state.userId)
     //1.Retrieve users courses from faculties in firebase and store them locally using AsyncStorage
     //Also filters the courses by department using the department Key
     this.data = []

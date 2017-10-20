@@ -19,6 +19,7 @@ import Button from 'react-native-button'
 import {
   AdMobBanner,
  } from 'react-native-admob'
+ import * as Notifications from '../auth/notifications'
 import Firebase from '../auth/firebase'
 const firebase = require('firebase')
 import * as timestamp from '../auth/timestamp'
@@ -27,22 +28,31 @@ import NavBar from './navBar'
 export default class Explore extends Component {
   constructor (props) {
     super (props)
+    this.user = firebase.auth().currentUser
     this.state = {
       activities:[],
       index:0,
+      post:"",
+      likes:0,
       isLoading:true,
       noActivity:false,
       refreshing:false,
+
     }
     this.renderItem = this.renderItem.bind(this)
     this.ref = firebase.database().ref().child('explore')
+    this.likesRef = firebase.database().ref('explore_likes')
+    this.postsRef = firebase.database().ref().child('posts')
   }
+
   async componentWillMount () {
     //Set theme styles
     theme.setRoot(this)
     //Retrieve user key
     var key = await AsyncStorage.getItem('collegeId')
-    this.setState({collegeId:key})
+    var userId= await AsyncStorage.getItem('myKey')
+    this.setState({collegeId:key, userId:userId})
+
     //Start component lifecycle with call to loading questions stored offline
     this.retrieveActivitiesOnline()
   }
@@ -53,10 +63,50 @@ export default class Explore extends Component {
       if (snapshot.val()  !== null ) this.setState({refreshing:false, noActivity:false,isLoading:false})
       else this.setState({refreshing:false, noActivity:true,isLoading:false})
       snapshot.forEach((snap)=>{
-          this.data.unshift({key:snap.key,courseId:snap.val().courseId, code:snap.val().courseCode, title:snap.val().course,percentage:snap.val().percentage,
-                          createdAt:snap.val().createdAt, message:snap.val().message, username:snap.val().username, profilePicture:snap.val().profilePicture})
-          this.setState({activities:this.data})
+        this.likesRef.child(snap.key).child(this.state.userId).once('value', (likeVal)=>{
+          if (likeVal.exists()){
+            this.data.unshift({
+                            key:snap.key,courseId:snap.val().courseId, likes:snap.val().starCount,
+                            code:snap.val().courseCode, title:snap.val().course,percentage:snap.val().percentage,
+                            createdAt:snap.val().createdAt, message:snap.val().message, username:snap.val().username,
+                             postLike:true, profilePicture:snap.val().profilePicture,
+                             userId:snap.val().userId})
+            this.setState({activities:this.data})
+          }else{
+            this.data.unshift({key:snap.key,courseId:snap.val().courseId, likes:snap.val().starCount,postLike:false, code:snap.val().courseCode, title:snap.val().course,percentage:snap.val().percentage,
+                            createdAt:snap.val().createdAt, message:snap.val().message,userId:snap.val().userId, username:snap.val().username, profilePicture:snap.val().profilePicture})
+            this.setState({activities:this.data})
+          }
+        })
+
       })
+    })
+  }
+
+  onRowPress(key, post){
+    if (post.postLike) {
+      this.unlikePost(post.key)
+      post.likes = post.likes - 1
+    } else {
+      this.likePost(post.key, post)
+      post.likes = post.likes + 1
+    }
+    post.postLike =!post.postLike
+    var clone = this.state.activities
+    clone[key] = post
+    this.setState({posts:clone})
+  }
+  likePost (postId, post) {
+   this.likesRef.child(postId).child(this.state.userId).set(true)
+   var ref = this.ref.child(this.state.collegeId).child(postId).child('starCount').once('value', (likesCount)=>{
+      likesCount.ref.set(likesCount.val() + 1)
+    })
+    Notifications.sendNotification(post.userId, 'explore_like', postId, post.message, post.username)
+  }
+  unlikePost (postId) {
+    this.likesRef.child(postId).child(this.state.userId).remove()
+    var ref = this.ref.child(this.state.collegeId).child(postId).child('starCount').once('value', (likesCount)=>{
+       likesCount.ref.set(likesCount.val() - 1)
     })
   }
   renderItem({ item, index }) {
@@ -76,6 +126,19 @@ export default class Explore extends Component {
        <View style={{flex:1, margin:5, padding:10}}>
         <Text style={[styles.textColor, customStyles.message]}>{item.message}</Text>
         <Text style={[styles.textColor, customStyles.message]}>{item.percentage}% in {item.title} ({item.code})</Text>
+      </View>
+      <View style={customStyles.interactions}>
+        <View style={{flex:1, alignItems:'flex-start',justifyContent:'flex-start'}}>
+          <Button style={[styles.textColor]} onPress={()=>this.onRowPress(index, item)}><Image source={require('../assets/images/heart2.png')} style={[customStyles.home,{tintColor: !item.postLike ? '#ffffff' : 'red' }]} />
+          <Text>{item.likes !== 0 && item.likes }</Text>
+        </Button>
+        </View>
+        <View style={{flex:1, alignItems:'flex-end', justifyContent:'center',  marginRight:15}}>
+          <Button
+            style={[styles.textColor]} onPress={()=>Actions.viewTheory({question:item.message, questionId:item.key, courseCode:item.username, comments:true, userId:item.userId})}>
+            <Image source={require('../assets/images/comments.png')} style={[customStyles.comment, styles.iconColor, {tintColor:'#ffffff'}]} />
+        </Button>
+        </View>
       </View>
       <View>
         <Button
@@ -171,6 +234,33 @@ const customStyles = StyleSheet.create({
     flex:1,
     flexDirection:'row',
      padding:3
+   },
+   home:{
+     margin: 15,
+     marginRight:5,
+     resizeMode: 'contain',
+     width: 25,
+     height: 25,
+     alignItems:'flex-end',
+
+   },
+   comment:{
+     resizeMode: 'contain',
+     width: 25,
+     height: 25,
+   },
+   menu:{
+     flex:4,
+     justifyContent:'flex-start',
+     alignItems:'flex-start',
+     marginTop:10,
+    flexDirection:'row',
+   },
+   interactions:{
+     flex:4,
+     justifyContent:'space-between',
+     marginTop:10,
+    flexDirection:'row',
    },
   listItem:{
     padding:10,

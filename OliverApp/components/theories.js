@@ -62,6 +62,7 @@ export default class Theories extends Component {
     }
   }
   retrieveQuestionsOnline () {
+    AsyncStorage.setItem('currentUser', this.state.userId)
     this.data = []
     this.setState({refreshing:true,isLoading:false,noQuestions:false, total:0})
     this.ref.orderByChild('type').equalTo('theory').once('value',(snapshot)=>{

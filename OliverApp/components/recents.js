@@ -46,9 +46,12 @@ export default class Activity extends Component {
     theme.setRoot(this)
     //Retrieve user key
     var key = await AsyncStorage.getItem('myKey')
+    var currentUser = await AsyncStorage.getItem('currentUser')
     this.setState({userId:key})
+    if (currentUser === key)
     //Start component lifecycle with call to loading questions stored offline
     this.retrieveActivitiesOffline()
+    else this.retrieveActivitiesOnline()
   }
   handleSwipeClick () {
     //Delete row that has been clicked on after swiping
@@ -71,6 +74,7 @@ export default class Activity extends Component {
     }
   }
   retrieveActivitiesOnline () {
+    AsyncStorage.setItem('currentUser', this.state.userId)
     this.data = []
     this.setState({refreshing:true,isLoading:false,noActivity:false})
     this.ref.child(this.state.userId).once('value',(snapshot)=>{

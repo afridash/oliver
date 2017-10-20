@@ -29,9 +29,9 @@ export default class Login extends React.Component {
       errors = true
     })
     if (!errors) {
-      var userId = firebase.auth().currentUser.uid
+      var userId = await firebase.auth().currentUser.uid
       var user
-      await firebase.database().ref().child('users').child(userId).once('value').then(function (snapshot) {
+      await firebase.database().ref().child('users').child(userId).once('value', (snapshot)=>{
         user = snapshot.val()
       })
       this.saveLocal(user)
