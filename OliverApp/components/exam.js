@@ -49,6 +49,7 @@ export default class Exams extends Component {
     this.bookmarksRef = firebase.database().ref().child('bookmarks')
     this.historyRef = firebase.database().ref().child('activities')
     this.exploreRef = firebase.database().ref().child('explore')
+    this.followersRef = firebase.database().ref().child('question_followers')
   }
   async componentWillMount () {
     theme.setRoot(this)
@@ -301,7 +302,7 @@ export default class Exams extends Component {
         userId:this.state.userId,
         percentage: (this.state.correct/this.state.total * 100).toFixed(2)
     }
-    this.exploreRef.child(this.state.college).push(data)
+    var key = this.exploreRef.child(this.state.college).push(data).key
     Alert.alert(
       'Shared!',
       'Thank you for sharing to explore! Kudos',
@@ -310,6 +311,7 @@ export default class Exams extends Component {
       ],
       { cancelable: false }
     )
+    this.followersRef.child(key).child(this.state.userId).set(true)
   }
   showSummary () {
     return (

@@ -60,8 +60,8 @@ export default class Explore extends Component {
     this.data = []
     this.setState({refreshing:true,isLoading:false,noActivity:false})
     this.ref.child(this.state.collegeId).limitToFirst(100).once('value',(snapshot)=>{
-      if (snapshot.val()  !== null ) this.setState({refreshing:false, noActivity:false,isLoading:false})
-      else this.setState({refreshing:false, noActivity:true,isLoading:false})
+      if (!snapshot.exists()) this.setState({refreshing:false, noActivity:true,isLoading:false})
+      else this.setState({refreshing:true, noActivity:false,isLoading:true})
       snapshot.forEach((snap)=>{
         this.likesRef.child(snap.key).child(this.state.userId).once('value', (likeVal)=>{
           if (likeVal.exists()){
@@ -69,13 +69,13 @@ export default class Explore extends Component {
                             key:snap.key,courseId:snap.val().courseId, likes:snap.val().starCount,
                             code:snap.val().courseCode, title:snap.val().course,percentage:snap.val().percentage,
                             createdAt:snap.val().createdAt, message:snap.val().message, username:snap.val().username,
-                             postLike:true, profilePicture:snap.val().profilePicture,
+                             postLike:true, profilePicture:snap.val().profilePicture, comments:snap.hasChild('comments') ? snap.val().comments : 0,
                              userId:snap.val().userId})
-            this.setState({activities:this.data})
+            this.setState({activities:this.data, refreshing:false, isLoading:false})
           }else{
             this.data.unshift({key:snap.key,courseId:snap.val().courseId, likes:snap.val().starCount,postLike:false, code:snap.val().courseCode, title:snap.val().course,percentage:snap.val().percentage,
-                            createdAt:snap.val().createdAt, message:snap.val().message,userId:snap.val().userId, username:snap.val().username, profilePicture:snap.val().profilePicture})
-            this.setState({activities:this.data})
+                            createdAt:snap.val().createdAt, message:snap.val().message,userId:snap.val().userId, username:snap.val().username, profilePicture:snap.val().profilePicture, comments:snap.hasChild('comments') ? snap.val().comments : 0,})
+            this.setState({activities:this.data, refreshing:false, isLoading:false})
           }
         })
 
@@ -130,13 +130,14 @@ export default class Explore extends Component {
       <View style={customStyles.interactions}>
         <View style={{flex:1, alignItems:'flex-start',justifyContent:'flex-start'}}>
           <Button style={[styles.textColor]} onPress={()=>this.onRowPress(index, item)}><Image source={require('../assets/images/heart2.png')} style={[customStyles.home,{tintColor: !item.postLike ? '#ffffff' : 'red' }]} />
-          <Text>{item.likes !== 0 && item.likes }</Text>
+          <Text style={styles.textColor}>{item.likes !== 0 && item.likes }</Text>
         </Button>
         </View>
         <View style={{flex:1, alignItems:'flex-end', justifyContent:'center',  marginRight:15}}>
           <Button
-            style={[styles.textColor]} onPress={()=>Actions.viewTheory({question:item.message, questionId:item.key, courseCode:item.username, comments:true, userId:item.userId})}>
+            style={[styles.textColor]} onPress={()=>Actions.viewTheory({question:item.message + " " + item.percentage + "% in "+ item.title + "("+item.code+")", questionId:item.key, courseCode:item.username, comments:true, userId:item.userId})}>
             <Image source={require('../assets/images/comments.png')} style={[customStyles.comment, styles.iconColor, {tintColor:'#ffffff'}]} />
+            <Text style={[{marginLeft:3}, styles.textColor]}>{item.comments !== 0 && item.comments}</Text>
         </Button>
         </View>
       </View>

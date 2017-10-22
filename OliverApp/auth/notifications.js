@@ -17,7 +17,7 @@
 
 const firebase = require('firebase')
 import {Firebase} from './firebase'
-export function sendNotification (userKey, type, key , post='', code='') {
+export function sendNotification (userKey, type, key , post='', code='', course='') {
   this.user = firebase.auth().currentUser
   this.notificationsRef = firebase.database().ref('notifications')
   this.userNotificationsRef = firebase.database().ref('user_notifications')
@@ -31,6 +31,7 @@ export function sendNotification (userKey, type, key , post='', code='') {
       postId: key,
       post:post,
       code:code,
+      course:course,
       receiverId:userKey,
       createdAt: firebase.database.ServerValue.TIMESTAMP
     }

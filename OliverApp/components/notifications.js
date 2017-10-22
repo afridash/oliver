@@ -61,14 +61,15 @@ export default class Notifications extends Component {
   retrieveNotificationsOnline () {
     AsyncStorage.setItem('currentUser', this.state.userId)
     this.data = []
-    this.setState({notifications:[], refreshing:true, isLoading:true})
+    this.setState({notifications:[], refreshing:true,})
     this.ref.child(this.state.userId).once('value', (snapshots)=>{
       if (!snapshots.exists()) this.setState({refreshing:false, isLoading:false, noNotifications:true})
       snapshots.forEach((childSnap)=>{
           this.data.push({key:childSnap.key, displayName:childSnap.val().displayName,
             type:childSnap.val().type, postId:childSnap.val().postId,profilePicture:childSnap.val().profilePicture,
-            userId:childSnap.val().userId, createdAt:childSnap.val().createdAt, post:childSnap.val().post, username:childSnap.val().code})
-          this.setState({data:this.data, refreshing:false})
+            userId:childSnap.val().userId, createdAt:childSnap.val().createdAt, post:childSnap.val().post,
+            username:childSnap.val().code, courseId:childSnap.val().course})
+          this.setState({data:this.data, refreshing:false, isLoading:false})
           AsyncStorage.setItem('notifications', JSON.stringify(this.data))
       })
     })
@@ -77,10 +78,10 @@ export default class Notifications extends Component {
     //Delete row that has been clicked on after swiping
     var rem = this.state.data.splice(this.state.activeRow,1)
     this.setState({data:this.state.data})
-    AsyncStorage.setItem('bookmarks', JSON.stringify(this.state.data))
+    AsyncStorage.setItem('notifications', JSON.stringify(this.state.data))
     this.ref.child(this.state.userId).child(this.state.deleteRef).remove()
   }
-  showvote (item, index, message) {
+  showTheoryVote (item, index, message) {
     return (
      <View
       style={customStyles.listItem}
@@ -88,9 +89,30 @@ export default class Notifications extends Component {
       <Swipeable onRightActionRelease={()=>this.setState({activeRow:index, deleteRef:item.key})}
         rightActionActivationDistance={100} onRef={ref => this.swipeable = ref} rightButtons={this.rightButtons}
          onSwipeStart={()=>this.setState(prevState =>({swipingStarted:!prevState.swipingStarted}))} onSwipeComplete={()=>this.setState(prevState =>({swipingStarted:!prevState.swipingStarted}))}>
-      <TouchableWithoutFeedback onPress={()=>Actions.viewTheory({questionId:item.postId, question:item.post, courseCode:item.username, comments:true})} style={{flex:1}}>
+      <TouchableWithoutFeedback onPress={()=>Actions.viewTheory({questionId:item.postId, question:item.post, courseCode:item.username, courseId:item.courseId, answer:''})} style={{flex:1}}>
         <View style={{flex:1, flexDirection:'row', justifyContent:'space-between'}}>
-           <Image source={{uri:item.profilePicture}} style={customStyles.profilePicture} resizeMode={'contain'}/>
+           <Image source={{uri:item.profilePicture}} style={customStyles.profilePicture} resizeMode={'cover'}/>
+           <View style={{flex:1}}>
+             <Text style={[customStyles.listText, styles.textColor]}>{item.displayName} {message}</Text>
+           </View>
+           <Text style={[customStyles.timestamp, styles.textColor]}>{timestamp.timeSince(item.createdAt)}</Text>
+        </View>
+      </TouchableWithoutFeedback>
+    </Swipeable>
+    </View>
+      )
+  }
+  showExploreVote (item, index, message) {
+    return (
+     <View
+      style={customStyles.listItem}
+    >
+      <Swipeable onRightActionRelease={()=>this.setState({activeRow:index, deleteRef:item.key})}
+        rightActionActivationDistance={100} onRef={ref => this.swipeable = ref} rightButtons={this.rightButtons}
+         onSwipeStart={()=>this.setState(prevState =>({swipingStarted:!prevState.swipingStarted}))} onSwipeComplete={()=>this.setState(prevState =>({swipingStarted:!prevState.swipingStarted}))}>
+      <TouchableWithoutFeedback onPress={()=>Actions.viewTheory({questionId:item.postId, question:item.post, courseCode:item.username, comments:true, userId:item.courseId})} style={{flex:1}}>
+        <View style={{flex:1, flexDirection:'row', justifyContent:'space-between'}}>
+           <Image source={{uri:item.profilePicture}} style={customStyles.profilePicture} resizeMode={'cover'}/>
            <View style={{flex:1}}>
              <Text style={[customStyles.listText, styles.textColor]}>{item.displayName} {message}</Text>
            </View>
@@ -102,10 +124,14 @@ export default class Notifications extends Component {
       )
   }
   renderItem({ item, index }) {
-    if (item.type === 'upvote') return this.showvote(item, index, 'upvoted your comment')
-    else if (item.type === 'downvote') return this.showvote(item, index, 'downvoted your comment')
-    else if (item.type === 'explore_like') return this.showvote(item, index, 'liked your post on explore')
-    else if (item.type === 'comment') return this.showvote(item, index, 'commented on your explore post')
+    if (item.type === 'upvote') return this.showExploreVote(item, index, 'upvoted your comment')
+    else if (item.type === 'downvote') return this.showExploreVote(item, index, 'downvoted your comment')
+    else if (item.type === 'explore_like') return this.showExploreVote(item, index, 'liked your post on explore')
+    else if (item.type === 'explore_comment') return this.showExploreVote(item, index, 'commented on an explore post')
+    else if (item.type === 'upvote_theory') return this.showTheoryVote(item, index, 'upvoted your comment to a question')
+    else if (item.type === 'downvote_theory') return this.showTheoryVote(item, index, 'downvoted your comment to a question')
+    else if (item.type === 'downvote_theory') return this.showTheoryVote(item, index, 'downvoted your comment to a question')
+    else if (item.type === 'theory_comment') return this.showTheoryVote(item, index, 'commented on a question you follow')
    }
    bannerError = (e) => {
      //Failed to load banner

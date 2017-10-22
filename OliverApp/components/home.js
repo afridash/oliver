@@ -114,7 +114,6 @@ export default class Home extends Component {
         this.data.push({key:course.key, show:false, name:course.val().name, code:course.val().code})
         this.setState({data:this.data, refreshing:false,noCourses:false, isLoading:false})
          AsyncStorage.setItem('user_courses', JSON.stringify(this.data))
-
       })
     })
     this._setHighScore()
@@ -148,7 +147,7 @@ export default class Home extends Component {
     }
     return result
   }
-   renderItem({ item, index }) {
+  renderItem({ item, index }) {
      return (
        <View
          style={customStyles.listItem}
@@ -170,10 +169,10 @@ export default class Home extends Component {
             <Text onPress={()=>Actions.theory({courseId:item.key, courseCode:item.code})} style={[customStyles.actions, styles.textColor]}>Study Theory Questions</Text>
           </View>
           <View style={customStyles.actionsContainer}>
-            <Text onPress={()=>Actions.start_exam({courseId:item.key, courseCode:item.code, course:item.name})} style={[customStyles.actions, styles.textColor]}>Practice Exam</Text>
+            <Text onPress={()=>Actions.objectives({courseId:item.key, courseCode:item.code})} style={[customStyles.actions, styles.textColor]}>Study Objectives</Text>
           </View>
           <View style={customStyles.actionsContainer}>
-            <Text style={[customStyles.actions, styles.textColor]}>High Score: {item.high}</Text>
+            <Text onPress={()=>Actions.start_exam({courseId:item.key, courseCode:item.code, course:item.name})} style={[customStyles.actions, styles.textColor]}>Practice Exam (H: {item.high})</Text>
           </View>
           </View>
         }

@@ -1,6 +1,3 @@
-/*
-*@author Richard Igbiriki October 5, 2017
-*/
 import React, {Component} from 'react'
 import {
   View,
@@ -11,31 +8,35 @@ import {
   FlatList,
   Image,
   RefreshControl,
+  TouchableWithoutFeedback,
 } from 'react-native'
+import Firebase from '../auth/firebase'
+const firebase = require('firebase')
 import {Actions} from 'react-native-router-flux'
-import theme, { styles } from 'react-native-theme'
-import Button from 'react-native-button'
 import {
   AdMobBanner,
  } from 'react-native-admob'
-import Firebase from '../auth/firebase'
-const firebase = require('firebase')
-
+import theme, { styles } from 'react-native-theme'
+import Button from 'react-native-button'
+import Swipeable from 'react-native-swipeable'
 import NavBar from './navBar'
-export default class Theories extends Component {
+
+export default class Objectives extends Component {
   constructor (props) {
     super (props)
     this.state = {
-      questions:[],
-      index:0,
+      data: [],
+      refreshing: false,
+      swipingStarted:false,
       isLoading:true,
-      noQuestions:false,
-      refreshing:false,
-      total:0,
+      noBookmarks:false,
     }
+    this.data = []
     this.renderItem = this.renderItem.bind(this)
     this.ref = firebase.database().ref().child('questions').child(this.props.courseId)
+    this.rightButtons = [<Text onPress={()=>this.handleSwipeClick()} style={customStyles.swipeButton}>Delete</Text>,]
   }
+
   async componentWillMount () {
     //Set theme styles
     theme.setRoot(this)
@@ -52,51 +53,66 @@ export default class Theories extends Component {
     //Retrieved and parse stored data in AsyncStorage
     //If no such data, read questions from firebase, then store them locally
     var questions = []
-    var stored = await AsyncStorage.getItem(this.props.courseId)
+    var stored = await AsyncStorage.getItem(this.props.courseId+'study')
     if (stored !== null) questions = JSON.parse(stored)
     if (questions.length === 0 || questions === null) {
       this.retrieveQuestionsOnline ()
     }else{
       this.data = questions
-      this.setState({questions:questions, noQuestions:false,isLoading:false, total:questions.length})
+      this.setState({data:questions, noQuestions:false,isLoading:false, total:questions.length})
     }
   }
   retrieveQuestionsOnline () {
     AsyncStorage.setItem('currentUser', this.state.userId)
     this.data = []
-    this.setState({refreshing:true,isLoading:false,noQuestions:false, total:0})
-    this.ref.orderByChild('type').equalTo('theory').once('value',(snapshot)=>{
-      if (snapshot.val()  !== null ) this.setState({refreshing:false, noQuestions:false,isLoading:false})
-      else this.setState({refreshing:false, noQuestions:true,isLoading:false})
+    this.setState({refreshing:true, noQuestions:false, total:0})
+    this.ref.orderByChild('type').equalTo('objective').once('value', (snapshot)=>{
+      if (!snapshot.exists()) this.setState({refreshing:false, noQuestions:true,isLoading:false})
+      else this.setState({refreshing:false, noQuestions:false,isLoading:true})
+      var answer
       snapshot.forEach((snap)=>{
-          this.data.push({key:snap.key, question:snap.val().question, answered:snap.val().answered,
-            answer:snap.val().answered ? snap.val().answer : '',
-            comments:snap.hasChild('comments') ? snap.val().comments : 0 })
-          this.setState({questions:this.data, total:this.state.total+1})
-          AsyncStorage.setItem(this.props.courseId, JSON.stringify(this.data))
+          if (snap.val().answer.toUpperCase() === 'A') answer = snap.val().optionA
+          else if (snap.val().answer.toUpperCase() === 'B') answer = snap.val().optionB
+          else if (snap.val().answer.toUpperCase() === 'C') answer = snap.val().optionC
+          else if (snap.val().answer.toUpperCase() === 'D') answer = snap.val().optionD
+          else answer = ''
+          this.data.push({key:snap.key, question:snap.val().question, show:false, textAnswer:answer})
+          this.setState({data:this.data, noQuestions:false,isLoading:false, refreshing:false})
+          AsyncStorage.setItem(this.props.courseId+'study', JSON.stringify(this.data))
       })
     })
-
   }
+  _onPressItem (index) {
+    var clone = this.state.data
+    clone[index].show = !clone[index].show
+    this.setState({data:clone})
+  }
+
   renderItem({ item, index }) {
-   return (
+    return (
      <View
       style={customStyles.listItem}
     >
       <View style={{flex:1, flexDirection:'row', justifyContent:'space-between'}}>
-        <Text
-          onPress={()=>Actions.viewTheory({courseCode:this.props.courseCode, question:item.question, questionId:item.key, answer:item.answered ? item.answer : "", courseId:this.props.courseId})}
-          style={[customStyles.listText, styles.textColor]}>{index+1}.  {item.question}</Text>
-       <Image source={require('../assets/images/arrow_right.png')} style={[styles.iconColor, customStyles.icon]} resizeMode={'contain'}/>
+        <Text onPress={()=>this._onPressItem(index)} style={[customStyles.listText, styles.textColor]}>{index+1} {item.question}</Text>
+        {!item.show ? <Image source={require('../assets/images/arrow_right.png')} style={[styles.iconColor, customStyles.icon]} resizeMode={'contain'}/> : <Image source={require('../assets/images/arrow_down.png')} style={[styles.iconColor, customStyles.icon]} resizeMode={'contain'}/>}
       </View>
-      <Text style={[styles.textColor, customStyles.responses]}>{item.comments !== 0 && "Responses: "+item.comments}</Text>
+      {item.show && <View style={{flex:1}}>
+        <View style={customStyles.actionsContainer}>
+        <Text style={[customStyles.actions, styles.textColor]}>{item.textAnswer}</Text>
+      </View>
+      </View>
+    }
     </View>
       )
    }
-  renderFlatList () {
+   bannerError = (e) => {
+     //Failed to load banner
+   }
+   renderFlatList () {
      return (
        <FlatList
-         data={this.state.questions}
+         data={this.state.data}
          ItemSeparatorComponent={()=><View style={customStyles.separator}></View>}
          renderItem={this.renderItem}
          refreshControl={
@@ -111,7 +127,7 @@ export default class Theories extends Component {
   render () {
     return (
       <View style={styles.container}>
-        <NavBar progress={''+this.state.total} title={this.props.courseCode} backButton={true}/>
+        <NavBar backButton={true} title={this.props.courseCode} />
         <View style={styles.secondaryContainer} >
           <View style={{flex:6, flexDirection:'row'}}>
             {(()=>{
@@ -120,21 +136,22 @@ export default class Theories extends Component {
                   <Text style={[customStyles.listText, styles.textColor]}>Loading...</Text></View>
               )
               else if (this.state.noQuestions) return (<View style={{flex:1, justifyContent:'center', alignItems:'center'}}>
-                <Text style={[customStyles.listText, styles.textColor]}>:( No Theories...Check Back Later</Text></View>)
+                <Text style={[customStyles.listText, styles.textColor]}>:( No Objectives...Check Back Later</Text></View>)
               else return this.renderFlatList()
             })()
           }
           </View>
-           <AdMobBanner
-            adSize="smartBannerPortrait"
-            adUnitID="ca-app-pub-1090704049569053/1792603919"
-            testDeviceID="EMULATOR"
-            didFailToReceiveAdWithError={this.bannerError} />
+          <AdMobBanner
+           adSize="smartBannerPortrait"
+           adUnitID="ca-app-pub-1090704049569053/1792603919"
+           testDeviceID="EMULATOR"
+           didFailToReceiveAdWithError={this.bannerError} />
         </View>
       </View>
     )
   }
 }
+
 const customStyles = StyleSheet.create({
   container:{
     flex:10,
@@ -150,12 +167,7 @@ const customStyles = StyleSheet.create({
     padding:20,
   },
   listText:{
-    fontSize:18,
-    fontFamily:(Platform.OS === 'ios') ? 'verdana' : 'serif',
-    margin:5,
-  },
-  responses:{
-    fontSize:12,
+    fontSize:16,
     fontFamily:(Platform.OS === 'ios') ? 'verdana' : 'serif',
     margin:5,
   },
@@ -170,15 +182,26 @@ const customStyles = StyleSheet.create({
   },
   actions:{
     padding:15,
-    fontSize:16,
+    fontSize:18,
     fontFamily:(Platform.OS === 'ios') ? 'verdana' : 'serif',
     },
-
   icon:{
     marginTop:20,
     resizeMode: 'contain',
     width: 20,
     height: 20,
     alignItems:'flex-end',
+  },
+  swipeButton:{
+    color:'white',
+    fontSize:16,
+    marginLeft:20,
+    backgroundColor:'#ff1744',
+    overflow:'hidden',
+    padding:10,
+    borderRadius:10,
+    borderWidth:1,
+    borderColor:'white',
+    fontFamily:(Platform.OS === 'ios') ? 'verdana' : 'serif',
   },
 })

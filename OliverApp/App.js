@@ -35,6 +35,7 @@ import ViewFull from './components/view'
 import Explore from './components/explore'
 import Theory from './components/viewTheory'
 import Notifications from './components/notifications'
+import Objectives from './components/objectives'
 import MenuIcon from './assets/images/menu_burger.png';
 
 const reducerCreate = params => {
@@ -111,6 +112,7 @@ export default class App extends React.Component {
                       <Scene key="themes" component={Themes} />
                       <Scene key="bookmarks" component={Bookmarks} />
                       <Scene key="theory" component={Theories} />
+                      <Scene key="objectives" component={Objectives} />
                       <Scene key="courses" component={Courses} />
                       <Scene key="profile" component={Profile} />
                       <Scene key="recents" component={Recents} />

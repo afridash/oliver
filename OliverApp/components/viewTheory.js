@@ -42,11 +42,16 @@ export default class Theory extends Component {
       username:'',
       user:'',
       bookmark:false,
+      collegeId:'',
+      followers:[]
     }
     this.renderItem = this.renderItem.bind(this)
     this.commentsRef = firebase.database().ref().child('answers').child(this.props.questionId)
     this.upvoteRef = firebase.database().ref().child('upvotes')
     this.bookmarksRef = firebase.database().ref().child('bookmarks')
+    this.questionsRef = firebase.database().ref().child('questions')
+    this.exploreRef = firebase.database().ref().child('explore')
+    this.followersRef = firebase.database().ref().child('question_followers').child(this.props.questionId)
   }
   async componentWillMount () {
     //Set theme styles
@@ -56,13 +61,31 @@ export default class Theory extends Component {
     var profilePicture = await AsyncStorage.getItem('pPicture')
     var user = await AsyncStorage.getItem('name')
     var username = await AsyncStorage.getItem('username')
-    this.setState({userId, profilePicture, username, user})
+    var collegeId = await AsyncStorage.getItem('collegeId')
+    this.setState({userId, profilePicture, username, user, collegeId})
+    //Determine if user is following post
+    this.followersRef.child(userId).once('value', (following)=>{
+      if (following.exists()) this.setState({following:true})
+      else this.setState({following:false})
+    })
+    //Retrieve All followers
+    this.retrieveFollowers()
     //Retrieve comments for the given question
     this.retrieveComments()
   }
+  retrieveFollowers () {
+    //Retrieve followers from firebase for notifications
+    this.followersRef.once('value', (snapshots)=>{
+      this.followers = []
+      snapshots.forEach((snapshot)=>{
+        this.followers.push({userId:snapshot.key})
+        this.setState({followers:this.followers})
+      })
+    })
+  }
   async retrieveComments () {
     this.data = []
-    this.setState({refreshing:true,isLoading:true,noQuestions:false})
+    this.setState({refreshing:true, noQuestions:false})
     //Fetch one result to confirm that comments exists
     this.commentsRef.limitToFirst(1).once('value', (snapshot)=>{
       if (!snapshot.exists()) this.setState({isLoading:false, refreshing:false})
@@ -120,7 +143,9 @@ export default class Theory extends Component {
      clone[index] = item
      this.setState({comments:clone})
      //Send notification to user
-     Notifications.sendNotification(item.userId, 'upvote', this.props.questionId, this.props.question, this.props.courseCode)
+     if (this.props.userId)
+     Notifications.sendNotification(item.userId, 'upvote', this.props.questionId, this.props.question, this.props.courseCode, this.props.userId)
+     else Notifications.sendNotification(item.userId, 'upvote_theory', this.props.questionId, this.props.question, this.props.courseCode, this.props.courseId)
     }
   }
   downvote (item, index) {
@@ -144,7 +169,9 @@ export default class Theory extends Component {
       clone[index] = item
       this.setState({comments:clone})
       //Send notification to user
-      Notifications.sendNotification(item.userId, 'downvote', this.props.questionId, this.props.question,  this.props.courseCode)
+      if (this.props.userId)
+      Notifications.sendNotification(item.userId, 'downvote', this.props.questionId, this.props.question, this.props.courseCode, this.props.userId)
+      else Notifications.sendNotification(item.userId, 'downvote_theory', this.props.questionId, this.props.question, this.props.courseCode, this.props.courseId)
     }
   }
   deleteComment (key) {
@@ -152,6 +179,17 @@ export default class Theory extends Component {
     this.commentsRef.child(key).remove()
     this.data = this.state.comments.filter((comment)=> { return comment.key !== key})
     this.setState({comments:this.data})
+    if (this.props.userId) {
+       var ref = this.exploreRef.child(this.state.collegeId).child(this.props.questionId).child('comments').once('value', (comments) => {
+         if (comments.exists()) comments.ref.set(comments.val() - 1)
+         else comments.ref.set(0)
+       })
+    } else if (this.props.courseId) {
+      var ref = this.questionsRef.child(this.props.courseId).child(this.props.questionId).child('comments').once('value', (comments)=>{
+        if (comments.exists()) comments.ref.set(comments.val() -  1)
+        else comments.ref.set(0)
+      })
+    }
   }
   bookmarkQuestion () {
     //Check if question has been previously bookmarked, if so remove it
@@ -168,6 +206,16 @@ export default class Theory extends Component {
       this.bookmarksRef.child(this.state.userId).child(this.props.questionId).update(data)
     }
     this.setState(prevState =>({bookmark:!prevState.bookmark}))
+  }
+  followQuestion () {
+    //Check if question has been previously followed, if so remove it
+    //Follow new questions
+    if (this.state.following) {
+      this.followersRef.child(this.state.userId).remove()
+    }else {
+        this.followersRef.child(this.state.userId).set(true)
+    }
+    this.setState(prevState =>({following:!prevState.following}))
   }
   renderItem({ item, index }) {
    return (
@@ -208,11 +256,40 @@ export default class Theory extends Component {
     </View>
       )
    }
+  renderHeader () {
+     return (
+       <View style={{flex:1,}}>
+         <Text style={[customStyles.listText, styles.textColor]}>{this.props.question}</Text>
+         {!this.props.comments ? <View style={{flex:0.5, justifyContent:'center', alignItems:'center', flexDirection:'row'}}>
+            <Button onPress={()=>this.bookmarkQuestion()}>
+             {this.state.bookmark ? <Image source={require('../assets/images/bookmark.png')} style={[{width:25, height:25, margin:10, tintColor:'red', padding:10}]} resizeMode={'contain'}/>:
+           <Image source={require('../assets/images/bookmark.png')} style={[styles.iconColor, {width:25, height:25, margin:10, padding:10}]} resizeMode={'contain'}/>}
+           </Button>
+           <Button onPress={()=>this.followQuestion()}>
+            {this.state.following ? <Image source={require('../assets/images/bell.png')} style={[{width:25, height:25, margin:10, tintColor:'red', padding:10}]} resizeMode={'contain'}/>:
+          <Image source={require('../assets/images/bell.png')} style={[styles.iconColor, {width:25, height:25, margin:10, padding:10}]} resizeMode={'contain'}/>}
+          </Button>
+        </View> : <View style={{flex:0.5, justifyContent:'center', alignItems:'center', flexDirection:'row'}}>
+          <Button onPress={()=>this.followQuestion()}>
+           {this.state.following ? <Image source={require('../assets/images/bell.png')} style={[{width:25, height:25, margin:10, tintColor:'red', padding:10}]} resizeMode={'contain'}/>:
+         <Image source={require('../assets/images/bell.png')} style={[styles.iconColor, {width:25, height:25, margin:10, padding:10}]} resizeMode={'contain'}/>}
+         </Button>
+        </View>}
+           {this.props.answer !== ''&& !this.props.comments && <Text style={[customStyles.answer, styles.textColor]}>Suggested Answer: {this.props.answer}</Text>}
+           <AdMobBanner
+             adSize="smartBannerPortrait"
+             adUnitID="ca-app-pub-1090704049569053/1792603919"
+             testDeviceID="EMULATOR"
+             didFailToReceiveAdWithError={this.bannerError} />
+       </View>
+     )
+   }
   renderFlatList () {
      return (
        <View style={{flex:1, flexDirection:'row'}}>
          <FlatList
            data={this.state.comments}
+           ListHeaderComponent = {this.renderHeader()}
            ItemSeparatorComponent={()=><View style={customStyles.separator}></View>}
            renderItem={this.renderItem}
            refreshControl={
@@ -237,12 +314,29 @@ export default class Theory extends Component {
      }
      this.commentsRef.push(data)
      this.setState({text: ''})
+     this.handleNotifications()
+   }
+   handleNotifications () {
      if (this.props.userId) {
-        Notifications.sendNotification(this.props.userId, 'comment', this.props.questionId, this.props.question, this.props.courseCode)
+       this.state.followers.map((follower)=>{
+         Notifications.sendNotification(follower.userId, 'explore_comment', this.props.questionId, this.props.question, this.props.courseCode, this.props.userId)
+       })
+        var ref = this.exploreRef.child(this.state.collegeId).child(this.props.questionId).child('comments').once('value', (comments) => {
+          if (comments.exists()) comments.ref.set(comments.val() + 1)
+          else comments.ref.set(1)
+        })
+     } else if (this.props.courseId) {
+       this.state.followers.map((follower)=>{
+         Notifications.sendNotification(follower.userId, 'theory_comment', this.props.questionId, this.props.question, this.props.courseCode, this.props.userId)
+       })
+       var ref = this.questionsRef.child(this.props.courseId).child(this.props.questionId).child('comments').once('value', (comments)=>{
+         if (comments.exists()) comments.ref.set(comments.val() + 1)
+         else comments.ref.set(1)
+       })
      }
    }
-   _onChangeHeight = (before, after) => {
-  }
+  _onChangeHeight = (before, after) => {
+    }
   bannerError = (e) => {
     //Failed to load banner
   }
@@ -251,29 +345,20 @@ export default class Theory extends Component {
       <KeyboardAvoidingView behavior= {(Platform.OS === 'ios')? "padding" : null} style={styles.container}>
         <NavBar title={this.props.courseCode} backButton={true}/>
         <View style={styles.secondaryContainer} >
-          <Text style={[customStyles.listText, styles.textColor]}>{this.props.question}</Text>
-          {!this.props.comments && <View style={{flex:0.5, justifyContent:'center', alignItems:'center'}}>
-             <Button onPress={()=>this.bookmarkQuestion()}>
-              {this.state.bookmark ? <Image source={require('../assets/images/bookmark.png')} style={[{width:25, height:25, margin:10, tintColor:'red', padding:10}]} resizeMode={'contain'}/>:
-            <Image source={require('../assets/images/bookmark.png')} style={[styles.iconColor, {width:25, height:25, margin:10, padding:10}]} resizeMode={'contain'}/>}
-            </Button>
-          </View>}
-            {this.props.answer !== ''&& !this.props.comments && <Text style={[customStyles.answer, styles.textColor]}>Suggested Answer: {this.props.answer}</Text>}
-            <AdMobBanner
-              adSize="smartBannerPortrait"
-              adUnitID="ca-app-pub-1090704049569053/1792603919"
-              testDeviceID="EMULATOR"
-              didFailToReceiveAdWithError={this.bannerError} />
-          <View style={{flex:6,flexDirection:'row' }}>
+          <View style={{flex:6,}}>
             {(()=>{
               if (this.state.isLoading) return (
                 <View style={{flex:1, justifyContent:'center', alignItems:'center'}}>
                   <Text style={[customStyles.listText, styles.textColor]}>Loading...</Text></View>
               )
               else {
-                if (this.state.comments.length === 0) return (<ScrollView contentContainerStyle={{flex:1, justifyContent:'center', alignItems:'center'}}>
-                  <Text style={[customStyles.listText, styles.textColor]}>{this.props.comments ? 'No Comments' : 'No Answers Yet'}</Text></ScrollView>)
-                else return this.renderFlatList()
+                return (
+                  <View style={{flex:6}}>
+                  {this.renderFlatList()}
+                   {this.state.comments.length === 0 && <ScrollView contentContainerStyle={{flex:1, justifyContent:'flex-start', alignItems:'center'}}>
+                    <Text style={[customStyles.listText, styles.textColor]}>{this.props.comments ? 'No Comments' : 'No Answers Yet'}</Text></ScrollView>}
+                  </View>
+                )
               }
             })()
           }
