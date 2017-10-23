@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "757475891712",
+    "firebase_url": "https://oliver-f5285.firebaseio.com",
+    "project_id": "oliver-f5285",
+    "storage_bucket": "oliver-f5285.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:757475891712:android:6c5ea9360ee70388",
+        "android_client_info": {
+          "package_name": "com.afridash.oliver"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "757475891712-bapfp1f25qelknf6vfnruuve84o8ae2m.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDIxl8N-JYO170QainySuH3_TE5p_8YVrE"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
