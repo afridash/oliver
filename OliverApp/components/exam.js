@@ -17,6 +17,7 @@ import {
 import {
   AdMobInterstitial,
  } from 'react-native-admob'
+ import Analytics from 'react-native-firebase-analytics'
 import {Actions} from 'react-native-router-flux'
 import theme, { styles } from 'react-native-theme'
 import Button from 'react-native-button'
@@ -57,6 +58,11 @@ export default class Exams extends Component {
     await this.getInfo()
     //Retrieve locally stored images or download questions if none
     this.retrieveQuestionsOffline()
+    Analytics.setUserId(this.state.userId)
+    Analytics.setUserProperty('username', this.state.username)
+    Analytics.logEvent('exam_started', {
+    'user': this.state.username
+  });
   }
   componentDidMount () {
     AdMobInterstitial.setTestDevices(['EMULATOR']);

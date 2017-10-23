@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import { StyleSheet, Text, View , Image, TouchableHighlight, Alert, Platform, TextInput, AsyncStorage} from 'react-native';
+import { StyleSheet, Text, View , Image, TouchableHighlight, Alert, Platform, TextInput, AsyncStorage, ScrollView} from 'react-native';
 import {Actions} from 'react-native-router-flux'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import Button from 'react-native-button'
@@ -58,7 +58,7 @@ export default class SignUp extends Component {
         this.setState({isLoading:false})
       }
     }else{
-      Alert.alert('Password Verification Error, please try again')
+      Alert.alert('Passwords do not match, please try again')
       this.setState({isLoading:false})
     }
   }
@@ -89,9 +89,12 @@ export default class SignUp extends Component {
         contentContainerStyle={styles.container}
         scrollEnabled
       >
-        <NavBar backButton={true} />
-        <View style={customStyles.title}><Text style={[customStyles.header, styles.header]}>Sign Up</Text></View>
-        <View style={customStyles.secondaryContainer}>
+        <NavBar backButton={true} title="Sign Up" />
+        <View style={customStyles.title}>
+          <Image source={require('../assets/images/logo.png')} resizeMode={'cover'} style={[{width:150, height:150}, styles.iconColor]} />
+        </View>
+        <ScrollView
+         style={customStyles.secondaryContainer}>
           <View style={customStyles.box}>
             <View style={customStyles.emailDIV}>
               <TextInput
@@ -185,7 +188,7 @@ export default class SignUp extends Component {
           </View>
               {!this.state.isLoading ? <Button onPress={()=>this.createAccount()} style={[styles.primaryButton,customStyles.signupButton,customStyles.primaryButton]}>Create Account</Button> :
               <Text style={[styles.primaryButton,customStyles.signupButton,customStyles.primaryButton]}>Signing up...</Text>}
-         </View>
+         </ScrollView>
     </KeyboardAwareScrollView>
     );
   }
@@ -213,21 +216,18 @@ const customStyles = StyleSheet.create({
     fontFamily:(Platform.OS === 'ios') ? 'verdana' : 'sans-serif',
   },
   emailDIV: {
-    flex: 1,
     flexDirection: 'row',
     height:50,
     borderColor: '#C8C8C8',
     borderBottomWidth: (Platform.OS === 'android') ? 0 : 1,
   },
   passwordDIV: {
-    flex: 1,
     flexDirection: 'row',
     height:50,
     borderColor: '#C8C8C8',
   },
   title: {
-    flex:0.5,
-    justifyContent:'center',
+    justifyContent:'flex-end',
     alignItems:'center',
   },
   header:{

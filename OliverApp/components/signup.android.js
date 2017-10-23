@@ -57,7 +57,7 @@ export default class SignUp extends Component {
         this.setState({isLoading:false})
       }
     }else{
-      Alert.alert('Password Verification Error, please try again')
+      Alert.alert('Passwords do not match, please try again')
       this.setState({isLoading:false})
     }
   }
@@ -82,8 +82,10 @@ export default class SignUp extends Component {
   render() {
     return (
         <ScrollView style={styles.container} >
-        <NavBar backButton={true} />
-        <View style={customStyles.title}><Text style={[customStyles.header, styles.header]}>Sign Up</Text></View>
+        <NavBar backButton={true} title="Sign Up" />
+        <View style={customStyles.title}>
+          <Image source={require('../assets/images/logo.png')} resizeMode={'cover'} style={[{width:150, height:150}, styles.iconColor]} />
+        </View>
         <View style={customStyles.secondaryContainer}>
           <View style={customStyles.box}>
             <View style={customStyles.emailDIV}>
@@ -203,24 +205,21 @@ const customStyles = StyleSheet.create({
     textAlign: 'center',
     color: 'black',
     fontSize: 14,
-    fontFamily:(Platform.OS === 'ios') ? 'verdana' : 'sans-serif',
+    fontFamily: 'sans-serif',
   },
   emailDIV: {
-    flex: 1,
     flexDirection: 'row',
-    height:50,
+    height:60,
     borderColor: '#C8C8C8',
-    borderBottomWidth: (Platform.OS === 'android') ? 0 : 1,
+    borderBottomWidth:  0 ,
   },
   passwordDIV: {
-    flex: 1,
     flexDirection: 'row',
-    height:50,
+    height:60,
     borderColor: '#C8C8C8',
   },
   title: {
-    flex:0.5,
-    justifyContent:'center',
+    justifyContent:'flex-end',
     alignItems:'center',
   },
   header:{
@@ -228,7 +227,7 @@ const customStyles = StyleSheet.create({
     fontSize:40,
     textDecorationLine:'underline',
     textDecorationColor:'white',
-    fontFamily:(Platform.OS === 'ios') ? 'verdana' : 'serif',
+    fontFamily: 'serif',
     color:'#fafafa',
   },
   box: {
@@ -252,7 +251,7 @@ const customStyles = StyleSheet.create({
     padding:10,
     textAlign:'center',
     color:'white',
-    fontFamily:(Platform.OS === 'ios') ? 'verdana' : 'serif',
+    fontFamily:'serif',
     margin:5,
     borderColor:'#fafafa',
   },

@@ -273,6 +273,7 @@ export default class Theory extends Component {
           <Button onPress={()=>this.followQuestion()}>
            {this.state.following ? <Image source={require('../assets/images/bell.png')} style={[{width:25, height:25, margin:10, tintColor:'red', padding:10}]} resizeMode={'contain'}/>:
          <Image source={require('../assets/images/bell.png')} style={[styles.iconColor, {width:25, height:25, margin:10, padding:10}]} resizeMode={'contain'}/>}
+          {this.state.followers.length > 0 && <Text style={[styles.textColor]}>{this.state.followers.length}</Text> }
          </Button>
         </View>}
            {this.props.answer !== ''&& !this.props.comments && <Text style={[customStyles.answer, styles.textColor]}>Suggested Answer: {this.props.answer}</Text>}

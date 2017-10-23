@@ -1,6 +1,16 @@
 import React from 'react';
 import theme, { styles } from 'react-native-theme'
-import { StyleSheet, Text, View , Image, TouchableHighlight, Alert, Platform, TextInput,AsyncStorage} from 'react-native';
+import {
+  StyleSheet,
+  Text,
+  View ,
+  Image,
+  TouchableHighlight,
+  Alert,
+  Platform,
+  TextInput,
+  AsyncStorage
+} from 'react-native';
 import {Actions} from 'react-native-router-flux'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import Button from 'react-native-button'
@@ -58,8 +68,10 @@ export default class Login extends React.Component {
       contentContainerStyle={styles.container}
       scrollEnabled={false}
     >
-      <NavBar backButton={true} />
-        <View style={customStyles.title}><Text style={[customStyles.header, styles.header]}>Log In</Text></View>
+      <NavBar backButton={true} title="Login" />
+        <View style={customStyles.title}>
+          <Image source={require('../assets/images/logo.png')} resizeMode={'cover'} style={[{width:150, height:150}, styles.iconColor]} />
+        </View>
         <View style={customStyles.secondaryContainer}>
           <View style={customStyles.box}>
             <View style={customStyles.emailDIV}>
@@ -96,8 +108,7 @@ export default class Login extends React.Component {
             <Text style={[styles.primaryButton, customStyles.loginButton, customStyles.primaryButton]}>Logging In...</Text>}
           <Text style={customStyles.information} onPress={()=>Actions.resetpassword()}>Forgot Password?</Text>
          </View>
-         <View style={customStyles.title}></View>
-         <View style={customStyles.title}></View>
+         <View style={{flex:2}}></View>
        </KeyboardAwareScrollView>
     );
   }
@@ -105,7 +116,8 @@ export default class Login extends React.Component {
 
 const customStyles = StyleSheet.create({
   secondaryContainer: {
-    flex:5,
+    flex:3.5,
+    backgroundColor:'white',
     shadowColor:'#000000',
     shadowOffset:{width: 10, height: 10},
     shadowOpacity:0.5,
@@ -113,7 +125,6 @@ const customStyles = StyleSheet.create({
     borderWidth:2,
     borderColor:'white',
     margin:40,
-    backgroundColor:'white',
     borderRadius:10,
   },
   input: {
@@ -122,42 +133,38 @@ const customStyles = StyleSheet.create({
     textAlign: 'center',
     color: 'black',
     fontSize: 14,
-    fontFamily:(Platform.OS === 'ios') ? 'verdana' : 'sans-serif',
+    fontFamily:'verdana' ,
   },
   emailDIV: {
-    flex: (Platform.OS === 'android') ? 3 : 2,
+    height:60,
     flexDirection: 'row',
-    height:50,
     borderColor: '#C8C8C8',
-    borderBottomWidth: (Platform.OS === 'android') ? 0 : 1,
+    borderBottomWidth: 1,
   },
   passwordDIV: {
-    flex: (Platform.OS === 'android') ? 3 : 2,
+    height:60,
     flexDirection: 'row',
-    height:50,
     borderColor: '#C8C8C8',
   },
   title: {
-    flex:2,
-    justifyContent:'center',
+    flex:3,
+    justifyContent:'flex-end',
     alignItems:'center',
   },
   header:{
-    fontSize:40,
-    textDecorationLine:'underline',
-    textDecorationColor:'white',
-    fontFamily:(Platform.OS === 'ios') ? 'verdana' : 'serif',
+    fontSize:30,
+    fontFamily: 'verdana',
     color:'#fafafa',
   },
   box: {
-    flex:3,
+    flex:2,
     flexDirection:'column',
-    alignItems:'center',
+    alignItems:'flex-start',
     justifyContent:'center',
   },
   information: {
     fontSize:20,
-    fontFamily:(Platform.OS === 'ios') ? 'verdana' : 'sans-serif',
+    fontFamily:'verdana',
     color:'#f5f5f5',
     padding:10,
     color:'black',
@@ -176,7 +183,7 @@ const customStyles = StyleSheet.create({
     padding:10,
     textAlign:'center',
     color:'white',
-    fontFamily:(Platform.OS === 'ios') ? 'verdana' : 'serif',
+    fontFamily: 'verdana',
     margin:5,
     borderColor:'#fafafa',
   },

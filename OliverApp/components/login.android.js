@@ -55,8 +55,10 @@ export default class Login extends React.Component {
       <ScrollView
       style={styles.container}
     >
-      <NavBar backButton={true} />
-        <View style={customStyles.title}><Text style={[customStyles.header, styles.header]}>Log In</Text></View>
+      <NavBar backButton={true} title="Login" />
+        <View style={customStyles.title}>
+            <Image source={require('../assets/images/logo.png')} resizeMode={'contain'} style={[{width:150, height:150}, styles.iconColor]} />
+        </View>
         <View style={customStyles.secondaryContainer}>
           <View style={customStyles.box}>
             <View style={customStyles.emailDIV}>
@@ -93,8 +95,7 @@ export default class Login extends React.Component {
             <Text style={[styles.primaryButton, customStyles.loginButton, customStyles.primaryButton]}>Logging In...</Text>}
           <Text style={customStyles.information} onPress={()=>Actions.resetpassword()}>Forgot Password?</Text>
          </View>
-         <View style={customStyles.title}></View>
-         <View style={customStyles.title}></View>
+         <View style={{flex:2}}></View>
        </ScrollView>
     );
   }
@@ -102,7 +103,7 @@ export default class Login extends React.Component {
 
 const customStyles = StyleSheet.create({
   secondaryContainer: {
-    flex:5,
+    flex:3.5,
     shadowColor:'#000000',
     shadowOffset:{width: 10, height: 10},
     shadowOpacity:0.5,
@@ -119,31 +120,29 @@ const customStyles = StyleSheet.create({
     textAlign: 'center',
     color: 'black',
     fontSize: 14,
-    fontFamily:(Platform.OS === 'ios') ? 'verdana' : 'sans-serif',
+    fontFamily:'sans-serif',
   },
   emailDIV: {
-    flex: 3,
+    flex: 1,
     flexDirection: 'row',
     height:80,
     borderColor: '#C8C8C8',
     borderBottomWidth: 0,
   },
   passwordDIV: {
-    flex: 3,
+    flex: 1,
     flexDirection: 'row',
     height:80,
     borderColor: '#C8C8C8',
   },
   title: {
-    flex:2,
-    justifyContent:'center',
+    flex:3,
+    justifyContent:'flex-end',
     alignItems:'center',
   },
   header:{
     fontSize:40,
-    textDecorationLine:'underline',
-    textDecorationColor:'white',
-    fontFamily:(Platform.OS === 'ios') ? 'verdana' : 'serif',
+    fontFamily: 'serif',
     color:'#fafafa',
   },
   box: {
@@ -154,7 +153,7 @@ const customStyles = StyleSheet.create({
   },
   information: {
     fontSize:20,
-    fontFamily:(Platform.OS === 'ios') ? 'verdana' : 'sans-serif',
+    fontFamily:'sans-serif',
     color:'#f5f5f5',
     padding:10,
     color:'black',
@@ -173,7 +172,7 @@ const customStyles = StyleSheet.create({
     padding:10,
     textAlign:'center',
     color:'white',
-    fontFamily:(Platform.OS === 'ios') ? 'verdana' : 'serif',
+    fontFamily: 'serif',
     margin:5,
     borderColor:'#fafafa',
   },

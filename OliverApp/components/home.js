@@ -20,6 +20,7 @@ import theme, { styles } from 'react-native-theme'
 import {
   AdMobBanner,
  } from 'react-native-admob'
+import Analytics from 'react-native-firebase-analytics'
 import Button from 'react-native-button'
 import Swipeable from 'react-native-swipeable'
 import Firebase from '../auth/firebase'
@@ -52,8 +53,9 @@ export default class Home extends Component {
     if (key === null) return Actions.reset('index')
     else {
       var currentUser = await AsyncStorage.getItem('currentUser')
+      var username = await AsyncStorage.getItem('name')
       var status = await AsyncStorage.getItem('status') //Check the internet status
-      this.setState({userId:key,status})
+      this.setState({userId:key,status, username:username})
       //Determine if the user wasn't the previously signed in user
       //Download directly from online if the user just signed
       if (currentUser === key)
@@ -61,7 +63,15 @@ export default class Home extends Component {
       else this.readAddCourses()
 
       this.checkUnsavedActivities()
+      this.setAnalytics()
     }
+  }
+  setAnalytics () {
+    Analytics.setUserId(this.state.userId)
+    Analytics.setUserProperty('username', this.state.username)
+    Analytics.logEvent('view_item', {
+    'page_id': 'home'
+  });
   }
   async checkUnsavedActivities () {
     //Save activities online if there are any unsaved
