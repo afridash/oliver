@@ -110,6 +110,7 @@ export default class Explore extends Component {
 
       })
     })
+    if (this.state.noActivity) AsyncStorage.setItem('explores', JSON.stringify([]))
   }
   onRowPress(key, post){
     if (post.postLike) {

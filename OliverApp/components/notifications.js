@@ -82,6 +82,7 @@ export default class Notifications extends Component {
           AsyncStorage.setItem('notifications', JSON.stringify(this.data))
       })
     })
+    if (this.state.noNotifications) AsyncStorage.setItem('notifications', JSON.stringify([])) 
   }
   handleSwipeClick () {
     //Delete row that has been clicked on after swiping

@@ -34,8 +34,7 @@ export default class Home extends Component {
       code:'',
       data:[],
       refreshing: false,
-      noCourses:true,
-      isLoading:true,
+      noCourses:false,
       status:'',
       swipingStarted:false
     }
@@ -43,9 +42,21 @@ export default class Home extends Component {
     this.data = this.state.data
     this.renderItem = this.renderItem.bind(this)
     this.historyRef = firebase.database().ref().child('activities')
+    this.verifyCollege()
     this.rightButtons = [
       <Text onPress={()=>this.handleSwipeClick()} style={customStyles.swipeButton}>Delete</Text>,
     ]
+  }
+  async verifyCollege () {
+    var lincoln = '-KxDQcHjbMhp6mTgkqnK'
+    var college = await AsyncStorage.getItem('collegeId')
+    if (college === lincoln) {
+      await this.checkIfVerified()
+    }
+  }
+  async checkIfVerified () {
+    var verified = await AsyncStorage.getItem('verified')
+    if (verified === null || verified === '1') return Actions.getCode()
   }
   async componentWillMount () {
     theme.setRoot(this)
@@ -121,14 +132,15 @@ export default class Home extends Component {
     this.data = []
     this.setState({refreshing:true})
     await this.ref.child(this.state.userId).once('value', (snapshot)=>{
-      if (snapshot.val() === null) this.setState({refreshing:false, noCourses:true,isLoading:false})
+      if (!snapshot.exists()) this.setState({refreshing:false, noCourses:true})
       snapshot.forEach((course)=>{
         this.data.push({key:course.key, show:false, name:course.val().name, code:course.val().code})
         this.setState({data:this.data, refreshing:false,noCourses:false, isLoading:false})
          AsyncStorage.setItem('user_courses', JSON.stringify(this.data))
       })
     })
-    this._setHighScore()
+    if (!this.state.noCourses) this._setHighScore()
+    else AsyncStorage.setItem('user_courses', JSON.stringify([]))
   }
   handleSwipeClick () {
     //Delete row that has been clicked on after swiping
@@ -240,20 +252,18 @@ export default class Home extends Component {
             <View style={{flex:1, flexDirection:'row'}}>{this.renderHeader()}</View>
             <View style={{flex:6, flexDirection:'row'}}>
               {(()=>{
-                if (this.state.isLoading) return (
-                  <View style={{flex:1, justifyContent:'center', alignItems:'center'}}>
-                    <Text style={[customStyles.listText, styles.textColor]}>Loading...</Text></View>
-                )
-                else if (this.state.noCourses) return (
-                  <View style={[styles.buttonContainer,customStyles.buttonContainer]}>
-                    <Button
-                      containerStyle={[styles.secondaryButton, customStyles.secondaryButton]}
-                      style={customStyles.addButton}
-                      styleDisabled={{color: 'red'}}
-                      onPress={Actions.add_course}>
-                      Add Course
-                    </Button>
-                  </View>
+                  if (this.state.noCourses) return (
+                  <View style={{flex:1, justifyContent:'center', alignItems:'center',}}>
+                    <View style={[styles.buttonContainer,customStyles.buttonContainer]}>
+                 <Button
+                   containerStyle={[styles.secondaryButton, customStyles.secondaryButton]}
+                   style={customStyles.addButton}
+                   styleDisabled={{color: 'red'}}
+                   onPress={Actions.add_course}>
+                   Find Courses
+                 </Button>
+               </View>
+             </View>
                 )
                 else if (this.state.noSearchResult) return (
                   <View style={{flex:1, justifyContent:'center', alignItems:'center'}}>
