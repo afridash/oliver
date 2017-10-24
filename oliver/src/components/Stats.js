@@ -106,7 +106,7 @@ export class Stats extends Component {
       <Col xs={12} md={10} mdOffset={1} style={{marginTop:'5%'}}>
         {this.state.showQuestions ? <Questions courseKey={this.state.course} close={this.done.bind(this)} /> : this.showTable()}
         <div className='text-center'>
-          <Link to="/"><Button bsStyle='danger' bsSize='small' >Go Home</Button></Link>
+          <Link to="/questions"><Button bsStyle='danger' bsSize='small' >Go Home</Button></Link>
           </div>
       </Col>
     )

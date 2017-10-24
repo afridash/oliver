@@ -136,7 +136,7 @@ export class View extends Component {
           </form>
         </Panel>
         <div className='text-center' style={{marginTop:30}}>
-          <Link to="/"><Button bsStyle='danger'>Go Home</Button></Link>
+          <Link to="/questions"><Button bsStyle='danger'>Go Home</Button></Link>
         </div>
       </Col>
     )

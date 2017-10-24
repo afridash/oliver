@@ -189,7 +189,7 @@ export class AddQuestions extends Component {
           </form>
         </Panel>
         <div className='text-center' style={{marginTop:30}}>
-          <Link to="/"><Button bsStyle='danger' bsSize='small'>Go Home</Button></Link>
+          <Link to="/questions"><Button bsStyle='danger' bsSize='small'>Go Home</Button></Link>
         </div>
       </Col>
     )

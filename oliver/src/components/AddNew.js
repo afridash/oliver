@@ -24,7 +24,7 @@ export class AddNew extends Component {
           </Tabs>
         </Panel>
         <div className='text-center'>
-          <Link to="/"><Button bsStyle='danger' bsSize='small'>Go Home</Button></Link>
+          <Link to="/questions"><Button bsStyle='danger' bsSize='small'>Go Home</Button></Link>
           </div>
       </Col>
     )
