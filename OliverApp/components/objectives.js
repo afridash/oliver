@@ -105,7 +105,7 @@ export default class Objectives extends Component {
         {!item.show ? <Image source={require('../assets/images/arrow_right.png')} style={[styles.iconColor, customStyles.icon]} resizeMode={'contain'}/> : <Image source={require('../assets/images/arrow_down.png')} style={[styles.iconColor, customStyles.icon]} resizeMode={'contain'}/>}
       </View>
       {item.show && <View style={{flex:1}}>
-        <View style={customStyles.actionsContainer}>
+        <View style={[customStyles.actionsContainer, styles.actionsContainer]}>
         <Text style={[customStyles.actions, styles.textColor]}>{item.textAnswer}</Text>
       </View>
       </View>
