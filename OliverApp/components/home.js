@@ -175,13 +175,13 @@ export default class Home extends Component {
           </View>
         </TouchableHighlight>
           {item.show && <View style={{flex:1}}>
-            <View style={customStyles.actionsContainer}>
+            <View style={[customStyles.actionsContainer,styles.actionsContainer]}>
             <Text onPress={()=>Actions.theory({courseId:item.key, courseCode:item.code})} style={[customStyles.actions, styles.textColor]}>Study Theory Questions</Text>
           </View>
-          <View style={customStyles.actionsContainer}>
+          <View style={[customStyles.actionsContainer,styles.actionsContainer]}>
             <Text onPress={()=>Actions.objectives({courseId:item.key, courseCode:item.code})} style={[customStyles.actions, styles.textColor]}>Study Objectives</Text>
           </View>
-          <View style={customStyles.actionsContainer}>
+          <View style={[customStyles.actionsContainer,styles.actionsContainer]}>
             <Text onPress={()=>Actions.start_exam({courseId:item.key, courseCode:item.code, course:item.name})} style={[customStyles.actions, styles.textColor]}>Practice Exam (H: {item.high})</Text>
           </View>
           </View>
@@ -307,7 +307,6 @@ const customStyles = StyleSheet.create({
     margin:5,
   },
   actionsContainer:{
-    borderColor:'white',
     borderWidth:1,
     borderRadius:10,
     overflow:'hidden',

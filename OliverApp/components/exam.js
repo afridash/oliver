@@ -255,16 +255,16 @@ export default class Exams extends Component {
         </ScrollView>
         <View style={{flex:2, margin:20,}}>
           <ScrollView >
-            <View style={[customStyles.actionsContainer,{backgroundColor:question.selected === 'A' ? '#607d8b' : 'transparent'}]}>
+            <View style={[customStyles.actionsContainer, styles.actionsContainer,{backgroundColor:question.selected === 'A' ? '#607d8b' : 'transparent'}]}>
             <Text onPress={()=>this.selectOption('A', question.optionA)} style={[customStyles.actions, styles.textColor]}>{question.optionA}</Text>
           </View>
-          <View style={[customStyles.actionsContainer, {backgroundColor:question.selected === 'B' ? '#607d8b' : 'transparent'}]}>
+          <View style={[customStyles.actionsContainer,styles.actionsContainer, {backgroundColor:question.selected === 'B' ? '#607d8b' : 'transparent'}]}>
             <Text onPress={()=>this.selectOption('B', question.optionB)} style={[customStyles.actions, styles.textColor]}>{question.optionB}</Text>
           </View>
-          <View style={[customStyles.actionsContainer, {backgroundColor:question.selected === 'C' ? '#607d8b' : 'transparent'}]}>
+          <View style={[customStyles.actionsContainer,styles.actionsContainer, {backgroundColor:question.selected === 'C' ? '#607d8b' : 'transparent'}]}>
             <Text onPress={()=>this.selectOption('C', question.optionC)} style={[customStyles.actions, styles.textColor]}>{question.optionC}</Text>
           </View>
-          <View style={[customStyles.actionsContainer, {backgroundColor:question.selected === 'D' ? '#607d8b' : 'transparent'}]}>
+          <View style={[customStyles.actionsContainer, styles.actionsContainer, {backgroundColor:question.selected === 'D' ? '#607d8b' : 'transparent'}]}>
             <Text onPress={()=>this.selectOption('D', question.optionD)} style={[customStyles.actions, styles.textColor]}>{question.optionD}</Text>
           </View>
           </ScrollView>
@@ -409,9 +409,9 @@ export default class Exams extends Component {
             })()
           }
             <View style={[{flex:0.1,flexDirection:'row', justifyContent:'space-between', alignItems:'center'}, styles.progress]}>
-              <Button onPress={()=>this.showPrevQuestion()}  ><Image source={require('../assets/images/left.png')} style={[customStyles.icons, styles.iconColor]} /></Button>
-              <Button onPress={()=>this.showAlert()}><Image source={require('../assets/images/cancel.png')} style={[styles.iconColor, {width:25,height:25, padding:10}]} resizeMode={'contain'} /></Button>
-              <Button onPress={()=>this.showNextQuestion()} ><Image source={require('../assets/images/right.png')} style={[customStyles.icons, styles.iconColor]} /></Button>
+              <Button onPress={()=>this.showPrevQuestion()}  ><Image source={require('../assets/images/left.png')} style={[customStyles.icons, {tintColor:'white'}]} /></Button>
+              <Button onPress={()=>this.showAlert()}><Image source={require('../assets/images/cancel.png')} style={[ {tintColor:'white'}, {width:25,height:25, padding:10}]} resizeMode={'contain'} /></Button>
+              <Button onPress={()=>this.showNextQuestion()} ><Image source={require('../assets/images/right.png')} style={[customStyles.icons, {tintColor:'white'}]} /></Button>
             </View>
           </View>
         }

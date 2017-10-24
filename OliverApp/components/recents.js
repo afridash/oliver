@@ -102,7 +102,7 @@ export default class Activity extends Component {
         <Text style={[customStyles.listText, styles.textColor]}>{item.code}</Text>
       </View>
        <View style={{flex:1}}>
-        <View style={customStyles.actionsContainer}>
+        <View style={[customStyles.actionsContainer, styles.actionsContainer]}>
         <Text style={[customStyles.actions, styles.textColor]}>Score: {item.score} out of {item.total}</Text>
         <Text style={[customStyles.actions, styles.textColor]}>Percentage: {item.percentage}%</Text>
       </View>

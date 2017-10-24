@@ -159,10 +159,10 @@ export default class Courses extends Component {
       </View>
         </TouchableHighlight>
       {item.show && <View style={{flex:1}}>
-        <View style={customStyles.actionsContainer}>
+        <View style={[customStyles.actionsContainer, styles.actionsContainer]}>
         <Text onPress={()=>this.writeAddCourses(item)} style={[customStyles.actions, styles.textColor]}>Add To My Courses</Text>
       </View>
-      <View style={customStyles.actionsContainer}>
+      <View style={[customStyles.actionsContainer, styles.actionsContainer]}>
         <Text onPress={()=>Actions.start_exam({courseCode:item.code, courseId:item.key, course:item.name})} style={[customStyles.actions, styles.textColor]}>Practice Exam</Text>
       </View>
       </View>
@@ -184,7 +184,7 @@ export default class Courses extends Component {
                   <SectionList
                     sections={this.state.data}
                     ItemSeparatorComponent={()=><View style={customStyles.separator}></View>}
-                    renderSectionHeader={({section}) => <Text style={[{fontSize:20, fontFamily:'verdana', padding:5}, styles.textColor, styles.progress]}>{section.key}</Text>}
+                    renderSectionHeader={({section}) => <Text style={[{fontSize:20, fontFamily:'verdana', padding:5}, customStyles.headerColor, styles.progress]}>{section.key}</Text>}
                     renderItem={this.renderItem}
                     refreshControl={
                      <RefreshControl
@@ -229,7 +229,6 @@ const customStyles = StyleSheet.create({
     margin:5,
   },
   actionsContainer:{
-    borderColor:'white',
     borderWidth:1,
     borderRadius:10,
     overflow:'hidden',
@@ -265,5 +264,8 @@ const customStyles = StyleSheet.create({
     width: 20,
     height: 20,
     alignItems:'flex-end',
+  },
+  headerColor:{
+    color:'white',
   },
 })
