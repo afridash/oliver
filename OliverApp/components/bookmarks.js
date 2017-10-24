@@ -30,6 +30,7 @@ export default class Bookmarks extends Component {
       swipingStarted:false,
       isLoading:true,
       noBookmarks:false,
+      status:'',
     }
     this.data = []
     this.renderItem = this.renderItem.bind(this)
@@ -40,7 +41,8 @@ export default class Bookmarks extends Component {
     theme.setRoot(this)
     var key = await AsyncStorage.getItem('myKey')
     var currentUser = await AsyncStorage.getItem('currentUser')
-    this.setState({userId:key})
+    var status = await AsyncStorage.getItem('status') //Check the internet status
+    this.setState({userId:key, status})
     if (currentUser === key)
     this.retrieveBookmarksOffline()
     else this.retrieveBookmarksOnline()
@@ -63,12 +65,19 @@ export default class Bookmarks extends Component {
     }else{
       this.data = bookmarks
       this.setState({data:bookmarks, isLoading:false, noBookmarks:false})
+      this.checkInternetStatus ()
+    }
+  }
+  async checkInternetStatus () {
+    //Reload bookmarks if there is internet status
+    if (this.state.status === 'true') {
+      this.retrieveBookmarksOnline ()
     }
   }
   retrieveBookmarksOnline () {
     AsyncStorage.setItem('currentUser', this.state.userId)
     this.data = []
-    this.setState({bookmarks:[], refreshing:true, isLoading:true})
+    this.setState({refreshing:true})
     this.ref.child(this.state.userId).once('value', (snapshots)=>{
       if (!snapshots.exists()) this.setState({refreshing:false, isLoading:false, noBookmarks:true})
       snapshots.forEach((childSnap)=>{

@@ -30,20 +30,21 @@ export default class Objectives extends Component {
       swipingStarted:false,
       isLoading:true,
       noBookmarks:false,
+      status:'',
     }
     this.data = []
     this.renderItem = this.renderItem.bind(this)
     this.ref = firebase.database().ref().child('questions').child(this.props.courseId)
     this.rightButtons = [<Text onPress={()=>this.handleSwipeClick()} style={customStyles.swipeButton}>Delete</Text>,]
   }
-
   async componentWillMount () {
     //Set theme styles
     theme.setRoot(this)
     //Retrieve user key
     var key = await AsyncStorage.getItem('myKey')
     var currentUser = await AsyncStorage.getItem('currentUser')
-    this.setState({userId:key})
+    var status = await AsyncStorage.getItem('status') //Check the internet status
+    this.setState({userId:key, status})
     //Start component lifecycle with call to loading questions stored offline
     if (currentUser === key)
     this.retrieveQuestionsOffline()
@@ -60,6 +61,13 @@ export default class Objectives extends Component {
     }else{
       this.data = questions
       this.setState({data:questions, noQuestions:false,isLoading:false, total:questions.length})
+      this.checkInternetStatus()
+    }
+  }
+  async checkInternetStatus () {
+    //Reload notifictions if there is internet status
+    if (this.state.status === 'true') {
+      this.retrieveQuestionsOnline ()
     }
   }
   retrieveQuestionsOnline () {
@@ -87,7 +95,6 @@ export default class Objectives extends Component {
     clone[index].show = !clone[index].show
     this.setState({data:clone})
   }
-
   renderItem({ item, index }) {
     return (
      <View

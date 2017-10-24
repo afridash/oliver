@@ -32,6 +32,7 @@ export default class Courses extends Component {
       data:[],
       refreshing: false,
       department:[],
+      status:''
     }
     this.data = []
     this.renderItem = this.renderItem.bind(this)
@@ -41,7 +42,8 @@ export default class Courses extends Component {
     var collegeId = await AsyncStorage.getItem('collegeId')
     var key = await AsyncStorage.getItem('myKey')
     var currentUser = await AsyncStorage.getItem('currentUser')
-    this.setState({userId:key, collegeId:collegeId})
+    var status = await AsyncStorage.getItem('status') //Check the internet status
+    this.setState({userId:key, collegeId:collegeId, status})
     if (currentUser === key)
     this.retrieveCoursesOffline()
     else
@@ -59,6 +61,13 @@ export default class Courses extends Component {
       this.data = courses
       this.addSection(this.data)
       this.filterByDepartment()
+      this.checkInternetStatus ()
+    }
+  }
+  async checkInternetStatus () {
+    //Reload courses if there is internet status
+    if (this.state.status === 'true') {
+      this.retrieveCoursesOnline ()
     }
   }
   async retrieveCoursesOnline () {

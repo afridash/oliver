@@ -30,6 +30,7 @@ export default class Notifications extends Component {
       swipingStarted:false,
       isLoading:true,
       noNotifications:false,
+      status:''
     }
     this.data = []
     this.renderItem = this.renderItem.bind(this)
@@ -40,7 +41,8 @@ export default class Notifications extends Component {
     theme.setRoot(this)
     var key = await AsyncStorage.getItem('myKey')
     var currentUser = await AsyncStorage.getItem('currentUser')
-    this.setState({userId:key})
+    var status = await AsyncStorage.getItem('status') //Check the internet status
+    this.setState({userId:key, status})
     if (currentUser === key)
     this.retrieveNotificationsOffline()
     else this.retrieveNotificationsOnline()
@@ -56,12 +58,19 @@ export default class Notifications extends Component {
     }else{
       this.data = notifications
       this.setState({data:notifications, isLoading:false, noNotifications:false})
+      this.checkInternetStatus()
+    }
+  }
+  async checkInternetStatus () {
+    //Reload notifictions if there is internet status
+    if (this.state.status === 'true') {
+      this.retrieveNotificationsOnline ()
     }
   }
   retrieveNotificationsOnline () {
     AsyncStorage.setItem('currentUser', this.state.userId)
     this.data = []
-    this.setState({notifications:[], refreshing:true,})
+    this.setState({refreshing:true,})
     this.ref.child(this.state.userId).once('value', (snapshots)=>{
       if (!snapshots.exists()) this.setState({refreshing:false, isLoading:false, noNotifications:true})
       snapshots.forEach((childSnap)=>{

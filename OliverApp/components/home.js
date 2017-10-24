@@ -81,10 +81,12 @@ export default class Home extends Component {
       if (stored !== null && stored !== '1') {
         var saved = JSON.parse(stored)
         saved.map((course)=>{
-          this.historyRef.child(this.state.userId).push(course)
+          var item = this.historyRef.child(this.state.userId).push()
+          item.setWithPriority(course, 0 - Date.now())
         })
         AsyncStorage.setItem('savedActivities','1')
       }
+      this.readAddCourses()
     }
   }
   componentWillReceiveProps (p) {
@@ -134,9 +136,6 @@ export default class Home extends Component {
     this.setState({data:this.state.data})
     AsyncStorage.setItem('user_courses', JSON.stringify(this.state.data))
     this.ref.child(this.state.userId).child(this.state.deleteRef).remove()
-  }
-  handleUserBeganScrollingParentView() {
-    this.swipeable.recenter();
   }
   _onPressItem (index) {
     //Update view to reflect the information on the clicked item

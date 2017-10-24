@@ -15,9 +15,7 @@ import {
 import {Actions} from 'react-native-router-flux'
 import theme, { styles } from 'react-native-theme'
 import Button from 'react-native-button'
-import {
-  AdMobBanner,
- } from 'react-native-admob'
+import {AdMobBanner} from 'react-native-admob'
 import Swipeable from 'react-native-swipeable'
 import Firebase from '../auth/firebase'
 const firebase = require('firebase')
@@ -34,6 +32,7 @@ export default class Activity extends Component {
       noActivity:false,
       refreshing:false,
       swipingStarted:false,
+      status:'',
     }
     this.renderItem = this.renderItem.bind(this)
     this.ref = firebase.database().ref().child('activities')
@@ -47,11 +46,12 @@ export default class Activity extends Component {
     //Retrieve user key
     var key = await AsyncStorage.getItem('myKey')
     var currentUser = await AsyncStorage.getItem('currentUser')
-    this.setState({userId:key})
+    var status = await AsyncStorage.getItem('status') //Check the internet status
+    this.setState({userId:key, status})
     if (currentUser === key)
     //Start component lifecycle with call to loading questions stored offline
-    this.retrieveActivitiesOffline()
-    else this.retrieveActivitiesOnline()
+    this.retrieveActivitiesOffline ()
+    else this.retrieveActivitiesOnline ()
   }
   handleSwipeClick () {
     //Delete row that has been clicked on after swiping
@@ -71,6 +71,13 @@ export default class Activity extends Component {
     }else{
       this.data = activities
       this.setState({activities:activities, noActivity:false,isLoading:false})
+      this.checkInternetStatus()
+    }
+  }
+  async checkInternetStatus () {
+    //Reload notifictions if there is internet status
+    if (this.state.status === 'true') {
+      this.retrieveActivitiesOnline ()
     }
   }
   retrieveActivitiesOnline () {

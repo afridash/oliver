@@ -42,7 +42,8 @@ export default class Theories extends Component {
     //Retrieve user key
     var key = await AsyncStorage.getItem('myKey')
     var currentUser = await AsyncStorage.getItem('currentUser')
-    this.setState({userId:key})
+    var status = await AsyncStorage.getItem('status') //Check the internet status
+    this.setState({userId:key, status})
     //Start component lifecycle with call to loading questions stored offline
     if (currentUser === key)
     this.retrieveQuestionsOffline()
@@ -59,6 +60,13 @@ export default class Theories extends Component {
     }else{
       this.data = questions
       this.setState({questions:questions, noQuestions:false,isLoading:false, total:questions.length})
+      this.checkInternetStatus()
+    }
+  }
+  async checkInternetStatus () {
+    //Reload theories if there is internet status
+    if (this.state.status === 'true') {
+      this.retrieveQuestionsOnline ()
     }
   }
   retrieveQuestionsOnline () {
@@ -76,13 +84,11 @@ export default class Theories extends Component {
           AsyncStorage.setItem(this.props.courseId, JSON.stringify(this.data))
       })
     })
-
   }
   renderItem({ item, index }) {
    return (
      <View
-      style={customStyles.listItem}
-    >
+      style={customStyles.listItem}>
       <View style={{flex:1, flexDirection:'row', justifyContent:'space-between'}}>
         <Text
           onPress={()=>Actions.viewTheory({courseCode:this.props.courseCode, question:item.question, questionId:item.key, answer:item.answered ? item.answer : "", courseId:this.props.courseId})}

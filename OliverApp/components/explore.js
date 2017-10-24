@@ -37,6 +37,7 @@ export default class Explore extends Component {
       isLoading:true,
       noActivity:false,
       refreshing:false,
+      status:''
 
     }
     this.renderItem = this.renderItem.bind(this)
@@ -44,45 +45,72 @@ export default class Explore extends Component {
     this.likesRef = firebase.database().ref('explore_likes')
     this.postsRef = firebase.database().ref().child('posts')
   }
-
   async componentWillMount () {
     //Set theme styles
     theme.setRoot(this)
     //Retrieve user key
     var key = await AsyncStorage.getItem('collegeId')
     var userId= await AsyncStorage.getItem('myKey')
-    this.setState({collegeId:key, userId:userId})
+    var currentUser = await AsyncStorage.getItem('currentUser')
+    var status = await AsyncStorage.getItem('status') //Check the internet status
+    this.setState({collegeId:key, userId, status})
 
     //Start component lifecycle with call to loading questions stored offline
-    this.retrieveActivitiesOnline()
+    if (currentUser === userId) {
+      this.retrieveActivitiesOffline ()
+    }
+    else{
+      this.retrieveActivitiesOnline ()
+    }
+  }
+  async retrieveActivitiesOffline () {
+    //Retrieved and parse stored data in AsyncStorage
+    //If no such data, read courses from firebase, then store them locally
+    var explores = []
+    var stored = await AsyncStorage.getItem("explores")
+    if (stored !== null) explores = JSON.parse(stored)
+    if (explores.length === 0 || explores === null) {
+      this.retrieveActivitiesOnline()
+    }else{
+      this.data = explores
+      this.setState({activities:this.data, refreshing:false, isLoading:false})
+      this.checkInternetStatus()
+    }
+  }
+  async checkInternetStatus () {
+    if (this.state.status === 'true') {
+      this.retrieveActivitiesOnline()
+    }
   }
   retrieveActivitiesOnline () {
     this.data = []
+    AsyncStorage.setItem('currentUser', this.state.userId)
     this.setState({refreshing:true,isLoading:false,noActivity:false})
     this.ref.child(this.state.collegeId).limitToFirst(100).once('value',(snapshot)=>{
       if (!snapshot.exists()) this.setState({refreshing:false, noActivity:true,isLoading:false})
-      else this.setState({refreshing:true, noActivity:false,isLoading:true})
+      else this.setState({refreshing:true, noActivity:false})
       snapshot.forEach((snap)=>{
         this.likesRef.child(snap.key).child(this.state.userId).once('value', (likeVal)=>{
           if (likeVal.exists()){
-            this.data.unshift({
+            this.data.push({
                             key:snap.key,courseId:snap.val().courseId, likes:snap.val().starCount,
                             code:snap.val().courseCode, title:snap.val().course,percentage:snap.val().percentage,
                             createdAt:snap.val().createdAt, message:snap.val().message, username:snap.val().username,
                              postLike:true, profilePicture:snap.val().profilePicture, comments:snap.hasChild('comments') ? snap.val().comments : 0,
                              userId:snap.val().userId})
             this.setState({activities:this.data, refreshing:false, isLoading:false})
+            AsyncStorage.setItem('explores', JSON.stringify(this.data))
           }else{
-            this.data.unshift({key:snap.key,courseId:snap.val().courseId, likes:snap.val().starCount,postLike:false, code:snap.val().courseCode, title:snap.val().course,percentage:snap.val().percentage,
+            this.data.push({key:snap.key,courseId:snap.val().courseId, likes:snap.val().starCount,postLike:false, code:snap.val().courseCode, title:snap.val().course,percentage:snap.val().percentage,
                             createdAt:snap.val().createdAt, message:snap.val().message,userId:snap.val().userId, username:snap.val().username, profilePicture:snap.val().profilePicture, comments:snap.hasChild('comments') ? snap.val().comments : 0,})
             this.setState({activities:this.data, refreshing:false, isLoading:false})
+            AsyncStorage.setItem('explores', JSON.stringify(this.data))
           }
         })
 
       })
     })
   }
-
   onRowPress(key, post){
     if (post.postLike) {
       this.unlikePost(post.key)

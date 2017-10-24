@@ -43,7 +43,8 @@ export default class Theory extends Component {
       user:'',
       bookmark:false,
       collegeId:'',
-      followers:[]
+      followers:[],
+      text:'',
     }
     this.renderItem = this.renderItem.bind(this)
     this.commentsRef = firebase.database().ref().child('answers').child(this.props.questionId)
@@ -271,8 +272,8 @@ export default class Theory extends Component {
           </Button>
         </View> : <View style={{flex:0.5, justifyContent:'center', alignItems:'center', flexDirection:'row'}}>
           <Button onPress={()=>this.followQuestion()}>
-           {this.state.following ? <Image source={require('../assets/images/bell.png')} style={[{width:25, height:25, margin:10, tintColor:'red', padding:10}]} resizeMode={'contain'}/>:
-         <Image source={require('../assets/images/bell.png')} style={[styles.iconColor, {width:25, height:25, margin:10, padding:10}]} resizeMode={'contain'}/>}
+           {this.state.following ? <Image source={require('../assets/images/bell.png')} style={[{width:25, height:25, tintColor:'red', padding:10}]} resizeMode={'contain'}/>:
+         <Image source={require('../assets/images/bell.png')} style={[styles.iconColor, {width:25, height:25, padding:10}]} resizeMode={'contain'}/>}
           {this.state.followers.length > 0 && <Text style={[styles.textColor]}>{this.state.followers.length}</Text> }
          </Button>
         </View>}
@@ -304,20 +305,22 @@ export default class Theory extends Component {
      )
    }
   shareComment () {
-     var data = {
-       userKey: this.state.userId,
-       comment: this.state.text,
-       username:this.state.username,
-       user:this.state.user,
-       profilePicture: this.state.profilePicture,
-       votes: 0,
-       createdAt: firebase.database.ServerValue.TIMESTAMP
-     }
-     this.commentsRef.push(data)
-     this.setState({text: ''})
-     this.handleNotifications()
+    if (this.state.text !== '') {
+      var data = {
+        userKey: this.state.userId,
+        comment: this.state.text,
+        username:this.state.username,
+        user:this.state.user,
+        profilePicture: this.state.profilePicture,
+        votes: 0,
+        createdAt: firebase.database.ServerValue.TIMESTAMP
+      }
+      this.commentsRef.push(data)
+      this.setState({text: ''})
+      this.handleNotifications()
+    }
    }
-   handleNotifications () {
+  handleNotifications () {
      if (this.props.userId) {
        this.state.followers.map((follower)=>{
          Notifications.sendNotification(follower.userId, 'explore_comment', this.props.questionId, this.props.question, this.props.courseCode, this.props.userId)

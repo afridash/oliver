@@ -207,7 +207,8 @@ export default class Exams extends Component {
       percentage:(this.state.correct/this.state.total * 100).toFixed(2)
     }
     if (this.state.status === 'true') {
-        this.historyRef.child(this.state.userId).push(data)
+        var item = this.historyRef.child(this.state.userId).push()
+        item.setWithPriority(data, 0 - Date.now())
     }else {
       this._saveActivities(data)
     }
@@ -308,7 +309,9 @@ export default class Exams extends Component {
         userId:this.state.userId,
         percentage: (this.state.correct/this.state.total * 100).toFixed(2)
     }
-    var key = this.exploreRef.child(this.state.college).push(data).key
+    var item = this.exploreRef.child(this.state.college).push()
+    key = item.key
+    item.setWithPriority(data, 0 - Date.now())
     Alert.alert(
       'Shared!',
       'Thank you for sharing to explore! Kudos',
@@ -334,7 +337,7 @@ export default class Exams extends Component {
       </View>
     )
   }
-  _keyExtractor = (item, index) => item.id
+  _keyExtractor = (item, index) => item.key
   renderItem({ item, index }) {
    return (
      <View
