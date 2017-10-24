@@ -330,7 +330,7 @@ export default class Exams extends Component {
         </View>
         <View style={{flex:1.5, margin:20,}}>
         <Text style={[customStyles.result, styles.textColor]}>Score: {this.state.correct}/{this.state.questions.length} ({this.state.percentage})</Text>
-        <View style={[customStyles.actionsContainer]}>
+        <View style={[customStyles.actionsContainer, styles.actionsContainer]}>
           <Text onPress={()=>this.setState({modalVisible:!this.state.modalVisible})} style={[customStyles.actions, styles.textColor]}>Show Summary</Text>
         </View>
         </View>
@@ -345,10 +345,10 @@ export default class Exams extends Component {
       >
       <Text style={[customStyles.listText, styles.textColor]}>{index+1}. {item.question}</Text>
       <View style={{flex:1, justifyContent:'center', alignItems:'center'}}>
-        <View style={[customStyles.actionsContainer]}>
+        <View style={[customStyles.actionsContainer, styles.actionsContainer]}>
           <Text style={[customStyles.actions, styles.textColor]}>Suggested Answer: {item.textAnswer} ({item.answer})</Text>
         </View>
-        <View style={[customStyles.actionsContainer, {borderColor:item.selected === item.answer ? '#004d40' : 'red'}]}>
+        <View style={[customStyles.actionsContainer,styles.actionsContainer, {borderColor:item.selected === item.answer ? '#004d40' : 'red'}]}>
           <Text style={[customStyles.actions, styles.textColor]}>Selected: {item.textSelected} ({item.selected})</Text>
         </View>
       </View>
@@ -460,7 +460,6 @@ const customStyles = {
     fontFamily:(Platform.OS === 'ios') ? 'verdana' : 'serif',
   },
   actionsContainer:{
-    borderColor:'white',
     borderWidth:1,
     borderRadius:10,
     overflow:'hidden',
