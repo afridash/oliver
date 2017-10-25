@@ -126,7 +126,7 @@ export default class Home extends Component {
          AsyncStorage.setItem('user_courses', JSON.stringify(this.data))
       })
     })
-    this._setHighScore()
+    if (!this.state.noCourses) this._setHighScore()
   }
   handleSwipeClick () {
     //Delete row that has been clicked on after swiping

@@ -437,7 +437,7 @@ export default class Exams extends Component {
               </Button>
               <Button
                 containerStyle={[styles.secondaryButton, customStyles.secondaryButton]}
-                style={customStyles.addButton}
+                style={[customStyles.addButton]}
                 styleDisabled={{color: 'red'}}
                 onPress={()=>this.shareToExplore()}>
                 Share
