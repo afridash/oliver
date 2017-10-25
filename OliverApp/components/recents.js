@@ -86,7 +86,10 @@ export default class Activity extends Component {
     this.setState({refreshing:true,isLoading:false,noActivity:false})
     this.ref.child(this.state.userId).once('value',(snapshot)=>{
       if (snapshot.exists()) this.setState({refreshing:false, noActivity:false,isLoading:false})
-      else this.setState({refreshing:false, noActivity:true,isLoading:false})
+      else {
+        AsyncStorage.setItem('activities', JSON.stringify([]))
+        this.setState({refreshing:false, noActivity:true,isLoading:false})
+      }
       snapshot.forEach((snap)=>{
           this.data.unshift({key:snap.key,code:snap.val().code, title:snap.val().title,total:snap.val().total,
                           score:snap.val().score, createdAt:snap.val().createdAt, show:false, percentage:snap.val().percentage})
@@ -94,7 +97,6 @@ export default class Activity extends Component {
           AsyncStorage.setItem('activities', JSON.stringify(this.data))
       })
     })
-    if (this.state.noActivity) AsyncStorage.setItem('activities', JSON.stringify([]))
   }
   renderItem({ item, index }) {
    return (

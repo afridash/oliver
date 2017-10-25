@@ -51,6 +51,8 @@ export default class Exams extends Component {
     this.historyRef = firebase.database().ref().child('activities')
     this.exploreRef = firebase.database().ref().child('explore')
     this.followersRef = firebase.database().ref().child('question_followers')
+    this.statsRef = firebase.database().ref().child('student_stats').child(this.props.courseId)
+    this.coursesRef = firebase.database().ref().child('course_activities').child(this.props.courseId)
   }
   async componentWillMount () {
     theme.setRoot(this)
@@ -58,11 +60,19 @@ export default class Exams extends Component {
     await this.getInfo()
     //Retrieve locally stored images or download questions if none
     this.retrieveQuestionsOffline()
+    this.saveStarted()
     Analytics.setUserId(this.state.userId)
     Analytics.setUserProperty('username', this.state.username)
     Analytics.logEvent('exam_started', {
     'user': this.state.username
-  });
+  })
+  }
+  saveStarted () {
+    //Save to number of tests started
+    var ref = this.statsRef.child(this.state.userId).child('total_started').once('value', (snapshot)=>{
+      if (snapshot.exists()) snapshot.ref.set(snapshot.val() + 1)
+      else snapshot.ref.set(1)
+    })
   }
   componentDidMount () {
     AdMobInterstitial.setTestDevices(['EMULATOR']);
@@ -147,7 +157,7 @@ export default class Exams extends Component {
     * If counter equals maxQuestions, break and set questions
     */
     var maxQuestions
-    if (this.state.questions.length > 50) maxQuestions = 50
+    if (this.state.questions.length > 20) maxQuestions = 20
     else maxQuestions = this.state.questions.length
     var num2 = this.state.questions.length //Max num to generate random questions
     var objsArray = []
@@ -209,12 +219,23 @@ export default class Exams extends Component {
     if (this.state.status === 'true') {
         var item = this.historyRef.child(this.state.userId).push()
         item.setWithPriority(data, 0 - Date.now())
+        var activity = this.coursesRef.child(this.state.userId).push()
+        activity.setWithPriority(data, 0 - Date.now())
+        this.saveCompleted()
     }else {
       this._saveActivities(data)
     }
     this.setState({percentage:(this.state.correct/this.state.total * 100).toFixed(2)})
   }
+  saveCompleted () {
+    //Save to number of tests completed
+    var ref = this.statsRef.child(this.state.userId).child('total_completed').once('value', (snapshot)=>{
+      if (snapshot.exists()) snapshot.ref.set(snapshot.val() + 1)
+      else snapshot.ref.set(1)
+    })
+  }
   async _saveActivities (data) {
+    data[courseId] = this.props.courseId
     var previous = await AsyncStorage.getItem('savedActivities')
     if (previous !== null && previous !== '1') {
       previous = JSON.parse(previous)
@@ -280,8 +301,15 @@ export default class Exams extends Component {
     */
     if (question.bookmark) {
       this.bookmarksRef.child(this.state.userId).child(question.key).remove()
+      var ref = this.statsRef.child(this.state.userId).child('total_bookmarked').once('value', (snapshot)=>{
+        if (snapshot.exists()) snapshot.ref.set(snapshot.val() - 1)
+      })
     }else {
       this.bookmarksRef.child(this.state.userId).child(question.key).update(question)
+      var ref = this.statsRef.child(this.state.userId).child('total_bookmarked').once('value', (snapshot)=>{
+        if (snapshot.exists()) snapshot.ref.set(snapshot.val() + 1)
+        else snapshot.ref.set(1)
+      })
     }
     question.bookmark = !question.bookmark
     var clone = this.state.questions
@@ -312,6 +340,11 @@ export default class Exams extends Component {
     var item = this.exploreRef.child(this.state.college).push()
     key = item.key
     item.setWithPriority(data, 0 - Date.now())
+    this.followersRef.child(key).child(this.state.userId).set(true)
+    var ref = this.statsRef.child(this.state.userId).child('explore_posts').once('value', (snapshot)=>{
+      if (snapshot.exists()) snapshot.ref.set(snapshot.val() + 1)
+      else snapshot.ref.set(1)
+    })
     Alert.alert(
       'Shared!',
       'Thank you for sharing to explore! Kudos',
@@ -320,7 +353,6 @@ export default class Exams extends Component {
       ],
       { cancelable: false }
     )
-    this.followersRef.child(key).child(this.state.userId).set(true)
   }
   showSummary () {
     return (

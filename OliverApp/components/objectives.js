@@ -75,7 +75,10 @@ export default class Objectives extends Component {
     this.data = []
     this.setState({refreshing:true, noQuestions:false, total:0})
     this.ref.orderByChild('type').equalTo('objective').once('value', (snapshot)=>{
-      if (!snapshot.exists()) this.setState({refreshing:false, noQuestions:true,isLoading:false})
+      if (!snapshot.exists()) {
+          AsyncStorage.setItem(this.props.courseId+'study', JSON.stringify([]))
+        this.setState({refreshing:false, noQuestions:true,isLoading:false})
+      }
       else this.setState({refreshing:false, noQuestions:false,isLoading:true})
       var answer
       snapshot.forEach((snap)=>{

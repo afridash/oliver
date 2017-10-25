@@ -67,7 +67,7 @@ export default class App extends React.Component {
     AsyncStorage.setItem('status', isConnected.toString())
   }
   componentWillUnmount() {
-    NetInfo.isConnected.removeEventListener('connectionChange', this._handleConnectionChange);
+    NetInfo.isConnected.removeEventListener('connectionChange', this._handleConnectionChange)
   }
   async handleEnter () {
     try {

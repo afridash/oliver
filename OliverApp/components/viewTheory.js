@@ -53,6 +53,7 @@ export default class Theory extends Component {
     this.questionsRef = firebase.database().ref().child('questions')
     this.exploreRef = firebase.database().ref().child('explore')
     this.followersRef = firebase.database().ref().child('question_followers').child(this.props.questionId)
+    this.statsRef = firebase.database().ref().child('student_stats').child(this.props.courseId)
   }
   async componentWillMount () {
     //Set theme styles
@@ -197,6 +198,9 @@ export default class Theory extends Component {
     //Bookmark new questions
     if (this.state.bookmark) {
       this.bookmarksRef.child(this.state.userId).child(this.props.questionId).remove()
+      var ref = this.statsRef.child(this.state.userId).child('total_bookmarked').once('value', (snapshot)=>{
+        if (snapshot.exists()) snapshot.ref.set(snapshot.val() - 1)
+      })
     }else {
       //Set data structure for bookmarked question
       var data = {
@@ -205,6 +209,10 @@ export default class Theory extends Component {
         question:this.props.question
       }
       this.bookmarksRef.child(this.state.userId).child(this.props.questionId).update(data)
+      var ref = this.statsRef.child(this.state.userId).child('total_bookmarked').once('value', (snapshot)=>{
+        if (snapshot.exists()) snapshot.ref.set(snapshot.val() + 1)
+        else snapshot.ref.set(1)
+      })
     }
     this.setState(prevState =>({bookmark:!prevState.bookmark}))
   }
@@ -336,6 +344,10 @@ export default class Theory extends Component {
        var ref = this.questionsRef.child(this.props.courseId).child(this.props.questionId).child('comments').once('value', (comments)=>{
          if (comments.exists()) comments.ref.set(comments.val() + 1)
          else comments.ref.set(1)
+       })
+       var ref = this.statsRef.child(this.state.userId).child('total_comments').once('value', (snapshot)=>{
+         if (snapshot.exists()) snapshot.ref.set(snapshot.val() + 1)
+         else snapshot.ref.set(1)
        })
      }
    }

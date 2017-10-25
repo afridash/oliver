@@ -95,10 +95,10 @@ theme.add({ // Add LIGHT theme
 
   },
   primaryButton:{
-    backgroundColor:'#FFFFFF',
+    backgroundColor:'#ed9b9b',
   },
   secondaryButton:{
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#ed9b9b',
   },
   progress:{
     backgroundColor:'#ed9b9b'

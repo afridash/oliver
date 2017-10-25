@@ -74,8 +74,11 @@ export default class Theories extends Component {
     this.data = []
     this.setState({refreshing:true,isLoading:false,noQuestions:false, total:0})
     this.ref.orderByChild('type').equalTo('theory').once('value',(snapshot)=>{
-      if (snapshot.val()  !== null ) this.setState({refreshing:false, noQuestions:false,isLoading:false})
-      else this.setState({refreshing:false, noQuestions:true,isLoading:false})
+      if (snapshot.exists()) this.setState({refreshing:false, noQuestions:false,isLoading:false})
+      else {
+        AsyncStorage.setItem(this.props.courseId, JSON.stringify([]))
+        this.setState({refreshing:false, noQuestions:true,isLoading:false})
+      }
       snapshot.forEach((snap)=>{
           this.data.push({key:snap.key, question:snap.val().question, answered:snap.val().answered,
             answer:snap.val().answered ? snap.val().answer : '',

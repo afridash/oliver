@@ -39,9 +39,12 @@ export default class Home extends Component {
       swipingStarted:false
     }
     this.ref = firebase.database().ref().child('user_courses')
+    this.registeredRef = firebase.database().ref().child('registered_courses')
+    this.statsRef = firebase.database().ref().child('student_stats')
     this.data = this.state.data
     this.renderItem = this.renderItem.bind(this)
     this.historyRef = firebase.database().ref().child('activities')
+    this.coursesRef = firebase.database().ref().child('course_activities')
     this.verifyCollege()
     this.rightButtons = [
       <Text onPress={()=>this.handleSwipeClick()} style={customStyles.swipeButton}>Delete</Text>,
@@ -94,6 +97,8 @@ export default class Home extends Component {
         saved.map((course)=>{
           var item = this.historyRef.child(this.state.userId).push()
           item.setWithPriority(course, 0 - Date.now())
+          var activity = this.coursesRef.child(course.courseId).child(this.state.userId).push()
+          activity.setWithPriority(data, 0 - Date.now())
         })
         AsyncStorage.setItem('savedActivities','1')
       }
@@ -132,7 +137,10 @@ export default class Home extends Component {
     this.data = []
     this.setState({refreshing:true})
     await this.ref.child(this.state.userId).once('value', (snapshot)=>{
-      if (!snapshot.exists()) this.setState({refreshing:false, noCourses:true})
+      if (!snapshot.exists()) {
+        AsyncStorage.setItem('user_courses', JSON.stringify([]))
+        this.setState({refreshing:false, noCourses:true})
+      }
       snapshot.forEach((course)=>{
         this.data.push({key:course.key, show:false, name:course.val().name, code:course.val().code})
         this.setState({data:this.data, refreshing:false,noCourses:false, isLoading:false})
@@ -140,7 +148,6 @@ export default class Home extends Component {
       })
     })
     if (!this.state.noCourses) this._setHighScore()
-    else AsyncStorage.setItem('user_courses', JSON.stringify([]))
   }
   handleSwipeClick () {
     //Delete row that has been clicked on after swiping
@@ -148,6 +155,7 @@ export default class Home extends Component {
     this.setState({data:this.state.data})
     AsyncStorage.setItem('user_courses', JSON.stringify(this.state.data))
     this.ref.child(this.state.userId).child(this.state.deleteRef).remove()
+    this.registeredRef.child(this.state.deleteRef).child(this.state.userId).remove()
   }
   _onPressItem (index) {
     //Update view to reflect the information on the clicked item

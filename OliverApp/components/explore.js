@@ -87,7 +87,10 @@ export default class Explore extends Component {
     AsyncStorage.setItem('currentUser', this.state.userId)
     this.setState({refreshing:true,isLoading:false,noActivity:false})
     this.ref.child(this.state.collegeId).limitToFirst(100).once('value',(snapshot)=>{
-      if (!snapshot.exists()) this.setState({refreshing:false, noActivity:true,isLoading:false})
+      if (!snapshot.exists()) {
+        this.setState({refreshing:false, noActivity:true,isLoading:false})
+        AsyncStorage.setItem('explores', JSON.stringify([]))
+      }
       else this.setState({refreshing:true, noActivity:false})
       snapshot.forEach((snap)=>{
         this.likesRef.child(snap.key).child(this.state.userId).once('value', (likeVal)=>{
@@ -110,7 +113,6 @@ export default class Explore extends Component {
 
       })
     })
-    if (this.state.noActivity) AsyncStorage.setItem('explores', JSON.stringify([]))
   }
   onRowPress(key, post){
     if (post.postLike) {

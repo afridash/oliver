@@ -73,6 +73,7 @@ export default class Universities extends Component {
       collegeId:college.key,
       college:college.name
       })
+      firebase.database().ref().child('student_stats').child(userKey).child('signed_up').set(firebase.database.ServerValue.TIMESTAMP)
   }
   async saveLocalData(userID, college){
     await AsyncStorage.multiSet([["email", this.props.email],
