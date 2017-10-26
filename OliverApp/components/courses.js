@@ -33,7 +33,9 @@ export default class Courses extends Component {
       refreshing: false,
       department:[],
       status:'',
-      name:''
+      name:'',
+      verified:false,
+      noCourses:false,
     }
     this.data = []
     this.renderItem = this.renderItem.bind(this)
@@ -50,6 +52,8 @@ export default class Courses extends Component {
     var currentUser = await AsyncStorage.getItem('currentUser')
     var name = await AsyncStorage.getItem('name')
     var status = await AsyncStorage.getItem('status') //Check the internet status
+    var verified = await AsyncStorage.getItem('verified')
+    if (verified !== null && verified !== '1') this.setState({verified:true})
     this.setState({userId:key, collegeId:collegeId, status, name})
     if (currentUser === key)
     this.retrieveCoursesOffline()
@@ -83,6 +87,10 @@ export default class Courses extends Component {
     this.data = []
     this.setState({courses:[], refreshing:true})
      this.facultiesRef.child(this.state.collegeId).once('value', (snapshots)=>{
+       if (!snapshots.exists()) {
+         AsyncStorage.setItem('courses', JSON.stringify([]))
+         this.setState({refreshing:false, noCourses:true})
+       }
       snapshots.forEach((childSnap)=>{
         this.departmentsRef.child(childSnap.key).once('value', (snapshot)=>{
           snapshot.forEach((department)=>{
@@ -195,29 +203,39 @@ export default class Courses extends Component {
           <View style={customStyles.container}>
             <View style={{flex:1, flexDirection:'row'}}>{this.renderHeader()}</View>
             <View style={{flex:6, flexDirection:'row'}}>
-              {this.state.noSearchResult ?
-                <View style={{flex:1, justifyContent:'center', alignItems:'center'}}>
-                  <Text style={[customStyles.listText, styles.textColor]}>:( Nothing Found</Text></View> :
+              {(()=>{
+                  if (this.state.noCourses) return (
+                  <View style={{flex:1, justifyContent:'center', alignItems:'center',}}>
+                    <Text style={[customStyles.listText, styles.textColor]}>No Courses</Text>
+                  </View>
+                )
+                else if (this.state.noSearchResult) return (
+                  <View style={{flex:1, justifyContent:'center', alignItems:'center'}}>
+                  <Text style={[customStyles.listText, styles.textColor]}>:( Nothing Found</Text></View>
+                )
+                else return (
                   <SectionList
-                    sections={this.state.data}
-                    ItemSeparatorComponent={()=><View style={customStyles.separator}></View>}
-                    renderSectionHeader={({section}) => <Text style={[{fontSize:20, fontFamily:'verdana', padding:5}, customStyles.headerColor, styles.progress]}>{section.key}</Text>}
-                    renderItem={this.renderItem}
-                    refreshControl={
-                     <RefreshControl
-                     refreshing={this.state.refreshing}
-                        onRefresh={this.retrieveCoursesOnline.bind(this)}
-              />
+                  sections={this.state.data}
+                  ItemSeparatorComponent={()=><View style={customStyles.separator}></View>}
+                  renderSectionHeader={({section}) => <Text style={[{fontSize:20, fontFamily:'verdana', padding:5}, customStyles.headerColor, styles.progress]}>{section.key}</Text>}
+                  renderItem={this.renderItem}
+                  refreshControl={
+                   <RefreshControl
+                   refreshing={this.state.refreshing}
+                      onRefresh={this.retrieveCoursesOnline.bind(this)}
+                    />
+                  }
+                />
+              )
+              })()
             }
-               />
-              }
             </View>
-            <AdMobBanner
+            {!this.state.verified && <AdMobBanner
               adSize="smartBannerPortrait"
               adUnitID="ca-app-pub-1090704049569053/1792603919"
               testDeviceID="EMULATOR"
               didFailToReceiveAdWithError={this.bannerError} />
-
+            }
           </View>
         </View>
       </View>

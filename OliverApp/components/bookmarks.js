@@ -31,6 +31,7 @@ export default class Bookmarks extends Component {
       isLoading:true,
       noBookmarks:false,
       status:'',
+      verified:false,
     }
     this.data = []
     this.renderItem = this.renderItem.bind(this)
@@ -42,6 +43,8 @@ export default class Bookmarks extends Component {
     var key = await AsyncStorage.getItem('myKey')
     var currentUser = await AsyncStorage.getItem('currentUser')
     var status = await AsyncStorage.getItem('status') //Check the internet status
+    var verified = await AsyncStorage.getItem('verified')
+    if (verified !== null && verified !== '1') this.setState({verified:true})
     this.setState({userId:key, status})
     if (currentUser === key)
     this.retrieveBookmarksOffline()
@@ -170,11 +173,13 @@ export default class Bookmarks extends Component {
              }
          />
           </View>
-          <AdMobBanner
-           adSize="smartBannerPortrait"
-           adUnitID="ca-app-pub-1090704049569053/1792603919"
-           testDeviceID="EMULATOR"
-           didFailToReceiveAdWithError={this.bannerError} />
+          {!this.state.verified && 
+            <AdMobBanner
+             adSize="smartBannerPortrait"
+             adUnitID="ca-app-pub-1090704049569053/1792603919"
+             testDeviceID="EMULATOR"
+             didFailToReceiveAdWithError={this.bannerError} />}
+
         </View>
       </View>
     )

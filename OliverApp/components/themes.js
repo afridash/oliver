@@ -18,6 +18,7 @@ export default class Themes extends Component {
   constructor (props) {
     super (props)
     this.state = {
+      verified:false,
     }
     this._defaultTheme = this._defaultTheme.bind(this)
     this._lightTheme = this._lightTheme.bind(this)
@@ -25,8 +26,10 @@ export default class Themes extends Component {
     this._blueTheme = this._blueTheme.bind(this)
     this._purpleTheme = this._purpleTheme.bind(this)
   }
-  componentWillMount () {
+  async componentWillMount () {
     theme.setRoot(this)
+    var verified = await AsyncStorage.getItem('verified')
+    if (verified !== null && verified !== '1') this.setState({verified: true})
   }
   async _defaultTheme () {
     if (theme.name !== 'default') {
@@ -165,11 +168,13 @@ export default class Themes extends Component {
             </Button>
           </View>
           <View style={{flex:1}}></View>
-          <AdMobBanner
-           adSize="smartBannerPortrait"
-           adUnitID="ca-app-pub-1090704049569053/1792603919"
-           testDeviceID="EMULATOR"
-           didFailToReceiveAdWithError={this.bannerError} />
+          {!this.state.verified &&
+            <AdMobBanner
+             adSize="smartBannerPortrait"
+             adUnitID="ca-app-pub-1090704049569053/1792603919"
+             testDeviceID="EMULATOR"
+             didFailToReceiveAdWithError={this.bannerError} />
+          }
         </View>
       </View>
     )

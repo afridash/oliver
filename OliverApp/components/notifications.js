@@ -30,7 +30,8 @@ export default class Notifications extends Component {
       swipingStarted:false,
       isLoading:true,
       noNotifications:false,
-      status:''
+      status:'',
+      verified:false,
     }
     this.data = []
     this.renderItem = this.renderItem.bind(this)
@@ -40,8 +41,10 @@ export default class Notifications extends Component {
   async componentWillMount () {
     theme.setRoot(this)
     var key = await AsyncStorage.getItem('myKey')
+    var verified = await AsyncStorage.getItem('verified')
     var currentUser = await AsyncStorage.getItem('currentUser')
     var status = await AsyncStorage.getItem('status') //Check the internet status
+    if (verified !== null & verified !=='1') this.setState({verified:true})
     this.setState({userId:key, status})
     if (currentUser === key)
     this.retrieveNotificationsOffline()
@@ -185,11 +188,13 @@ export default class Notifications extends Component {
             })()
           }
           </View>
-          <AdMobBanner
-           adSize="smartBannerPortrait"
-           adUnitID="ca-app-pub-1090704049569053/1792603919"
-           testDeviceID="EMULATOR"
-           didFailToReceiveAdWithError={this.bannerError} />
+          {!this.state.verified &&
+            <AdMobBanner
+             adSize="smartBannerPortrait"
+             adUnitID="ca-app-pub-1090704049569053/1792603919"
+             testDeviceID="EMULATOR"
+             didFailToReceiveAdWithError={this.bannerError} />
+           }
         </View>
       </View>
     )

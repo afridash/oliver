@@ -57,7 +57,8 @@ export default class Profile extends React.Component {
       college:'',
       username:'',
       profilePicture:'none',
-      userId:''
+      userId:'',
+      verified:false
     }
   }
   async componentWillMount () {
@@ -67,6 +68,8 @@ export default class Profile extends React.Component {
     var profilePicture = await AsyncStorage.getItem('pPicture')
     var college = await AsyncStorage.getItem('college')
     var username = await AsyncStorage.getItem('username')
+    var verified = await AsyncStorage.getItem('verified')
+    if (verified !== null && verified !== '1') this.setState({verified:true})
    this.setState({email, college, username,profilePicture, userId})
     this.user = firebase.auth().currentUser
   }
@@ -171,11 +174,12 @@ export default class Profile extends React.Component {
         </View>
         <View style={{flex:2, backgroundColor:'white'}}>
         </View>
-        <AdMobBanner
+        {!this.state.verified && <AdMobBanner
          adSize="smartBannerPortrait"
          adUnitID="ca-app-pub-1090704049569053/1792603919"
          testDeviceID="EMULATOR"
          didFailToReceiveAdWithError={this.bannerError} />
+       }
       </View>
     </View>
     );

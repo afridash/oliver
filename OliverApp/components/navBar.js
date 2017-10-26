@@ -111,6 +111,7 @@ const customStyles = {
   },
   navBar: {
     borderTopWidth:20,
+    borderBottomWidth:0.5,
     shadowColor:'#000000',
     shadowOffset:{width: 5, height: 5},
     shadowOpacity:0.5,

@@ -45,6 +45,7 @@ export default class Theory extends Component {
       collegeId:'',
       followers:[],
       text:'',
+      verified:false,
     }
     this.renderItem = this.renderItem.bind(this)
     this.commentsRef = firebase.database().ref().child('answers').child(this.props.questionId)
@@ -53,6 +54,7 @@ export default class Theory extends Component {
     this.questionsRef = firebase.database().ref().child('questions')
     this.exploreRef = firebase.database().ref().child('explore')
     this.followersRef = firebase.database().ref().child('question_followers').child(this.props.questionId)
+    if (this.props.courseId)
     this.statsRef = firebase.database().ref().child('student_stats').child(this.props.courseId)
   }
   async componentWillMount () {
@@ -64,6 +66,8 @@ export default class Theory extends Component {
     var user = await AsyncStorage.getItem('name')
     var username = await AsyncStorage.getItem('username')
     var collegeId = await AsyncStorage.getItem('collegeId')
+    var verified = await AsyncStorage.getItem('verified')
+    if (verified !== null && verified !== '1') this.setState({verified:true})
     this.setState({userId, profilePicture, username, user, collegeId})
     //Determine if user is following post
     this.followersRef.child(userId).once('value', (following)=>{
@@ -286,11 +290,12 @@ export default class Theory extends Component {
          </Button>
         </View>}
            {this.props.answer !== ''&& !this.props.comments && <Text style={[customStyles.answer, styles.textColor]}>Suggested Answer: {this.props.answer}</Text>}
-           <AdMobBanner
+           {!this.state.verified && <AdMobBanner
              adSize="smartBannerPortrait"
              adUnitID="ca-app-pub-1090704049569053/1792603919"
              testDeviceID="EMULATOR"
              didFailToReceiveAdWithError={this.bannerError} />
+           }
        </View>
      )
    }

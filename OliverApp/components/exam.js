@@ -39,6 +39,7 @@ export default class Exams extends Component {
       isLoading:true,
       status:'',
       college:'',
+      verified:false,
       profilePicture:'',
       messages:[{key:1, message:'Want to beat my high score ?!'},
                 {key:2, message:'I just finished practicing! Want to try?'},
@@ -85,6 +86,8 @@ export default class Exams extends Component {
     var college = await AsyncStorage.getItem('collegeId')
     var username = await AsyncStorage.getItem('username')
     var profilePicture = await AsyncStorage.getItem('pPicture')
+    var verified = await AsyncStorage.getItem('verified')
+    if (verified !== null && verified !== '1') this.setState({verified:true})
     this.setState({userId:key, status, college, profilePicture, username:username})
   }
   async downloadQuestions () {
@@ -204,10 +207,12 @@ export default class Exams extends Component {
     }
   }
   _saveToHistory (){
-      AdMobInterstitial.requestAd().then(function(){
+      if (!this.state.verified){
+        AdMobInterstitial.requestAd().then(function(){
          AdMobInterstitial.showAd()
       }).catch((e)=>{
-      });
+      })
+    }
     var data = {
       title:this.props.course,
       code:this.props.courseCode,

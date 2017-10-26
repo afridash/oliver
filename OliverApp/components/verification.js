@@ -46,7 +46,7 @@ export default class VerifyPin extends React.Component {
                 autoCapitalize='none'
                 autoCorrect={false}
                 keyboardAppearance='dark'
-                placeholder={'Pin'}
+                placeholder={'Enter Pin'}
                 placeholderTextColor={'black'}
                 onChangeText={(pin) => this.setState({pin})}
                 onSubmitEditing={() => { this.verifyPin() }}
@@ -89,7 +89,7 @@ const customStyles = StyleSheet.create({
     flexDirection: 'row',
     height:90,
     borderColor: '#C8C8C8',
-    borderBottomWidth: 0,
+    borderBottomWidth: (Platform.OS === 'ios') ? 1 : 0,
   },
   title: {
     flex:2,

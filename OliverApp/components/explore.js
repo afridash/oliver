@@ -37,13 +37,15 @@ export default class Explore extends Component {
       isLoading:true,
       noActivity:false,
       refreshing:false,
-      status:''
+      status:'',
+      verified:false,
 
     }
     this.renderItem = this.renderItem.bind(this)
     this.ref = firebase.database().ref().child('explore')
     this.likesRef = firebase.database().ref('explore_likes')
     this.postsRef = firebase.database().ref().child('posts')
+    this.statsRef = firebase.database().ref().child('student_stats')
   }
   async componentWillMount () {
     //Set theme styles
@@ -53,6 +55,8 @@ export default class Explore extends Component {
     var userId= await AsyncStorage.getItem('myKey')
     var currentUser = await AsyncStorage.getItem('currentUser')
     var status = await AsyncStorage.getItem('status') //Check the internet status
+    var verified = await AsyncStorage.getItem('verified')
+    if (verified !== null && verified !== '1') this.setState({verified:true})
     this.setState({collegeId:key, userId, status})
 
     //Start component lifecycle with call to loading questions stored offline
@@ -132,13 +136,20 @@ export default class Explore extends Component {
    var ref = this.ref.child(this.state.collegeId).child(postId).child('starCount').once('value', (likesCount)=>{
       likesCount.ref.set(likesCount.val() + 1)
     })
-    Notifications.sendNotification(post.userId, 'explore_like', postId, post.message, post.username)
+    Notifications.sendNotification(post.userId, 'explore_like', postId, post.message + " " + post.percentage + "% in "+ post.title + "("+post.code+")", post.username)
   }
   unlikePost (postId) {
     this.likesRef.child(postId).child(this.state.userId).remove()
     var ref = this.ref.child(this.state.collegeId).child(postId).child('starCount').once('value', (likesCount)=>{
        likesCount.ref.set(likesCount.val() - 1)
     })
+  }
+  handleGo (item) {
+    var ref = this.statsRef.child(item.courseId).child(this.state.userId).child('explore_origin').once('value', (snapshot)=>{
+      if (snapshot.exists()) snapshot.ref.set(snapshot.val() + 1)
+      else snapshot.ref.set(1)
+    })
+    return Actions.start_exam({courseId:item.courseId, courseCode:item.code, course:item.title})
   }
   renderItem({ item, index }) {
    return (
@@ -160,14 +171,17 @@ export default class Explore extends Component {
       </View>
       <View style={customStyles.interactions}>
         <View style={{flex:1, alignItems:'flex-start',justifyContent:'flex-start'}}>
-          <Button style={[styles.textColor]} onPress={()=>this.onRowPress(index, item)}><Image source={require('../assets/images/heart2.png')} style={[customStyles.home,{tintColor: !item.postLike ? '#ffffff' : 'red' }]} />
+          <Button style={[styles.textColor]} onPress={()=>this.onRowPress(index, item)}>
+            {!item.postLike ? <Image source={require('../assets/images/heart2.png')} style={[customStyles.home, styles.iconColor]} /> :
+          <Image source={require('../assets/images/heart2.png')} style={[customStyles.home,{tintColor: 'red' }]} />
+        }
           <Text style={styles.textColor}>{item.likes !== 0 && item.likes }</Text>
         </Button>
         </View>
         <View style={{flex:1, alignItems:'flex-end', justifyContent:'center',  marginRight:15}}>
           <Button
             style={[styles.textColor]} onPress={()=>Actions.viewTheory({question:item.message + " " + item.percentage + "% in "+ item.title + "("+item.code+")", questionId:item.key, courseCode:item.username, comments:true, userId:item.userId})}>
-            <Image source={require('../assets/images/comments.png')} style={[customStyles.comment, styles.iconColor, {tintColor:'#ffffff'}]} />
+            <Image source={require('../assets/images/comments.png')} style={[customStyles.comment, styles.iconColor]} />
             <Text style={[{marginLeft:3}, styles.textColor]}>{item.comments !== 0 && item.comments}</Text>
         </Button>
         </View>
@@ -177,7 +191,7 @@ export default class Explore extends Component {
           containerStyle={[styles.secondaryButton, customStyles.secondaryButton]}
           style={customStyles.addButton}
           styleDisabled={{color: 'red'}}
-          onPress={()=>Actions.start_exam({courseId:item.courseId, courseCode:item.code, course:item.title})}>
+          onPress={()=>this.handleGo(item)}>
           Start
         </Button>
       </View>
@@ -241,11 +255,12 @@ export default class Explore extends Component {
             })()
           }
           </View>
-         <AdMobBanner
-            adSize="smartBannerPortrait"
-            adUnitID="ca-app-pub-1090704049569053/1792603919"
-            testDeviceID="EMULATOR"
-            didFailToReceiveAdWithError={this.bannerError} />
+          {!this.state.verified &&  <AdMobBanner
+              adSize="smartBannerPortrait"
+              adUnitID="ca-app-pub-1090704049569053/1792603919"
+              testDeviceID="EMULATOR"
+              didFailToReceiveAdWithError={this.bannerError} />
+            }
         </View>
       </View>
     )

@@ -25,8 +25,11 @@ export default class DrawerContent extends React.Component {
     var email = await AsyncStorage.getItem('email')
     var userId = await AsyncStorage.getItem('myKey')
     if (userId !== null) {
-      this.ref.child(userId).child('notificationsBadges').once('value', (badges)=>{
-        if (badges.exists()) this.setState({badges:badges.val()})
+      this.ref.child(userId).on('child_added', (badges)=>{
+        this.setState({badges:badges.val()})
+      })
+      this.ref.child(userId).on('child_changed', (badges)=>{
+        this.setState({badges:badges.val()})
       })
       var profilePicture = await AsyncStorage.getItem('pPicture')
      this.setState({email, name, profilePicture, userId})
@@ -66,7 +69,7 @@ export default class DrawerContent extends React.Component {
           <TouchableHighlight
             onPress={Actions.profile}
             underlayColor={'transparent'}
-            style={{flex:1}}>
+            style={[{flex:1,borderBottomWidth : (Platform.OS ==='ios') ? 0: 1}, styles.actionsContainer]}>
             <View style={sidebar.profile}>
               <View style={sidebar.profileContainer}>
               <Image resizeMode={'cover'} source={{uri: this.state.profilePicture}} style={sidebar.profilePicture} />
@@ -94,7 +97,7 @@ export default class DrawerContent extends React.Component {
                     <Image source={require('../assets/images/explore.png')} style={[sidebar.home, styles.iconColor]} />  Explore</Button>
           </View>
         </View>
-        <View style={{flex:1, justifyContent:'flex-end', alignItems:'center', borderTopWidth:3, borderColor:'white'}}>
+        <View style={[sidebar.line, styles.actionsContainer]}>
           <Button style={[sidebar.secondaryContainer, styles.textColor]} onPress={()=>Actions.replace('themes')}><Image source={require('../assets/images/themes.png')} style={[sidebar.home, styles.iconColor]} />Themes</Button>
           <Button onPress={()=>this.logout()} style={[sidebar.secondaryContainer, styles.textColor]}><Image source={require('../assets/images/logout.png')} style={[sidebar.home, styles.iconColor]} />Logout</Button>
       </View>
@@ -125,7 +128,12 @@ const sidebar = {
     shadowOpacity:0.5,
     shadowRadius:5,
   },
-
+  line:{
+    flex:1,
+    justifyContent:'flex-end',
+    alignItems:'center',
+    borderTopWidth:3,
+  },
   menu:{
     flex:4,
     justifyContent:'flex-start',

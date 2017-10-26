@@ -33,6 +33,7 @@ export default class Activity extends Component {
       refreshing:false,
       swipingStarted:false,
       status:'',
+      verified:false,
     }
     this.renderItem = this.renderItem.bind(this)
     this.ref = firebase.database().ref().child('activities')
@@ -46,7 +47,9 @@ export default class Activity extends Component {
     //Retrieve user key
     var key = await AsyncStorage.getItem('myKey')
     var currentUser = await AsyncStorage.getItem('currentUser')
-    var status = await AsyncStorage.getItem('status') //Check the internet status
+    var status = await AsyncStorage.getItem('status') //Check the internet statu
+    var verified = await AsyncStorage.getItem('verified')
+    if (verified !== null && verified !== '1') this.setState({verified:true})
     this.setState({userId:key, status})
     if (currentUser === key)
     //Start component lifecycle with call to loading questions stored offline
@@ -156,11 +159,14 @@ export default class Activity extends Component {
             })()
           }
           </View>
-          <AdMobBanner
-           adSize="smartBannerPortrait"
-           adUnitID="ca-app-pub-1090704049569053/1792603919"
-           testDeviceID="EMULATOR"
-           didFailToReceiveAdWithError={this.bannerError} />
+          {!this.state.verified &&
+            <AdMobBanner
+             adSize="smartBannerPortrait"
+             adUnitID="ca-app-pub-1090704049569053/1792603919"
+             testDeviceID="EMULATOR"
+             didFailToReceiveAdWithError={this.bannerError} />
+           }
+
         </View>
       </View>
     )
