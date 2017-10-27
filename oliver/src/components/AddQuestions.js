@@ -2,7 +2,7 @@ import React, {Component} from 'react'
 import {FormGroup, FormControl, ControlLabel, Col, Panel, Button, Modal} from 'react-bootstrap'
 import {Questions} from './Questions'
 import {Link} from 'react-router-dom'
-import {Firebase} from '../auth/firebase'
+import Firebase from '../auth/firebase'
 const firebase =  require('firebase')
 export class AddQuestions extends Component {
   constructor (props) {

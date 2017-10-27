@@ -25,8 +25,8 @@ export default class Home extends Component {
                         <li><a href="#FEATURES">FEATURES</a></li>
                         <li><a href="#SCREENS">SCREENS</a> </li>
                         <li><a href="#DOWNLOAD">DOWNLOAD </a> </li>
-                        <li><a href="#CONTACT">CONTACT </a> </li>
-                        <li><a href="#">LOGIN </a> </li>
+                        <li><a href="#SUSCRIBE">CONTACT </a> </li>
+                        <li><a href="Login">LOGIN </a> </li>
                     </ul>
                 </div>
             </div>

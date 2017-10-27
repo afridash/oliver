@@ -9,6 +9,7 @@ import Review from './components/review'
 import Downloads from './components/downloads'
 import Subscribe from './components/subscribe'
 import CopyRight from './components/copyright'
+
 export default class App extends Component {
   render() {
     return (
