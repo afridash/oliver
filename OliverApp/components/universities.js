@@ -26,11 +26,65 @@ export default class Universities extends Component {
     this.usersRef = firebase.database().ref().child('users')
     this.renderItem = this.renderItem.bind(this)
     this.userKey = ''
+    this.picture ='https://firebasestorage.googleapis.com/v0/b/oliver-f5285.appspot.com/o/users%2Fprofile%2Fuserprofile.png?alt=media&token=e96bc455-8477-46db-a3a2-05b4a1031fe8'
   }
   async componentWillMount () {
     theme.setRoot(this)
     this.userKey = await AsyncStorage.getItem('myKey')
     this.getColleges()
+  }
+  async createAccount (college) {
+    var p=false;
+    await firebase.auth().createUserWithEmailAndPassword(this.props.email, this.props.password).catch(function(error){
+      Alert.alert(error.message)
+      p=true
+    });
+    if(!p){
+      var user = firebase.auth().currentUser
+         user.updateProfile({
+          displayName: this.props.firstName + " "+this.props.lastName,
+          photoURL:this.picture
+        }).then(function() {
+          // Update successful.
+        }, function(error) {
+          //console.log(error)
+        })
+        user.sendEmailVerification().then(function() {
+            //Email sent
+          }).catch(function(error) {
+            // An error happened.
+          })
+     this.saveUserInfo(user.uid,this.props.email, this.props.firstName,this.props.lastName, this.props.username, college)
+      this.saveLocalData(user.uid, college)
+      return Actions.reset('drawer')
+      this.setState({isLoading:false})
+    }else{
+      this.setState({isLoading:false})
+    }
+  }
+  saveUserInfo(userKey, email, firstName, lastName, username, college){
+    this.usersRef.child(userKey).set({
+      firstName: firstName,
+      lastName:lastName,
+      email: email,
+      username : username,
+      userKey:userKey,
+      profilePicture:this.picture,
+      collegeId:college.key,
+      college:college.name
+      })
+      firebase.database().ref().child('student_stats').child(userKey).child('signed_up').set(firebase.database.ServerValue.TIMESTAMP)
+  }
+  async saveLocalData(userID, college){
+    await AsyncStorage.multiSet([["email", this.props.email],
+                                 ['name', this.props.firstName+" "+this.props.lastName],
+                                  ['myKey', userID],
+                                  ['currentUser', userID],
+                                  ['pPicture',this.picture],
+                                  ['username',this.props.username],
+                                  ['college', college.name],
+                                  ['collegeId', college.key]
+                                ])
   }
   getColleges () {
     this.colleges = []
@@ -42,10 +96,23 @@ export default class Universities extends Component {
     })
   }
   async _onPressItem (index) {
-    await this.saveCollege(this.state.colleges[index])
-    if (this.props.calling)
-    return Actions.replace('profile')
-    else return Actions.reset('drawer')
+    if (this.props.calling){
+      var lincoln = '-KxDQcHjbMhp6mTgkqnK'
+      var verified = await AsyncStorage.getItem('verified')
+      if (this.state.colleges[index].key === lincoln) {
+        if (verified !== null && verified !== '1') {
+            await this.saveCollege(this.state.colleges[index])
+            alert ("LINCOLN VERFIED")
+            alert(verified)
+        }
+      }else {
+        await this.saveCollege(this.state.colleges[index])
+      }
+      return Actions.replace('profile')
+    }
+    else {
+      this.createAccount(this.state.colleges[index])
+    }
   }
   saveCollege (college) {
     this.usersRef.child(this.userKey).update({collegeId:college.key, college:college.name})

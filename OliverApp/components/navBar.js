@@ -1,15 +1,57 @@
 import {
- View, Image, StatusBar, TouchableWithoutFeedback, Text,Platform,
+ View,
+ Image,
+ StatusBar,
+ TouchableWithoutFeedback,
+ Text,
+ Platform,
+ AsyncStorage,
+ AppState,
 } from 'react-native';
 import React, { Component } from 'react';
 import { Actions, Router, Scene } from 'react-native-router-flux';
 import theme, {styles} from 'react-native-theme'
+import moment from 'moment'
+import Firebase from '../auth/firebase'
+const firebase = require('firebase')
 export default class NavBar extends Component {
   constructor (props) {
     super(props)
+    this.state = {
+      appState: AppState.currentState,
+    }
+    this._handleAppStateChange = this._handleAppStateChange.bind(this)
+    this.sessionsRef = firebase.database().ref().child('sessions')
+    this.usersRef = firebase.database().ref().child('users')
   }
-  componentWillMount () {
+  async componentWillMount () {
     theme.setRoot(this)
+    var userId = await AsyncStorage.getItem('myKey')
+    this.setState({userId})
+  }
+  componentDidMount () {
+    AppState.addEventListener('change', this._handleAppStateChange)
+  }
+  componentWillUnmount () {
+    AppState.removeEventListener('change', this._handleAppStateChange)
+  }
+  async _handleAppStateChange (nextAppState) {
+    if (this.state.appState.match(/inactive|background/) && nextAppState === 'active') {
+        AsyncStorage.setItem('session_start', new Date().getTime().toString())
+    }else {
+      if (this.state.appState.match(/inactive|background/)) {
+        this.usersRef.child(this.state.userId).child('last_seen').set(firebase.database.ServerValue.TIMESTAMP)
+        var session_start = await AsyncStorage.getItem('session_start')
+        var session_end = new Date().getTime()
+        var diff = moment(session_end).diff(moment(Number(session_start)), 'minutes')
+        this.sessionsRef.child(this.state.userId).child(moment().format('l').replace(/\//g, '-')).push({
+        session_start:session_start,
+        session_end:session_end,
+        time_difference:diff,
+        })
+      }
+    }
+    this.setState({appState: nextAppState});
   }
   render() {
     return (

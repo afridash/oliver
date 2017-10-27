@@ -49,8 +49,8 @@ export default class DrawerContent extends React.Component {
     })
     var current = await AsyncStorage.getItem('myKey')
     AsyncStorage.setItem('currentUser', current)
-    let keys = ['email', 'myKey', 'name', 'pPicture',]
-    AsyncStorage.multiRemove(keys, (err) => {
+    let keys = ['email', 'myKey', 'name', 'pPicture', 'verified', 'collegeId', 'college', 'username']
+    await AsyncStorage.multiRemove(keys, (err) => {
       return Actions.reset('index')
     })
   }

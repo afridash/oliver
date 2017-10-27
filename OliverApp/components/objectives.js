@@ -75,7 +75,10 @@ export default class Objectives extends Component {
     this.data = []
     this.setState({refreshing:true, noQuestions:false, total:0})
     this.ref.orderByChild('type').equalTo('objective').once('value', (snapshot)=>{
-      if (!snapshot.exists()) this.setState({refreshing:false, noQuestions:true,isLoading:false})
+      if (!snapshot.exists()) {
+          AsyncStorage.setItem(this.props.courseId+'study', JSON.stringify([]))
+        this.setState({refreshing:false, noQuestions:true,isLoading:false})
+      }
       else this.setState({refreshing:false, noQuestions:false,isLoading:true})
       var answer
       snapshot.forEach((snap)=>{
@@ -105,7 +108,7 @@ export default class Objectives extends Component {
         {!item.show ? <Image source={require('../assets/images/arrow_right.png')} style={[styles.iconColor, customStyles.icon]} resizeMode={'contain'}/> : <Image source={require('../assets/images/arrow_down.png')} style={[styles.iconColor, customStyles.icon]} resizeMode={'contain'}/>}
       </View>
       {item.show && <View style={{flex:1}}>
-        <View style={customStyles.actionsContainer}>
+        <View style={[customStyles.actionsContainer, styles.actionsContainer]}>
         <Text style={[customStyles.actions, styles.textColor]}>{item.textAnswer}</Text>
       </View>
       </View>

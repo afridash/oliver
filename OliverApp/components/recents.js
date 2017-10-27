@@ -85,8 +85,11 @@ export default class Activity extends Component {
     this.data = []
     this.setState({refreshing:true,isLoading:false,noActivity:false})
     this.ref.child(this.state.userId).once('value',(snapshot)=>{
-      if (snapshot.val()  !== null ) this.setState({refreshing:false, noActivity:false,isLoading:false})
-      else this.setState({refreshing:false, noActivity:true,isLoading:false})
+      if (snapshot.exists()) this.setState({refreshing:false, noActivity:false,isLoading:false})
+      else {
+        AsyncStorage.setItem('activities', JSON.stringify([]))
+        this.setState({refreshing:false, noActivity:true,isLoading:false})
+      }
       snapshot.forEach((snap)=>{
           this.data.unshift({key:snap.key,code:snap.val().code, title:snap.val().title,total:snap.val().total,
                           score:snap.val().score, createdAt:snap.val().createdAt, show:false, percentage:snap.val().percentage})
@@ -94,7 +97,6 @@ export default class Activity extends Component {
           AsyncStorage.setItem('activities', JSON.stringify(this.data))
       })
     })
-
   }
   renderItem({ item, index }) {
    return (
@@ -109,7 +111,7 @@ export default class Activity extends Component {
         <Text style={[customStyles.listText, styles.textColor]}>{item.code}</Text>
       </View>
        <View style={{flex:1}}>
-        <View style={customStyles.actionsContainer}>
+        <View style={[customStyles.actionsContainer, styles.actionsContainer]}>
         <Text style={[customStyles.actions, styles.textColor]}>Score: {item.score} out of {item.total}</Text>
         <Text style={[customStyles.actions, styles.textColor]}>Percentage: {item.percentage}%</Text>
       </View>

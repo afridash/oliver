@@ -21,65 +21,21 @@ export default class SignUp extends Component {
       username:'',
       isLoading:false,
     }
-    this.picture ='https://firebasestorage.googleapis.com/v0/b/oliver-f5285.appspot.com/o/users%2Fprofile%2Fuserprofile.png?alt=media&token=e96bc455-8477-46db-a3a2-05b4a1031fe8'
-    this.usersRef = firebase.database().ref().child('users')
   }
   componentWillMount () {
     theme.setRoot(this)
   }
   async createAccount () {
-    this.setState({isLoading:true})
-    var p=false;
     if(validate.verifyLength(this.state.password,this.state.passwordConfirm) && validate.verifyMatch(this.state.password,this.state.passwordConfirm)){
-      await firebase.auth().createUserWithEmailAndPassword(this.state.email, this.state.password).catch(function(error){
-        Alert.alert(error.message)
-        p=true
-      });
-      if(!p){
-        var user = firebase.auth().currentUser
-           user.updateProfile({
-            displayName: this.state.firstName + " "+this.state.lastName,
-            photoURL:this.picture
-          }).then(function() {
-            // Update successful.
-          }, function(error) {
-            console.log(error)
-          })
-          user.sendEmailVerification().then(function() {
-              //Email sent
-            }).catch(function(error) {
-              // An error happened.
-            })
-       this.saveUserInfo(user.uid,this.state.email, this.state.firstName,this.state.lastName, this.state.username)
-        this.saveLocalData(user.uid)
-        return Actions.universities()
-        this.setState({isLoading:false})
-      }else{
-        this.setState({isLoading:false})
-      }
+      return Actions.universities({password:this.state.password,
+        email:this.state.email,
+        firstName:this.state.firstName,
+        lastName:this.state.lastName,
+        username:this.state.username
+      })
     }else{
       Alert.alert('Passwords do not match, please try again')
-      this.setState({isLoading:false})
     }
-  }
-  saveUserInfo(userKey, email, firstName, lastName, username){
-    this.usersRef.child(userKey).set({
-      firstName: firstName,
-      lastName:lastName,
-      email: email,
-      username : username,
-      userKey:userKey,
-      profilePicture:'https://firebasestorage.googleapis.com/v0/b/oliver-f5285.appspot.com/o/users%2Fprofile%2Fuserprofile.png?alt=media&token=e96bc455-8477-46db-a3a2-05b4a1031fe8'
-      })
-  }
-  async saveLocalData(userID){
-    await AsyncStorage.multiSet([["email", this.state.email],
-                                 ['name', this.state.firstName+" "+this.state.lastName],
-                                  ['myKey', userID],
-                                  ['currentUser', userID],
-                                  ['pPicture',this.picture],
-                                  ['username',this.state.username],
-                                ])
   }
   render() {
     return (
@@ -186,8 +142,7 @@ export default class SignUp extends Component {
                     />
             </View>
           </View>
-              {!this.state.isLoading ? <Button onPress={()=>this.createAccount()} style={[styles.primaryButton,customStyles.signupButton,customStyles.primaryButton]}>Create Account</Button> :
-              <Text style={[styles.primaryButton,customStyles.signupButton,customStyles.primaryButton]}>Signing up...</Text>}
+              <Button onPress={()=>this.createAccount()} style={[styles.primaryButton,customStyles.signupButton,customStyles.primaryButton]}>Create Account</Button>
          </ScrollView>
     </KeyboardAwareScrollView>
     );

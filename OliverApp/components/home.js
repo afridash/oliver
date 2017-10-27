@@ -34,18 +34,32 @@ export default class Home extends Component {
       code:'',
       data:[],
       refreshing: false,
-      noCourses:true,
-      isLoading:true,
+      noCourses:false,
       status:'',
       swipingStarted:false
     }
     this.ref = firebase.database().ref().child('user_courses')
+    this.registeredRef = firebase.database().ref().child('registered_courses')
+    this.statsRef = firebase.database().ref().child('student_stats')
     this.data = this.state.data
     this.renderItem = this.renderItem.bind(this)
     this.historyRef = firebase.database().ref().child('activities')
+    this.coursesRef = firebase.database().ref().child('course_activities')
+    this.verifyCollege()
     this.rightButtons = [
       <Text onPress={()=>this.handleSwipeClick()} style={customStyles.swipeButton}>Delete</Text>,
     ]
+  }
+  async verifyCollege () {
+    var lincoln = '-KxDQcHjbMhp6mTgkqnK'
+    var college = await AsyncStorage.getItem('collegeId')
+    if (college === lincoln) {
+      await this.checkIfVerified()
+    }
+  }
+  async checkIfVerified () {
+    var verified = await AsyncStorage.getItem('verified')
+    if (verified === null || verified === '1') return Actions.getCode()
   }
   async componentWillMount () {
     theme.setRoot(this)
@@ -83,6 +97,8 @@ export default class Home extends Component {
         saved.map((course)=>{
           var item = this.historyRef.child(this.state.userId).push()
           item.setWithPriority(course, 0 - Date.now())
+          var activity = this.coursesRef.child(course.courseId).child(this.state.userId).push()
+          activity.setWithPriority(data, 0 - Date.now())
         })
         AsyncStorage.setItem('savedActivities','1')
       }
@@ -121,14 +137,17 @@ export default class Home extends Component {
     this.data = []
     this.setState({refreshing:true})
     await this.ref.child(this.state.userId).once('value', (snapshot)=>{
-      if (snapshot.val() === null) this.setState({refreshing:false, noCourses:true,isLoading:false})
+      if (!snapshot.exists()) {
+        AsyncStorage.setItem('user_courses', JSON.stringify([]))
+        this.setState({refreshing:false, noCourses:true})
+      }
       snapshot.forEach((course)=>{
         this.data.push({key:course.key, show:false, name:course.val().name, code:course.val().code})
         this.setState({data:this.data, refreshing:false,noCourses:false, isLoading:false})
          AsyncStorage.setItem('user_courses', JSON.stringify(this.data))
       })
     })
-    this._setHighScore()
+    if (!this.state.noCourses) this._setHighScore()
   }
   handleSwipeClick () {
     //Delete row that has been clicked on after swiping
@@ -136,6 +155,7 @@ export default class Home extends Component {
     this.setState({data:this.state.data})
     AsyncStorage.setItem('user_courses', JSON.stringify(this.state.data))
     this.ref.child(this.state.userId).child(this.state.deleteRef).remove()
+    this.registeredRef.child(this.state.deleteRef).child(this.state.userId).remove()
   }
   _onPressItem (index) {
     //Update view to reflect the information on the clicked item
@@ -174,13 +194,13 @@ export default class Home extends Component {
           </View>
         </TouchableHighlight>
           {item.show && <View style={{flex:1}}>
-            <View style={customStyles.actionsContainer}>
+            <View style={[customStyles.actionsContainer,styles.actionsContainer]}>
             <Text onPress={()=>Actions.theory({courseId:item.key, courseCode:item.code})} style={[customStyles.actions, styles.textColor]}>Study Theory Questions</Text>
           </View>
-          <View style={customStyles.actionsContainer}>
+          <View style={[customStyles.actionsContainer,styles.actionsContainer]}>
             <Text onPress={()=>Actions.objectives({courseId:item.key, courseCode:item.code})} style={[customStyles.actions, styles.textColor]}>Study Objectives</Text>
           </View>
-          <View style={customStyles.actionsContainer}>
+          <View style={[customStyles.actionsContainer,styles.actionsContainer]}>
             <Text onPress={()=>Actions.start_exam({courseId:item.key, courseCode:item.code, course:item.name})} style={[customStyles.actions, styles.textColor]}>Practice Exam (H: {item.high})</Text>
           </View>
           </View>
@@ -240,20 +260,18 @@ export default class Home extends Component {
             <View style={{flex:1, flexDirection:'row'}}>{this.renderHeader()}</View>
             <View style={{flex:6, flexDirection:'row'}}>
               {(()=>{
-                if (this.state.isLoading) return (
-                  <View style={{flex:1, justifyContent:'center', alignItems:'center'}}>
-                    <Text style={[customStyles.listText, styles.textColor]}>Loading...</Text></View>
-                )
-                else if (this.state.noCourses) return (
-                  <View style={[styles.buttonContainer,customStyles.buttonContainer]}>
-                    <Button
-                      containerStyle={[styles.secondaryButton, customStyles.secondaryButton]}
-                      style={customStyles.addButton}
-                      styleDisabled={{color: 'red'}}
-                      onPress={Actions.add_course}>
-                      Add Course
-                    </Button>
-                  </View>
+                  if (this.state.noCourses) return (
+                  <View style={{flex:1, justifyContent:'center', alignItems:'center',}}>
+                    <View style={[styles.buttonContainer,customStyles.buttonContainer]}>
+                 <Button
+                   containerStyle={[styles.secondaryButton, customStyles.secondaryButton]}
+                   style={customStyles.addButton}
+                   styleDisabled={{color: 'red'}}
+                   onPress={Actions.add_course}>
+                   Find Courses
+                 </Button>
+               </View>
+             </View>
                 )
                 else if (this.state.noSearchResult) return (
                   <View style={{flex:1, justifyContent:'center', alignItems:'center'}}>
@@ -306,7 +324,6 @@ const customStyles = StyleSheet.create({
     margin:5,
   },
   actionsContainer:{
-    borderColor:'white',
     borderWidth:1,
     borderRadius:10,
     overflow:'hidden',

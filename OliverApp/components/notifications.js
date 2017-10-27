@@ -72,7 +72,10 @@ export default class Notifications extends Component {
     this.data = []
     this.setState({refreshing:true,})
     this.ref.child(this.state.userId).once('value', (snapshots)=>{
-      if (!snapshots.exists()) this.setState({refreshing:false, isLoading:false, noNotifications:true})
+      if (!snapshots.exists()) {
+        AsyncStorage.setItem('notifications', JSON.stringify([]))
+        this.setState({refreshing:false, isLoading:false, noNotifications:true})
+      }
       snapshots.forEach((childSnap)=>{
           this.data.push({key:childSnap.key, displayName:childSnap.val().displayName,
             type:childSnap.val().type, postId:childSnap.val().postId,profilePicture:childSnap.val().profilePicture,

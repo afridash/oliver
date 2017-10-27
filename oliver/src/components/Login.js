@@ -14,8 +14,8 @@ class Login extends Component {
       username: '',
       password: '',
       error: '',
+      redirect:false,
     }
-    this.handleUser = this.handleUser.bind(this);
   }
 
   componentWillMount () {
@@ -29,20 +29,21 @@ class Login extends Component {
     }
 
   async handleSubmit (event) {
-  event.preventDefault()
+    event.preventDefault()
     var loggedInError = false
-  await firebase.auth().signInWithEmailAndPassword(this.state.email, this.state.password).catch(function(error) {
+    await firebase.auth().signInWithEmailAndPassword(this.state.email, this.state.password).catch(function(error) {
     var errorCode = error.code;
     var errorMessage = error.message;
     console.log(errorMessage)
+    alert(errorMessage)
     loggedInError=true
   })
-  if(!loggedInError){
-    this.setState({redirect:true})
-  }else{
-    this.setState({error:"Password and Email Do Not Match"})
+    if(!loggedInError){
+      this.setState({redirect:true})
+    }else{
+      this.setState({error:"Password and Email Do Not Match"})
+    }
   }
-}
 
   handlePasswordChange (event){
     this.setState({password: event.target.value})
@@ -54,7 +55,7 @@ class Login extends Component {
 
   render () {
   return (
-    <div className='center'>
+    this.state.redirect ? <Redirect to='/students' push/> : <div className='center'>
           <MuiThemeProvider>
             <div>
               <br/>
@@ -87,6 +88,7 @@ class Login extends Component {
             </div>
           </MuiThemeProvider>
         </div>
+
   );
 }
 }

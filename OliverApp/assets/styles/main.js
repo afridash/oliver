@@ -5,6 +5,9 @@ theme.add({ // Add default theme
     flex: 1,
     backgroundColor:'#424242',
   },
+  actionsContainer:{
+      borderColor:'white',
+  },
   secondaryContainer: {
     flex:10,
     alignItems: 'center',
@@ -73,7 +76,10 @@ theme.add({ // Add default theme
 theme.add({ // Add LIGHT theme
   container: {
     flex: 1,
-    backgroundColor:'#E0E0E0' ,
+    backgroundColor:'#FFFFFF' ,
+  },
+  actionsContainer:{
+      borderColor:'#ed9b9b',
   },
   secondaryContainer: {
     flex:10,
@@ -84,20 +90,21 @@ theme.add({ // Add LIGHT theme
     paddingVertical: 20
   },
   navBar: {
-    borderColor:'#0277bd',
-    backgroundColor: '#01579b',
+    borderColor:'#ed9b9b',
+    backgroundColor: '#FFFFFF',
+
   },
   primaryButton:{
-    backgroundColor:'#0277bd',
+    backgroundColor:'#ed9b9b',
   },
   secondaryButton:{
-    backgroundColor: '#0277bd',
+    backgroundColor: '#ed9b9b',
   },
   progress:{
-    backgroundColor:'#0277bd'
+    backgroundColor:'#ed9b9b'
   },
   subtitle: {
-    color:'#595959',
+    color:'#FFFFFF',
   },
   title: {
     flex:2,
@@ -105,7 +112,8 @@ theme.add({ // Add LIGHT theme
     alignItems:'center',
   },
   header:{
-    color:'#595959',
+    color:'#ed9b9b',
+
   },
   image: {
     flex:3,
@@ -118,16 +126,16 @@ theme.add({ // Add LIGHT theme
     height:  150,
   },
   information: {
-    color:'#595959',
+    color:'#ed9b9b',
   },
   scrollView: {
     height: 700
   },
   textColor:{
-    color:'black',
+    color:'#ed9b9b',
   },
   iconColor:{
-    tintColor:'black',
+    tintColor:'#ed9b9b',
   },
 }, 'light')
 
@@ -135,6 +143,9 @@ theme.add({ // Add BLUE theme
   container: {
     flex: 1,
     backgroundColor:'#1A237E' ,
+  },
+  actionsContainer:{
+      borderColor:'white',
   },
   secondaryContainer: {
     flex:10,
@@ -197,6 +208,9 @@ theme.add({ // Add PURPLE theme
     flex: 1,
     backgroundColor:'#4A148C' ,
   },
+  actionsContainer:{
+      borderColor:'white',
+  },
   secondaryContainer: {
     flex:10,
     alignItems: 'center',
@@ -257,6 +271,9 @@ theme.add({ // Add PINK theme
   container: {
     flex: 1,
     backgroundColor:'#880E4F' ,
+  },
+  actionsContainer:{
+      borderColor:'white',
   },
   secondaryContainer: {
     flex:10,

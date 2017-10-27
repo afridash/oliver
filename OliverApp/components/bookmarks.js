@@ -97,6 +97,7 @@ export default class Bookmarks extends Component {
         }
       })
     })
+    if (this.state.noBookmarks) AsyncStorage.setItem('bookmarks', JSON.stringify([]))
   }
   handleSwipeClick () {
     //Delete row that has been clicked on after swiping
