@@ -10,21 +10,21 @@ export default class Review extends Component {
                   <div className="col-md-4">
                       <div className="single_fun_facts">
                           <i className="pe-7s-cloud-download"></i>
-                          <h2><span  className="counter_num">2500</span> <span>+</span></h2>
+                          <h2><span  className="counter_num">2800</span> <span>+</span></h2>
                           <p>Questions</p>
                       </div>
                   </div>
                   <div className="col-md-4">
                       <div className="single_fun_facts">
                           <i className="pe-7s-look"></i>
-                          <h2><span  className="counter_num">25</span> <span>+</span></h2>
+                          <h2><span  className="counter_num">80</span> <span>+</span></h2>
                           <p>Courses</p>
                       </div>
                   </div>
                   <div className="col-md-4">
                       <div className="single_fun_facts">
                           <i className="pe-7s-comment"></i>
-                          <h2><span  className="counter_num">2</span> <span>+</span></h2>
+                          <h2><span  className="counter_num">3</span> <span>+</span></h2>
                           <p>Universties</p>
                       </div>
                   </div>

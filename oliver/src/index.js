@@ -8,6 +8,7 @@ import {AddNew} from './components/AddNew'
 import {AddQuestions} from './components/AddQuestions'
 import {View} from './components/View'
 import {Stats} from './components/Stats'
+import Policy from './components/policy'
 import Home from './components/App'
 import App from './App';
 import registerServiceWorker from './registerServiceWorker';
@@ -21,6 +22,7 @@ ReactDOM.render(<BrowserRouter >
        <Route path={"/addquestions"} component={AddQuestions} />
        <Route path={'/view'} component={View} />
        <Route path={'/stats'} component={Stats} />
+        <Route path={'/policy'} component={Policy} />
     </Switch>
   </div>
 </BrowserRouter>, document.getElementById('root'));
