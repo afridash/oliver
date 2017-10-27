@@ -108,12 +108,12 @@ export default class DrawerContent extends React.Component {
 const sidebar = {
   secondaryContainer:{
     fontSize: 18,
+    padding:5,
     fontFamily:(Platform.OS === 'ios') ? 'verdana' : 'sans-serif',
   },
   container:{
     flex:3,
     marginTop:25,
-
   },
   profile:{
     flex:1,
@@ -129,7 +129,6 @@ const sidebar = {
     shadowRadius:5,
   },
   line:{
-    flex:1,
     justifyContent:'flex-end',
     alignItems:'center',
     borderTopWidth:3,
@@ -148,7 +147,7 @@ const sidebar = {
   },
 
   home:{
-    margin: 15,
+    margin: (Platform.OS === 'ios') ? 15 : 10,
     resizeMode: 'contain',
     width: 30,
     height: 30,

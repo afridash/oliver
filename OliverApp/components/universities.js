@@ -7,6 +7,7 @@ import {
   Platform,
   FlatList,
   Image,
+  RefreshControl,
   TouchableHighlight,
 } from 'react-native'
 import {Actions} from 'react-native-router-flux'
@@ -21,6 +22,7 @@ export default class Universities extends Component {
     this.state = {
       universities:[],
       index:0,
+      refreshing:true,
     }
     this.ref = firebase.database().ref().child('colleges')
     this.usersRef = firebase.database().ref().child('users')
@@ -91,7 +93,7 @@ export default class Universities extends Component {
     this.ref.once('value', (snapshots)=>{
       snapshots.forEach((snapshot)=>{
         this.colleges.push({key:snapshot.key, name:snapshot.val().college})
-        this.setState({colleges:this.colleges})
+        this.setState({colleges:this.colleges, refreshing:false})
       })
     })
   }
@@ -142,6 +144,12 @@ export default class Universities extends Component {
               data={this.state.colleges}
               ItemSeparatorComponent={()=><View style={customStyles.separator}></View>}
               renderItem={this.renderItem}
+              refreshControl={
+               <RefreshControl
+               refreshing={this.state.refreshing}
+                  onRefresh={this.getColleges.bind(this)}
+              />
+             }
          />
           </View>
         </View>

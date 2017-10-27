@@ -102,8 +102,8 @@ android {
         applicationId "com.afridash.oliver"
         minSdkVersion 16
         targetSdkVersion 22
-        versionCode 3
-        versionName "1.2"
+        versionCode 7
+        versionName "2.0.1"
         ndk {
             abiFilters "armeabi-v7a", "x86"
         }

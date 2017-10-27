@@ -104,7 +104,6 @@ export default class Home extends Component {
         })
         AsyncStorage.setItem('savedActivities','1')
       }
-      this.readAddCourses()
     }
   }
   componentWillReceiveProps (p) {
@@ -129,7 +128,13 @@ export default class Home extends Component {
       await this.data.map(async (course)=>{
         course.high = await this.getHighScore(course.key)
       })
+      this.checkInternetStatus()
       this.setState({data:this.data, noCourses:false, isLoading:false})
+    }
+  }
+  async checkInternetStatus () {
+    if (this.state.status === 'true') {
+      this.readAddCourses()
     }
   }
   async readAddCourses() {

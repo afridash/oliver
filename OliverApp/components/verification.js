@@ -102,6 +102,7 @@ const customStyles = StyleSheet.create({
     textDecorationColor:'white',
     fontFamily:(Platform.OS === 'ios') ? 'verdana' : 'serif',
     color:'#fafafa',
+    backgroundColor:'transparent'
   },
   box: {
     flex:1,
