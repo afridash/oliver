@@ -20,7 +20,7 @@ export default class Downloads extends Component {
 
                 <div className="col-md-6">
                     <div className="row">
-                        <a href="">
+                        <a href="https://itunes.apple.com/ng/app/oliver/id1294021174?ls=1&mt=8" target='_blank'>
                             <div className="col-md-4 no_padding">
                                 <div className="single_store">
                                     <i className="fa fa-apple"></i>
