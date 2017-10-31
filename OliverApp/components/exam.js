@@ -23,8 +23,9 @@ import theme, { styles } from 'react-native-theme'
 import Button from 'react-native-button'
 import Firebase from '../auth/firebase'
 const firebase = require('firebase')
-
 import NavBar from './navBar'
+AdMobInterstitial.setTestDevices(['EMULATOR']);
+AdMobInterstitial.setAdUnitID('ca-app-pub-1090704049569053/9261698690');
 export default class Exams extends Component {
   constructor (props) {
     super (props)
@@ -74,10 +75,6 @@ export default class Exams extends Component {
       if (snapshot.exists()) snapshot.ref.set(snapshot.val() + 1)
       else snapshot.ref.set(1)
     })
-  }
-  componentDidMount () {
-    AdMobInterstitial.setTestDevices(['EMULATOR']);
-    AdMobInterstitial.setAdUnitID('ca-app-pub-1090704049569053/9261698690');
   }
   async getInfo () {
     //Retrieve user from local storage
