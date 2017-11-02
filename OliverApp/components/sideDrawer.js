@@ -98,7 +98,7 @@ export default class DrawerContent extends React.Component {
           </View>
         </View>
         <View style={[sidebar.line, styles.actionsContainer]}>
-          <Button style={[sidebar.secondaryContainer, styles.textColor]} onPress={()=>Actions.replace('themes')}><Image source={require('../assets/images/themes.png')} style={[sidebar.home, styles.iconColor]} />Themes</Button>
+          <Button style={[sidebar.secondaryContainer, styles.textColor]} onPress={()=>Actions.replace('preferences')}><Image source={require('../assets/images/system.png')} style={[sidebar.home, styles.iconColor]} />Preferences</Button>
           <Button onPress={()=>this.logout()} style={[sidebar.secondaryContainer, styles.textColor]}><Image source={require('../assets/images/logout.png')} style={[sidebar.home, styles.iconColor]} />Logout</Button>
       </View>
     </View>
