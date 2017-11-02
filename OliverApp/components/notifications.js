@@ -143,10 +143,12 @@ export default class Notifications extends Component {
     else if (item.type === 'downvote') return this.showExploreVote(item, index, 'downvoted your comment')
     else if (item.type === 'explore_like') return this.showExploreVote(item, index, 'liked your post on explore')
     else if (item.type === 'explore_comment') return this.showExploreVote(item, index, 'commented on an explore post')
+    else if (item.type === 'explore_mention') return this.showExploreVote(item, index, 'replied to your comment')
     else if (item.type === 'upvote_theory') return this.showTheoryVote(item, index, 'upvoted your comment to a question')
     else if (item.type === 'downvote_theory') return this.showTheoryVote(item, index, 'downvoted your comment to a question')
     else if (item.type === 'downvote_theory') return this.showTheoryVote(item, index, 'downvoted your comment to a question')
     else if (item.type === 'theory_comment') return this.showTheoryVote(item, index, 'commented on a question you follow')
+    else if (item.type === 'theory_mention') return this.showTheoryVote(item, index, 'replied to your comment on a question')
    }
    bannerError = (e) => {
      //Failed to load banner
