@@ -69,7 +69,7 @@ export default class Themes extends Component {
   render () {
     return (
       <View style={styles.container}>
-        <NavBar />
+        <NavBar backButton={true} title='Themes' />
         <StatusBar
           barStyle="light-content"
         />

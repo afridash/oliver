@@ -44,19 +44,6 @@ export default class DrawerContent extends React.Component {
     sceneStyle: ViewPropTypes.style,
     title: PropTypes.string,
   }
-  async logout () {
-    firebase.auth().signOut().then(function () {
-      // Sign-out successful.
-      }, function (error) {
-        // An error happened.
-    })
-    var current = await AsyncStorage.getItem('myKey')
-    AsyncStorage.setItem('currentUser', current)
-    let keys = ['email', 'myKey', 'name', 'pPicture', 'verified', 'collegeId', 'college', 'username']
-    await AsyncStorage.multiRemove(keys, (err) => {
-      return Actions.reset('index')
-    })
-  }
   loadNotifcations () {
     this.ref.child(this.state.userId).child('notificationsBadges').remove()
     this.setState({badges:0})
@@ -99,7 +86,6 @@ export default class DrawerContent extends React.Component {
         </View>
         <View style={[sidebar.line, styles.actionsContainer]}>
           <Button style={[sidebar.secondaryContainer, styles.textColor]} onPress={()=>Actions.replace('preferences')}><Image source={require('../assets/images/system.png')} style={[sidebar.home, styles.iconColor]} />Preferences</Button>
-          <Button onPress={()=>this.logout()} style={[sidebar.secondaryContainer, styles.textColor]}><Image source={require('../assets/images/logout.png')} style={[sidebar.home, styles.iconColor]} />Logout</Button>
       </View>
     </View>
     );
