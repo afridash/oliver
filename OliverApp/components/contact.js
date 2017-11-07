@@ -8,7 +8,7 @@ export default class Contact extends Component {
   render() {
     return (
       <View style={styles.container}>
-        <NavBar backButton={true} title='Contact' />
+        <NavBar backButton={true} />
         <WebView
           source={{uri: 'https://oliver.afridash.com'}}
           style={{marginTop: 20}}

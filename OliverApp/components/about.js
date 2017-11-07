@@ -8,7 +8,7 @@ export default class About extends Component {
   render() {
     return (
       <View style={styles.container}>
-        <NavBar backButton={true} title='Contact' />
+        <NavBar backButton={true} title='About' />
         <ScrollView style={{flex:1}}>
           <Text style={[styles.textColor, customStyles.header]}>About </Text>
           <Text style={[styles.textColor, customStyles.body]}> We at Afridash are happy to introduce Oliver -- your one stop shop for exam preparation on your campus. With your help, we have built the perfect app to keep track of your courses, and provide you with a smooth experience to practice past questions from those courses. We simulated a practice exam with the objectives, and provided you a way to study theory questions.

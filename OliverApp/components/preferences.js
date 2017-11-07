@@ -53,30 +53,31 @@ render () {
           <View style={[customStyles.space]}>
             <Button onPress={()=>Actions.about()} style={[customStyles.secondaryContainer, styles.textColor]} >
               <Image source={require('../assets/images/info.png')} style={[customStyles.home, styles.iconColor]} /> About Us</Button>
-              <View>
+              <View style={customStyles.iconPosition}>
               <Image source={require('../assets/images/arrow_right.png')} style={[styles.iconColor, customStyles.icon]} resizeMode={'contain'}/>
             </View>
           </View>
           <View style={[customStyles.space]}>
             <Button onPress={()=>Actions.contact()} style={[customStyles.secondaryContainer, styles.textColor]} >
               <Image source={require('../assets/images/phone.png')} style={[customStyles.home, styles.iconColor]} /> Contact Us</Button>
-              <View>
+              <View style={customStyles.iconPosition}>
               <Image source={require('../assets/images/arrow_right.png')} style={[styles.iconColor, customStyles.icon]} resizeMode={'contain'}/>
             </View>
           </View>
           <View style={[customStyles.space]}>
             <Button onPress={this._shareMessage} style={[customStyles.secondaryContainer, styles.textColor]} >
               <Image source={require('../assets/images/heart2.png')} style={[customStyles.home, styles.iconColor]} />Share to a Friend</Button>
-              <View>
+              <View style={customStyles.iconPosition}>
               <Image source={require('../assets/images/arrow_right.png')} style={[styles.iconColor, customStyles.icon]} resizeMode={'contain'}/>
             </View>
           </View>
-              <View style={[customStyles.logout]}>
+              <View style={[customStyles.space]}>
                   <Button style={[customStyles.secondaryContainer, styles.textColor]} onPress={()=>Actions.themes()}><Image source={require('../assets/images/themes.png')} style={[customStyles.home, styles.iconColor]} />Themes</Button>
-                  <View>
+                  <View style={customStyles.iconPosition}>
                   <Image source={require('../assets/images/arrow_right.png')} style={[styles.iconColor, customStyles.icon]} resizeMode={'contain'}/>
                 </View>
               </View>
+              <View style={customStyles.logout}></View>
                 <View style={{justifyContent:'center', alignItems:'center'}}>
                   <Button onPress={()=>this.logout()} style={[customStyles.secondaryContainer, styles.textColor]}>
                     <Image source={require('../assets/images/logout.png')} style={[customStyles.home, styles.iconColor]} />Logout</Button>
@@ -102,7 +103,8 @@ const customStyles ={
   space:{
      flexDirection:'row',
     justifyContent:'space-between',
-
+    borderBottomWidth:0.5,
+    borderColor:'lightgrey',
   },
   logout:{
     flex:1,
@@ -152,6 +154,10 @@ const customStyles ={
     width: 20,
     height: 20,
     alignItems:'flex-end',
+  },
+  iconPosition:{
+    justifyContent:'center',
+    alignItems:'center'
   },
   menu:{
     flex:4,
