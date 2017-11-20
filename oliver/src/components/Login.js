@@ -81,7 +81,7 @@ class Login extends Component {
               />
               <br/>
               <p style={{color:'red'}}>{this.state.error}</p>
-              <RaisedButton label="Submit" primary={true} style={styles.button} onClick={(event) =>
+              <RaisedButton type="submit" label="Submit" primary={true} style={styles.button} onClick={(event) =>
               this.handleSubmit(event)}/>
                 </div>
             </div>

@@ -21,7 +21,7 @@ ReactDOM.render(<BrowserRouter >
        <Route exact path={"/"} component={App} />
         <Route exact path={"/questions"} component={Home} />
         <Route exact path={"/students"} component={Students} />
-        <Route exact path={"/student/:id"} component={Student} />
+        <Route exact path={"/student/:id/:courseId"} component={Student} />
        <Route exact path={"/add"} component={AddNew} />
        <Route path={"/addquestions"} component={AddQuestions} />
        <Route path={'/view'} component={View} />
