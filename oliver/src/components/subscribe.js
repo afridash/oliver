@@ -20,7 +20,7 @@ export default class Subscribe extends Component {
   render() {
     return (
   <div>
-    <section className="subscribe parallax subscribe-parallax" data-stellar-background-ratio="0.6" data-stellar-vertical-offset="20">
+    <section id="SUSCRIBE" className="subscribe parallax subscribe-parallax" data-stellar-background-ratio="0.6" data-stellar-vertical-offset="20">
         <div className="section_overlay wow lightSpeedIn">
             <div className="container">
                 <div className="row">

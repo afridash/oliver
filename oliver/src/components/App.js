@@ -125,7 +125,7 @@ export default class Home extends Component {
           <h2>Welcome to Oliver</h2>
         </div>
         <p className="App-intro">
-          Please sir, can I have some more questions ? :(
+          Please, can I have some more questions ? :(
         </p>
         <Link to="/addquestions"><Button bsStyle="primary" bsSize="large">Add Questions</Button></Link>
         <div style={{margin:5}}>Or Maybe...View Them <Link to="/view">Here</Link></div>
