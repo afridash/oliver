@@ -20,7 +20,7 @@ export class Questions extends Component {
     this.questions = []
     this.courseKey = this.props.courseKey
     this.questionsRef = firebase.database().ref().child('questions')
-    this.statsRef = firebase.database().ref().child('oliver_stats').ref('questions')
+    this.statsRef = firebase.database().ref().child('oliver_stats').child('questions')
   }
   setChecked (event) {
     this.setState({checked:event.target.checked})
