@@ -59,16 +59,22 @@ export default class NavBar extends Component {
       <StatusBar />
       <View style={{ flexDirection: 'row' }}>
         <View style={{flex:1}}>
-          {this.props.backButton ? <TouchableWithoutFeedback  onPress={()=>Actions.pop({refresh: {done: true}})}>
-          <Image
-            source={require('../assets/images/arrow_left.png')}
-            style={[customStyles.backButton, styles.iconColor]} />
-          </TouchableWithoutFeedback>:
-          <TouchableWithoutFeedback  onPress={Actions.drawerOpen}>
-            <Image
-              source={require('../assets/images/menu.png')}
-              style={[customStyles.backarrowStyle, styles.iconColor]} />
-            </TouchableWithoutFeedback>
+          {
+            (()=>{
+              if (this.props.backButton) {
+                return ( <TouchableWithoutFeedback  onPress={()=>Actions.pop({refresh: {done: true}})}>
+                  <Image
+                    source={require('../assets/images/arrow_left.png')}
+                    style={[customStyles.backButton, styles.iconColor]} />
+                  </TouchableWithoutFeedback>)
+              }else {
+                  return (<TouchableWithoutFeedback  onPress={Actions.drawerOpen}>
+                    <Image
+                      source={require('../assets/images/menu.png')}
+                      style={[customStyles.backarrowStyle, styles.iconColor]} />
+                    </TouchableWithoutFeedback>)
+              }
+            })()
           }
         </View>
       {this.props.title && <View style={customStyles.titleContainer}><Text style={[customStyles.title, styles.textColor]}>{this.props.title}</Text></View>}
