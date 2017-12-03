@@ -380,10 +380,10 @@ export default class Exams extends Component {
       <Text style={[customStyles.listText, styles.textColor]}>{index+1}. {item.question}</Text>
       <View style={{flex:1, justifyContent:'center', alignItems:'center'}}>
         <View style={[customStyles.actionsContainer, styles.actionsContainer]}>
-          <Text style={[customStyles.actions, styles.textColor]}>Suggested Answer: {item.textAnswer} ({item.answer})</Text>
+          <Text style={[customStyles.actions, styles.textColor]}>Correct Answer: {item.textAnswer} ({item.answer})</Text>
         </View>
         <View style={[customStyles.actionsContainer,styles.actionsContainer, {borderColor:item.selected === item.answer ? '#004d40' : 'red'}]}>
-          <Text style={[customStyles.actions, styles.textColor]}>Selected: {item.textSelected} ({item.selected})</Text>
+          <Text style={[customStyles.actions, styles.textColor]}>Your Answer: {item.textSelected} ({item.selected})</Text>
         </View>
       </View>
     </View>
