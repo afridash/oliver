@@ -1,7 +1,5 @@
 import React, {Component} from 'react'
-import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
-import RaisedButton from 'material-ui/RaisedButton'
-import TextField from 'material-ui/TextField'
+import { Button, FormGroup, FormControl, ControlLabel } from "react-bootstrap"
 import { Link,Redirect, } from 'react-router-dom'
 import {Firebase} from '../auth/firebase'
 const firebase =  require('firebase')
@@ -56,7 +54,6 @@ class Login extends Component {
   render () {
   return (
     this.state.redirect ? <Redirect to='/students' push/> : <div className='center'>
-          <MuiThemeProvider>
             <div>
               <br/>
               <br/>
@@ -65,28 +62,39 @@ class Login extends Component {
               <br/>
 
               <div className="row" >
-                <div className="col-md-4 col-md-offset-4" style={styles.box}>
-                  <h3 className='text-center'>Login</h3>
-              <TextField
-                hintText="Enter Your Username or Email"
-                floatingLabelText="Username"
-                onChange = {this.handleEmailChange.bind(this)}
-              />
-              <br/>
-              <TextField
-                type="password"
-                hintText="Enter Your Password"
-                floatingLabelText="Password"
-                onChange = {this.handlePasswordChange.bind(this)}
-              />
-              <br/>
-              <p style={{color:'red'}}>{this.state.error}</p>
-              <RaisedButton type="submit" label="Submit" primary={true} style={styles.button} onClick={(event) =>
-              this.handleSubmit(event)}/>
-                </div>
+                <form>
+                  <div className="col-md-4 col-md-offset-4" style={styles.box}>
+                    <h3 className='text-center'>Login</h3>
+                        <br/>
+                <FormGroup bsSize="large">
+                  <ControlLabel>Email Address</ControlLabel>
+                  <FormControl
+                    className='form-control'
+                    placeholder="Please Enter Your Email"
+                    onChange = {this.handleEmailChange.bind(this)}
+                  />
+                </FormGroup>
+
+                <br/>
+              <FormGroup bsSize="large">
+                <ControlLabel>Password</ControlLabel>
+                <FormControl
+                  className='form-control'
+                  type="password"
+                  placeholder="Please Enter Your Password"
+                  onChange = {this.handlePasswordChange.bind(this)}
+                />
+              </FormGroup>
+
+                <p style={{color:'red'}}>{this.state.error}</p>
+                <FormGroup>
+                  <Button type="submit" bsStyle="primary" bsSize="large" style={styles.button} onClick={(event) =>
+                  this.handleSubmit(event)} >Login</Button>
+                </FormGroup>
+                  </div>
+                </form>
             </div>
             </div>
-          </MuiThemeProvider>
         </div>
 
   );

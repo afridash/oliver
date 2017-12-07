@@ -10,6 +10,8 @@ import {View} from './components/View'
 import {Stats} from './components/Stats'
 import Home from './components/App'
 import Login from './components/Login'
+import RecentActivities from './components/recentActivities'
+import Weblogin from './components/weblogin'
 import Students from './components/students.js'
 import Student from './components/student.js'
 import App from './App';
@@ -18,7 +20,7 @@ import registerServiceWorker from './registerServiceWorker';
 ReactDOM.render(<BrowserRouter >
   <div>
     <Switch>
-       <Route exact path={"/"} component={App} />
+       <Route exact path={"/"} component={App}/>
         <Route exact path={"/questions"} component={Home} />
         <Route exact path={"/students"} component={Students} />
         <Route exact path={"/student/:id/:courseId"} component={Student} />
@@ -27,6 +29,8 @@ ReactDOM.render(<BrowserRouter >
        <Route path={'/view'} component={View} />
        <Route path={'/stats'} component={Stats} />
        <Route path={'/Login'} component={Login} />
+       <Route path={'/weblogin'} component={Weblogin}/>
+       <Route path={'/recentActivities'} component={RecentActivities} />
     </Switch>
   </div>
 </BrowserRouter>, document.getElementById('root'));

@@ -1,5 +1,57 @@
 import React, { Component } from 'react'
+import { Button, FormGroup, FormControl, ControlLabel } from "react-bootstrap"
+import {Firebase} from '../auth/firebase'
+
+const firebase =  require('firebase')
+
 export default class Home extends Component {
+
+  constructor(props){
+    super(props);
+    this.auth = firebase.auth()
+    this.state = {
+      username: '',
+      password: '',
+      error: '',
+      redirect:false,
+    }
+  }
+
+  componentWillMount () {
+    firebase.auth().onAuthStateChanged(this.handleUser)
+  }
+
+  handleUser(user){
+      if(user){
+        this.setState({redirect:true})
+      }
+    }
+
+  async handleSubmit (event) {
+      event.preventDefault()
+      var loggedInError = false
+      await firebase.auth().signInWithEmailAndPassword(this.state.email, this.state.password).catch(function(error) {
+      var errorCode = error.code;
+      var errorMessage = error.message
+      console.log(errorMessage)
+      alert(errorMessage)
+      loggedInError=true
+    })
+      if(!loggedInError){
+        this.setState({redirect:true})
+      }else{
+        this.setState({error:"Password and Email Do Not Match"})
+      }
+  }
+
+  handlePasswordChange (event){
+    this.setState({password: event.target.value})
+  }
+
+  handleEmailChange (event) {
+    this.setState({email: event.target.value})
+  }
+
   render() {
     return (
   <div><section className="header parallax home-parallax page" id="HOME">
@@ -45,11 +97,46 @@ export default class Home extends Component {
                         </div>
                     </div>
                 </div>
-                <div className="col-md-3 col-md-offset-1 col-sm-4">
-                    <div className="home-iphone">
-                        <img src="images/iPhone_Home.png" alt="" width={'120%'} />
-                    </div>
+                <div className="col-md-4 col-sm-4">
+                          <form>
+                            <div className='well'>
+                              <div className="row">
+                                <div className="col-md-10 col-md-offset-1">
+                              <h3 className='text-center'>Login</h3>
+                                  <br/>
+                          <FormGroup bsSize="large">
+                            <ControlLabel>Email Address</ControlLabel>
+                            <FormControl
+                              className='form-control'
+                              placeholder="Enter Your Email"
+                              onChange = {this.handleEmailChange.bind(this)}
+                            />
+                          </FormGroup>
+
+                          <br/>
+                        <FormGroup bsSize="large">
+                          <ControlLabel>Password</ControlLabel>
+                          <FormControl
+                            className='form-control'
+                            type="password"
+                            placeholder="Enter Your Password"
+                            onChange = {this.handlePasswordChange.bind(this)}
+                          />
+                        </FormGroup>
+
+                          <br/>
+                          <p style={{color:'red'}}>{this.state.error}</p>
+                          <FormGroup>
+                            <Button type="submit" bsStyle="primary" bsSize="large" style={styles.button} onClick={(event) =>
+                            this.handleSubmit(event)} >Login</Button>
+                          </FormGroup>
+                          <div className="col-md-8 col-md-offset-2"><a target="_blank" href={'https://oliver.afridash.com/policy'}>Privacy Policy</a></div>
+                          </div>
+                        </div>
+                      </div>
+                          </form>
                 </div>
+
             </div>
         </div>
     </div>
@@ -57,3 +144,13 @@ export default class Home extends Component {
 );
 }
 }
+const styles = {
+button:{
+  width:'100%'
+},
+box:{
+  boxShadow: '5px 5px 5px #888888',
+  backgroundColor:'#E0E0E0',
+  top:'30%',
+},
+};
