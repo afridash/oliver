@@ -10,6 +10,8 @@ import {View} from './components/View'
 import {Stats} from './components/Stats'
 import Policy from './components/policy'
 import Home from './components/App'
+import AppHome from './components/AppHome.js'
+import Practice from './components/Practice.js'
 import Login from './components/Login'
 import Students from './components/students.js'
 import Student from './components/student.js'
@@ -20,6 +22,8 @@ ReactDOM.render(<BrowserRouter >
   <div>
     <Switch>
        <Route exact path={"/"} component={App} />
+       <Route exact path={"/AppHome"} component={AppHome} />
+        <Route exact path={"/Practice"} component={Practice} />
         <Route exact path={"/questions"} component={Home} />
         <Route exact path={"/students"} component={Students} />
         <Route exact path={"/student/:id/:courseId"} component={Student} />
