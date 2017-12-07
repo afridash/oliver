@@ -59,7 +59,7 @@ export default class NavBar extends Component {
       <StatusBar />
       <View style={{ flexDirection: 'row' }}>
         <View style={{flex:1}}>
-          {this.props.backButton ? <TouchableWithoutFeedback  onPress={Actions.pop}>
+          {this.props.backButton ? <TouchableWithoutFeedback  onPress={()=>Actions.pop({refresh: {done: true}})}>
           <Image
             source={require('../assets/images/arrow_left.png')}
             style={[customStyles.backButton, styles.iconColor]} />
@@ -111,6 +111,7 @@ const customStyles = {
   },
   navBar: {
     borderTopWidth:20,
+    borderBottomWidth:0.5,
     shadowColor:'#000000',
     shadowOffset:{width: 5, height: 5},
     shadowOpacity:0.5,

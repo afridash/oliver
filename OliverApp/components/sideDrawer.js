@@ -25,8 +25,11 @@ export default class DrawerContent extends React.Component {
     var email = await AsyncStorage.getItem('email')
     var userId = await AsyncStorage.getItem('myKey')
     if (userId !== null) {
-      this.ref.child(userId).child('notificationsBadges').once('value', (badges)=>{
-        if (badges.exists()) this.setState({badges:badges.val()})
+      this.ref.child(userId).on('child_added', (badges)=>{
+        this.setState({badges:badges.val()})
+      })
+      this.ref.child(userId).on('child_changed', (badges)=>{
+        this.setState({badges:badges.val()})
       })
       var profilePicture = await AsyncStorage.getItem('pPicture')
      this.setState({email, name, profilePicture, userId})
@@ -41,19 +44,6 @@ export default class DrawerContent extends React.Component {
     sceneStyle: ViewPropTypes.style,
     title: PropTypes.string,
   }
-  async logout () {
-    firebase.auth().signOut().then(function () {
-      // Sign-out successful.
-      }, function (error) {
-        // An error happened.
-    })
-    var current = await AsyncStorage.getItem('myKey')
-    AsyncStorage.setItem('currentUser', current)
-    let keys = ['email', 'myKey', 'name', 'pPicture', 'verified', 'collegeId', 'college', 'username']
-    await AsyncStorage.multiRemove(keys, (err) => {
-      return Actions.reset('index')
-    })
-  }
   loadNotifcations () {
     this.ref.child(this.state.userId).child('notificationsBadges').remove()
     this.setState({badges:0})
@@ -66,7 +56,7 @@ export default class DrawerContent extends React.Component {
           <TouchableHighlight
             onPress={Actions.profile}
             underlayColor={'transparent'}
-            style={{flex:1}}>
+            style={[{flex:1,borderBottomWidth : (Platform.OS ==='ios') ? 0: 1}, styles.actionsContainer]}>
             <View style={sidebar.profile}>
               <View style={sidebar.profileContainer}>
               <Image resizeMode={'cover'} source={{uri: this.state.profilePicture}} style={sidebar.profilePicture} />
@@ -94,9 +84,8 @@ export default class DrawerContent extends React.Component {
                     <Image source={require('../assets/images/explore.png')} style={[sidebar.home, styles.iconColor]} />  Explore</Button>
           </View>
         </View>
-        <View style={{flex:1, justifyContent:'flex-end', alignItems:'center', borderTopWidth:3, borderColor:'white'}}>
-          <Button style={[sidebar.secondaryContainer, styles.textColor]} onPress={()=>Actions.replace('themes')}><Image source={require('../assets/images/themes.png')} style={[sidebar.home, styles.iconColor]} />Themes</Button>
-          <Button onPress={()=>this.logout()} style={[sidebar.secondaryContainer, styles.textColor]}><Image source={require('../assets/images/logout.png')} style={[sidebar.home, styles.iconColor]} />Logout</Button>
+        <View style={[sidebar.line, styles.actionsContainer]}>
+          <Button style={[sidebar.secondaryContainer, styles.textColor]} onPress={()=>Actions.replace('preferences')}><Image source={require('../assets/images/system.png')} style={[sidebar.home, styles.iconColor]} />Preferences</Button>
       </View>
     </View>
     );
@@ -105,12 +94,12 @@ export default class DrawerContent extends React.Component {
 const sidebar = {
   secondaryContainer:{
     fontSize: 18,
+    padding:5,
     fontFamily:(Platform.OS === 'ios') ? 'verdana' : 'sans-serif',
   },
   container:{
     flex:3,
     marginTop:25,
-
   },
   profile:{
     flex:1,
@@ -125,7 +114,11 @@ const sidebar = {
     shadowOpacity:0.5,
     shadowRadius:5,
   },
-
+  line:{
+    justifyContent:'flex-end',
+    alignItems:'center',
+    borderTopWidth:3,
+  },
   menu:{
     flex:4,
     justifyContent:'flex-start',
@@ -140,7 +133,7 @@ const sidebar = {
   },
 
   home:{
-    margin: 15,
+    margin: (Platform.OS === 'ios') ? 15 : 10,
     resizeMode: 'contain',
     width: 30,
     height: 30,

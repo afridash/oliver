@@ -32,7 +32,7 @@ export default class ViewFull extends Component {
       <View style={styles.container}>
         <NavBar backButton={true} title={this.state.name} />
       <View style={{flex:1, justifyContent:'center', alignItems:'center' }}>
-        <Image source={{uri: this.state.profilePicture}} resizeMode={'cover'} style={customStyles.profile} />
+        <Image source={{uri: this.state.profilePicture}} resizeMode={'contain'} style={customStyles.profile} />
       </View>
     </View>
     );

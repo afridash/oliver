@@ -36,7 +36,8 @@ export default class Home extends Component {
       refreshing: false,
       noCourses:false,
       status:'',
-      swipingStarted:false
+      swipingStarted:false,
+      verified:false,
     }
     this.ref = firebase.database().ref().child('user_courses')
     this.registeredRef = firebase.database().ref().child('registered_courses')
@@ -60,6 +61,7 @@ export default class Home extends Component {
   async checkIfVerified () {
     var verified = await AsyncStorage.getItem('verified')
     if (verified === null || verified === '1') return Actions.getCode()
+    else this.setState({verified:true})
   }
   async componentWillMount () {
     theme.setRoot(this)
@@ -102,7 +104,6 @@ export default class Home extends Component {
         })
         AsyncStorage.setItem('savedActivities','1')
       }
-      this.readAddCourses()
     }
   }
   componentWillReceiveProps (p) {
@@ -127,7 +128,13 @@ export default class Home extends Component {
       await this.data.map(async (course)=>{
         course.high = await this.getHighScore(course.key)
       })
+      this.checkInternetStatus()
       this.setState({data:this.data, noCourses:false, isLoading:false})
+    }
+  }
+  async checkInternetStatus () {
+    if (this.state.status === 'true') {
+      this.readAddCourses()
     }
   }
   async readAddCourses() {
@@ -281,11 +288,12 @@ export default class Home extends Component {
               })()
             }
             </View>
-            <AdMobBanner
-              adSize="smartBannerPortrait"
-              adUnitID="ca-app-pub-1090704049569053/1792603919"
-              testDeviceID="EMULATOR"
-              didFailToReceiveAdWithError={this.bannerError} />
+            {!this.state.verified && <AdMobBanner
+                adSize="smartBannerPortrait"
+                adUnitID="ca-app-pub-1090704049569053/1792603919"
+                testDeviceID="EMULATOR"
+                didFailToReceiveAdWithError={this.bannerError} />}
+
           </View>
         </View>
       </View>

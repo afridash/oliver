@@ -20,6 +20,7 @@ export class Questions extends Component {
     this.questions = []
     this.courseKey = this.props.courseKey
     this.questionsRef = firebase.database().ref().child('questions')
+    this.statsRef = firebase.database().ref().child('oliver_stats').ref('questions')
   }
   setChecked (event) {
     this.setState({checked:event.target.checked})
@@ -73,6 +74,9 @@ export class Questions extends Component {
   }
   _saveAssignment () {
     this.questions.filter((question)=> this.uploadQuestion(question))
+    var ref = this.statsRef.once('value', (questions)=>{
+      questions.ref.set(questions.val() + this.questions.length-1)
+    })
     this.setState({submitted:true})
   }
   async uploadQuestion (question) {

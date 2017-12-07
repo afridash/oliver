@@ -39,8 +39,10 @@ yarn-error.log
 # BUCK
 buck-out/
 \.buckd/
-*.keystore
-
+# Private files
+*.jks
+*.apk
+*/auth/firebase.js
 # fastlane
 #
 # It is recommended to not store the screenshots in the git repo. Instead, use fastlane to re-generate the

@@ -37,6 +37,9 @@ import Theory from './components/viewTheory'
 import Notifications from './components/notifications'
 import Objectives from './components/objectives'
 import VerifyPin from './components/verification'
+import Preferences from './components/preferences'
+import Contact from './components/contact'
+import About from './components/about'
 import MenuIcon from './assets/images/menu_burger.png';
 
 const reducerCreate = params => {
@@ -122,6 +125,9 @@ export default class App extends React.Component {
                       <Scene key="viewTheory" component={Theory} />
                       <Scene key="notifications" component={Notifications} />
                       <Scene key="getCode" component={VerifyPin} />
+                      <Scene key="preferences" component={Preferences} />
+                      <Scene key="contact" component={Contact} />
+                      <Scene key="about" component={About} />
                   </Scene>
                 </Drawer>
               </Stack>

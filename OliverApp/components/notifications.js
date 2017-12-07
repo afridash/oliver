@@ -30,7 +30,8 @@ export default class Notifications extends Component {
       swipingStarted:false,
       isLoading:true,
       noNotifications:false,
-      status:''
+      status:'',
+      verified:false,
     }
     this.data = []
     this.renderItem = this.renderItem.bind(this)
@@ -40,8 +41,10 @@ export default class Notifications extends Component {
   async componentWillMount () {
     theme.setRoot(this)
     var key = await AsyncStorage.getItem('myKey')
+    var verified = await AsyncStorage.getItem('verified')
     var currentUser = await AsyncStorage.getItem('currentUser')
     var status = await AsyncStorage.getItem('status') //Check the internet status
+    if (verified !== null & verified !=='1') this.setState({verified:true})
     this.setState({userId:key, status})
     if (currentUser === key)
     this.retrieveNotificationsOffline()
@@ -140,10 +143,12 @@ export default class Notifications extends Component {
     else if (item.type === 'downvote') return this.showExploreVote(item, index, 'downvoted your comment')
     else if (item.type === 'explore_like') return this.showExploreVote(item, index, 'liked your post on explore')
     else if (item.type === 'explore_comment') return this.showExploreVote(item, index, 'commented on an explore post')
+    else if (item.type === 'explore_mention') return this.showExploreVote(item, index, 'replied to your comment')
     else if (item.type === 'upvote_theory') return this.showTheoryVote(item, index, 'upvoted your comment to a question')
     else if (item.type === 'downvote_theory') return this.showTheoryVote(item, index, 'downvoted your comment to a question')
     else if (item.type === 'downvote_theory') return this.showTheoryVote(item, index, 'downvoted your comment to a question')
     else if (item.type === 'theory_comment') return this.showTheoryVote(item, index, 'commented on a question you follow')
+    else if (item.type === 'theory_mention') return this.showTheoryVote(item, index, 'replied to your comment on a question')
    }
    bannerError = (e) => {
      //Failed to load banner
@@ -185,11 +190,13 @@ export default class Notifications extends Component {
             })()
           }
           </View>
-          <AdMobBanner
-           adSize="smartBannerPortrait"
-           adUnitID="ca-app-pub-1090704049569053/1792603919"
-           testDeviceID="EMULATOR"
-           didFailToReceiveAdWithError={this.bannerError} />
+          {!this.state.verified &&
+            <AdMobBanner
+             adSize="smartBannerPortrait"
+             adUnitID="ca-app-pub-1090704049569053/1792603919"
+             testDeviceID="EMULATOR"
+             didFailToReceiveAdWithError={this.bannerError} />
+           }
         </View>
       </View>
     )

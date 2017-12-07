@@ -10,7 +10,7 @@ export default class Features extends Component {
 
                     <div className="section_title wow fadeIn" data-wow-duration="1s">
                         <h2>Features</h2>
-                        <p>To ensure you maximize the best out of this App, we created a UI so easy to understand from it relatable contents, icons to it's colors to ensure easy navigation across the entire App. Take a look at some other features.</p>
+                        <p>To ensure you maximize the best out of this App, we created a UI so easy to understand from its relatable contents, icons to its colors to ensure easy navigation across the entire App. Take a look at some other features.</p>
                     </div>
 
                 </div>
@@ -21,34 +21,22 @@ export default class Features extends Component {
             <div className="container">
                 <div className="row">
                     <div className="col-md-4 right_no_padding wow fadeInLeft" data-wow-duration="1s">
-
-
                         <div className="left_single_feature">
-
                             <div><span className="pe-7s-like"></span></div>
-
                             <h3>Offline Capabilities<span>/</span></h3>
-                            <p>Saving you from having to be online to retrieve questions and courses was one of our major focus, and we did it! You can view courses, bookmarks, questions, and activities offline...once you have downloaded them the first time.
-</p>
+                            <p>Saving you from having to be online to retrieve questions and courses was one of our major focus, and we did it! You can view courses, bookmarks, questions, and activities offline...once you have downloaded them the first time.</p>
                         </div>
-
                         <div className="left_single_feature">
-
                             <div><span className="pe-7s-science"></span></div>
-
                             <h3>Activities<span>/</span></h3>
                             <p>We help you keep track of your activities in practice exams. Recent activities is our way of saying...great job!</p>
                         </div>
-
-
                         <div className="left_single_feature">
                             <div><span className="pe-7s-look"></span></div>
-
                             <h3>Explore<span>/</span></h3>
                             <p>You did great, you want others to be inspired, or challenged? Share to EXPLORE. Users across your campus will be able see your performance and be challenged to do the same. On EXPLORE, you can search for other users to see what they've shared, or search for a course to see all EXPLORERS from that course.
 </p>
                         </div>
-
                     </div>
                     <div className="col-md-4">
                         <div className="feature_iphone">

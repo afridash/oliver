@@ -19,7 +19,7 @@ import {
 import {Actions} from 'react-native-router-flux'
 import theme, { styles } from 'react-native-theme'
 import Button from 'react-native-button'
-import AutoExpandingTextInput from 'react-native-auto-expanding-textinput'
+import PureRenderMixin from 'react-addons-pure-render-mixin';
 import {
   AdMobBanner,
  } from 'react-native-admob'
@@ -33,6 +33,7 @@ export default class Theory extends Component {
     super (props)
     this.state = {
       comments:[],
+      tagged:[],
       index:0,
       isLoading:false,
       noQuestions:false,
@@ -45,6 +46,10 @@ export default class Theory extends Component {
       collegeId:'',
       followers:[],
       text:'',
+      verified:false,
+      maxHeight:50,
+      minHeight:100,
+
     }
     this.renderItem = this.renderItem.bind(this)
     this.commentsRef = firebase.database().ref().child('answers').child(this.props.questionId)
@@ -53,7 +58,11 @@ export default class Theory extends Component {
     this.questionsRef = firebase.database().ref().child('questions')
     this.exploreRef = firebase.database().ref().child('explore')
     this.followersRef = firebase.database().ref().child('question_followers').child(this.props.questionId)
+    if (this.props.courseId)
     this.statsRef = firebase.database().ref().child('student_stats').child(this.props.courseId)
+    this.tagged = []
+    this.textInput = ''
+    this.shouldComponentUpdate = PureRenderMixin.shouldComponentUpdate.bind(this);
   }
   async componentWillMount () {
     //Set theme styles
@@ -64,6 +73,8 @@ export default class Theory extends Component {
     var user = await AsyncStorage.getItem('name')
     var username = await AsyncStorage.getItem('username')
     var collegeId = await AsyncStorage.getItem('collegeId')
+    var verified = await AsyncStorage.getItem('verified')
+    if (verified !== null && verified !== '1') this.setState({verified:true})
     this.setState({userId, profilePicture, username, user, collegeId})
     //Determine if user is following post
     this.followersRef.child(userId).once('value', (following)=>{
@@ -255,11 +266,12 @@ export default class Theory extends Component {
           </View>
 
           <View style={{flex:1}}>
-              <Text style={[customStyles.actions, styles.textColor]}>{item.comment}</Text>
+              <Text style={[customStyles.actions, styles.textColor]}>{this.formatTaggedComment(item.comment)}</Text>
           </View>
         </View>
           <View style={{justifyContent:'flex-end', alignItems:'flex-end'}}>
-            {this.state.userId === item.userId && <Text style={[styles.textColor, customStyles.timestamp]} onPress={()=>this.deleteComment(item.key)}>Delete</Text>}
+            {this.state.userId === item.userId ? <Button onPress={()=>this.deleteComment(item.key)}><Image style={[styles.iconColor, customStyles.deleteIcon]} source={require('../assets/images/trash.png')} /></Button> :
+            <Button onPress={()=>this.replyTo(item.userId, item.user)}><Image style={[styles.iconColor, customStyles.icons]} source={require('../assets/images/reply.png')} /></Button>}
           </View>
       </View>
     </View>
@@ -286,11 +298,12 @@ export default class Theory extends Component {
          </Button>
         </View>}
            {this.props.answer !== ''&& !this.props.comments && <Text style={[customStyles.answer, styles.textColor]}>Suggested Answer: {this.props.answer}</Text>}
-           <AdMobBanner
+           {!this.state.verified && <AdMobBanner
              adSize="smartBannerPortrait"
              adUnitID="ca-app-pub-1090704049569053/1792603919"
              testDeviceID="EMULATOR"
              didFailToReceiveAdWithError={this.bannerError} />
+           }
        </View>
      )
    }
@@ -326,7 +339,17 @@ export default class Theory extends Component {
       this.commentsRef.push(data)
       this.setState({text: ''})
       this.handleNotifications()
+      //Send notifications to tagged followers
+      this.sendTagNotification()
     }
+   }
+  sendTagNotification () {
+     this.tagged = this.state.tagged.filter((user)=> { return this.state.text.includes(user.username)})
+      if (this.props.userId) {
+        this.tagged.map((user)=> Notifications.sendNotification(user.userId, 'explore_mention', this.props.questionId, this.props.question, this.props.courseCode, this.props.userId))
+      }else if (this.props.courseId) {
+        this.tagged.map((user)=> Notifications.sendNotification(user.userId, 'theory_mention', this.props.questionId, this.props.question, this.props.courseCode, this.props.userId))
+      }
    }
   handleNotifications () {
      if (this.props.userId) {
@@ -351,12 +374,42 @@ export default class Theory extends Component {
        })
      }
    }
-  _onChangeHeight = (before, after) => {
-    }
+  _onChange = (event) => {
+     let curHeight = event.nativeEvent.contentSize.height;
+     if (curHeight < this.state.minHeight || curHeight > this.state.maxHeight) return;
+     this.setState({
+       height: curHeight
+     });
+   }
   bannerError = (e) => {
     //Failed to load banner
   }
+  replyTo (userId, username) {
+    username = username.replace(' ', '_')
+    if (userId !== this.state.currentUser){
+      this.tagged.push({userId:userId, username:username})
+      this.setState({text:this.state.text+' @'+username+' ', tagged:this.tagged, currentUser:userId})
+    }else if (!this.state.text.includes('@'+username)) {
+        this.setState({text:this.state.text+' @'+username+' '})
+    }
+    this.textInput.focus()
+  }
+  formatTaggedComment (comment) {
+    //Break from recursion if there are no more @ symbols in the text
+    if (!comment.includes('@')) return (<Text>{comment}</Text>)
+    //Split the comment into three halves Before @, @ to space, and After @
+      var tempComment = comment
+      var position = tempComment.indexOf('@')
+      var before = comment.slice(0, position)
+      tempComment = tempComment.slice(position)
+      var end = tempComment.indexOf(' ')
+      var name = tempComment.slice(0, end)
+      var after = tempComment.slice(end)
+      //Return a recursive call with the After...
+     return (<Text>{before} <Text style={{color:'#2980b9'}}>{name}</Text> {this.formatTaggedComment(after)}</Text>)
+  }
   render () {
+    let tmpHeight = Math.min(this.state.maxHeight, this.state.height)
     return (
       <KeyboardAvoidingView behavior= {(Platform.OS === 'ios')? "padding" : null} style={styles.container}>
         <NavBar title={this.props.courseCode} backButton={true}/>
@@ -389,17 +442,17 @@ export default class Theory extends Component {
               resizeMode={'cover'}
               source={{uri: this.state.profilePicture}}
                  />
-            <AutoExpandingTextInput
-              minHeight={50}
-              maxHeight={55}
+            <TextInput
               enablesReturnKeyAutomatically={true}
-              onChangeHeight={this._onChangeHeight}
+              onContentSizeChange = {this._onChange}
               returnKeyType="done"
-              style={customStyles.postInput}
+              multiline={true}
+              style={[customStyles.postInput, {height:tmpHeight}]}
               placeholder={'Write Something...'}
               placeholderTextColor={'rgba(198,198,204,1)'}
               onChangeText={(text) => { this.setState({text: text}) }}
               value={(this.state && this.state.text) || ''}
+              ref = {(input)=> this.textInput = input}
             />
             <View style={{flex: 0, justifyContent: 'flex-end', alignItems: 'center', marginRight: 5, flexDirection: 'row'}} >
               <Text style={{padding: 2, color: '#283593'}} >{this.state.chars}</Text>
@@ -456,11 +509,19 @@ const customStyles = StyleSheet.create({
     height: 30,
     alignItems:'flex-end',
   },
+  deleteIcon:{
+    resizeMode: 'cover',
+    width: 20,
+    height: 20,
+    alignItems:'flex-end',
+  },
   postInput: {
     flex: 4,
-    height: 50,
     padding: 5,
     fontSize: 14,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    justifyContent: 'center',
     color: 'black',
     fontFamily: 'Verdana',
     borderColor: 'rgba(0,0,0,0.5)'

@@ -20,6 +20,8 @@ export class AddQuestions extends Component {
     this.facultiesRef = firebase.database().ref().child('faculties')
     this.departmentsRef = firebase.database().ref().child('departments')
     this.coursesRef = firebase.database().ref().child('courses')
+    this.statsRef = firebase.database().ref().child('oliver_stats')
+    this.courses = []
   }
   componentWillMount () {
     this.collegesRef.once('value', (snapshots)=>{
@@ -58,7 +60,6 @@ export class AddQuestions extends Component {
     this.retrieveCourses (event.target.value)
   }
   retrieveCourses(key) {
-    this.courses = []
     this.coursesRef.child(key).once('value',(snapshots)=>{
       snapshots.forEach((snapshot)=>{
         this.courses.push({name:snapshot.val().name, key:snapshot.key})
@@ -117,9 +118,12 @@ export class AddQuestions extends Component {
       name:this.state.name,
       code:this.state.code
     }
-    this.coursesRef.child(this.state.departmentKey).push(data)
-    this.retrieveCourses(this.state.departmentKey)
-    this.setState({showModal:false})
+    var key = this.coursesRef.child(this.state.departmentKey).push(data).key
+    this.courses.push({name:this.state.name, key:key})
+    this.setState({courses:this.courses, name:'', code:'', showModal:false})
+    var ref = this.statsRef.child('courses').once('value', (courses)=>{
+      courses.ref.set(courses.val() + 1)
+    })
   }
   selectDetails () {
     return (

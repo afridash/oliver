@@ -8,8 +8,10 @@ import {AddNew} from './components/AddNew'
 import {AddQuestions} from './components/AddQuestions'
 import {View} from './components/View'
 import {Stats} from './components/Stats'
+import Policy from './components/policy'
 import Home from './components/App'
-import Login from './components/Login'
+import AppHome from './components/AppHome.js'
+import Practice from './components/Practice.js'
 import RecentActivities from './components/recentActivities'
 import Weblogin from './components/weblogin'
 import Students from './components/students.js'
@@ -21,6 +23,8 @@ ReactDOM.render(<BrowserRouter >
   <div>
     <Switch>
        <Route exact path={"/"} component={App}/>
+       <Route exact path={"/AppHome"} component={AppHome} />
+        <Route exact path={"/Practice"} component={Practice} />
         <Route exact path={"/questions"} component={Home} />
         <Route exact path={"/students"} component={Students} />
         <Route exact path={"/student/:id/:courseId"} component={Student} />
@@ -28,7 +32,7 @@ ReactDOM.render(<BrowserRouter >
        <Route path={"/addquestions"} component={AddQuestions} />
        <Route path={'/view'} component={View} />
        <Route path={'/stats'} component={Stats} />
-       <Route path={'/Login'} component={Login} />
+        <Route path={'/policy'} component={Policy} />
        <Route path={'/weblogin'} component={Weblogin}/>
        <Route path={'/recentActivities'} component={RecentActivities} />
     </Switch>

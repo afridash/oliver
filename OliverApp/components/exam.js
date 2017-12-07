@@ -23,8 +23,9 @@ import theme, { styles } from 'react-native-theme'
 import Button from 'react-native-button'
 import Firebase from '../auth/firebase'
 const firebase = require('firebase')
-
 import NavBar from './navBar'
+AdMobInterstitial.setTestDevices(['EMULATOR']);
+AdMobInterstitial.setAdUnitID('ca-app-pub-1090704049569053/9261698690');
 export default class Exams extends Component {
   constructor (props) {
     super (props)
@@ -39,6 +40,7 @@ export default class Exams extends Component {
       isLoading:true,
       status:'',
       college:'',
+      verified:false,
       profilePicture:'',
       messages:[{key:1, message:'Want to beat my high score ?!'},
                 {key:2, message:'I just finished practicing! Want to try?'},
@@ -74,10 +76,6 @@ export default class Exams extends Component {
       else snapshot.ref.set(1)
     })
   }
-  componentDidMount () {
-    AdMobInterstitial.setTestDevices(['EMULATOR']);
-    AdMobInterstitial.setAdUnitID('ca-app-pub-1090704049569053/9261698690');
-  }
   async getInfo () {
     //Retrieve user from local storage
     var key = await AsyncStorage.getItem('myKey')
@@ -85,6 +83,8 @@ export default class Exams extends Component {
     var college = await AsyncStorage.getItem('collegeId')
     var username = await AsyncStorage.getItem('username')
     var profilePicture = await AsyncStorage.getItem('pPicture')
+    var verified = await AsyncStorage.getItem('verified')
+    if (verified !== null && verified !== '1') this.setState({verified:true})
     this.setState({userId:key, status, college, profilePicture, username:username})
   }
   async downloadQuestions () {
@@ -204,10 +204,12 @@ export default class Exams extends Component {
     }
   }
   _saveToHistory (){
-      AdMobInterstitial.requestAd().then(function(){
+      if (!this.state.verified){
+        AdMobInterstitial.requestAd().then(function(){
          AdMobInterstitial.showAd()
       }).catch((e)=>{
-      });
+      })
+    }
     var data = {
       title:this.props.course,
       code:this.props.courseCode,

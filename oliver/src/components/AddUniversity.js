@@ -12,6 +12,7 @@ export class AddUniversity extends Component {
       colleges:[],
     }
     this.ref = firebase.database().ref().child('colleges')
+    this.statsRef = firebase.database().ref().child('oliver_stats').child('colleges')
   }
   componentDidMount () {
     this.ref.once('value', (snapshots)=>{
@@ -31,6 +32,9 @@ export class AddUniversity extends Component {
       location:this.state.location
     }
     this.ref.push(data)
+    var ref = this.statsRef.once('value', (colleges)=>{
+      colleges.ref.set(colleges.val() + 1)
+    })
     this.setState({university:'', location:'', submittedUniversity:true})
   }
   showUniversityForm () {
