@@ -8,6 +8,7 @@
     "firebase": "^4.3.0",
     "material-ui": "^0.19.4",
     "material-ui-icons": "^1.0.0-beta.17",
+    "material-ui-image": "^2.1.1",
     "material-ui-search-bar": "^0.4.1",
     "moment": "^2.19.2",
     "react": "^15.6.1",

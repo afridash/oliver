@@ -78,17 +78,7 @@ const HomeIcon = (props) => (
   </SvgIcon>
 );
 
-const timerStyle = {
-  containerOutter: {
-    width: 50,
-    height: 50
-  },
-  containerInner: {
-    lineHeight: '5',
-    color:'red'
-  }
 
-};
 const recentsIcon = <FontIcon className="material-icons">restore</FontIcon>;
 const favoritesIcon = <FontIcon className="material-icons">favorite</FontIcon>;
 const nearbyIcon = <IconLocationOn />;
@@ -139,7 +129,7 @@ Logged.muiName = 'IconMenu';
      color:'#2d6ca1',
    },
  })
-class AppHome extends Component {
+class Practice extends Component {
   constructor(props) {
   super(props);
   this.state = {
@@ -458,7 +448,7 @@ class AppHome extends Component {
 
                           <div className="col-sm-10 col-sm-offset-1">
                             <FlatButton label="Previous" style={{position:'absolute',left:0} } />
-                            <FlatButton label="Next" style={{position:'absolute',right:0}}   />
+                            <FlatButton label="Next" href="/PracticeSummary" style={{position:'absolute',right:0}}   />
                               <br/>   <br/>
 
 
@@ -485,4 +475,4 @@ class AppHome extends Component {
   }
 }
 
-export default AppHome;
+export default Practice;

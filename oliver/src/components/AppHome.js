@@ -31,6 +31,7 @@ import Chip from 'material-ui/Chip';
 import Divider from 'material-ui/Divider';
 import Dialog from 'material-ui/Dialog';
 import {RadioButton, RadioButtonGroup} from 'material-ui/RadioButton';
+import {Link} from 'react-router-dom'
 
 import {
   blue300,
@@ -280,8 +281,8 @@ handleClose = () => {
                     <div className="panel panel-info" style={{borderRightWidth:2, borderTopWidth:0, borderLeftWidth:0, borderBottomWidth:0, borderColor:'none', margin:0}}>
                       <div className="panel-heading"> CSC 158 </div>
                       <div className="panel-body">
-                        <p>HIGH SCORE</p>
-                        <p> 50% </p> </div>
+                        <h3 style={{fontSize:15}}>HIGH SCORE</h3>
+                        <h3 style={{fontSize:15}}> 50% </h3> </div>
 
                     </div>
                   </div>
@@ -291,52 +292,20 @@ handleClose = () => {
                         children={<div>
                         <p>Introduction to Computer Science</p>
 
-                      </div>
-                    }
-                       />
+                      </div>}/>
 
                     </div>
                       <div className="row">
                         <div className="col-sm-10 col-sm-offset-1">
                           <RaisedButton label="Study Theory" fullWidth={true} style={style.chip} />
                           <RaisedButton label="Study Objective" fullWidth={true} style={style.chip} />
-                          <RaisedButton label="Practice" fullWidth={true} onClick={this.handleOpen} style={style.chip}/>
-                              <Dialog
-                                title="Introduction to Computer Science"
-                                actions={actions}
-                                modal={false}
-                                open={this.state.open}
-                                onRequestClose={this.handleClose}
-                                autoScrollBodyContent={true}
-                              >
-                              1.  An electronic tool that allows information to be input, processed, and output
-                                <RadioButtonGroup name="shipSpeed" defaultSelected="not_light">
-                                  {radios}
-                                </RadioButtonGroup>
-
-                                2.  An electronic tool that allows information to be input, processed, and output
-                                  <RadioButtonGroup name="shipSpeed" defaultSelected="not_light">
-                                    {radios}
-                                  </RadioButtonGroup>
-
-                                3.  An electronic tool that allows information to be input, processed, and output
-                                  <RadioButtonGroup name="shipSpeed" defaultSelected="not_light">
-                                    {radios}
-                                  </RadioButtonGroup>
-
-                                4.  An electronic tool that allows information to be input, processed, and output
-                                  <RadioButtonGroup name="shipSpeed" defaultSelected="not_light">
-                                    {radios}
-                                  </RadioButtonGroup>
-                              </Dialog>
+                          <RaisedButton label="Practice" fullWidth={true} href="/practice" style={style.chip}/>
 
                         </div>
                       </div>
                   </div>
                 </div>
-              </div>
-              }
-        />
+              </div> }/>
           </div>
 
           <div className="col-lg-3">
@@ -347,8 +316,8 @@ handleClose = () => {
                     <div className="panel panel-info" style={{borderRightWidth:2, borderTopWidth:0, borderLeftWidth:0, borderBottomWidth:0, borderColor:'none', margin:0}}>
                       <div className="panel-heading"> CSC 158 </div>
                       <div className="panel-body">
-                        <p>HIGH SCORE</p>
-                        <p> 50% </p> </div>
+                        <h3 style={{fontSize:15}}>HIGH SCORE</h3>
+                        <h3 style={{fontSize:15}}> 50% </h3> </div>
 
                     </div>
                   </div>
@@ -358,48 +327,20 @@ handleClose = () => {
                         children={<div>
                         <p>Introduction to Computer Science</p>
 
-                      </div>
-                    }
-                       />
+                      </div>}/>
 
                     </div>
                       <div className="row">
                         <div className="col-sm-10 col-sm-offset-1">
-                          <Paper style={style} zDepth={2}
-                            children={<div>
+                          <RaisedButton label="Study Theory" fullWidth={true} style={style.chip} />
+                          <RaisedButton label="Study Objective" fullWidth={true} style={style.chip} />
+                          <RaisedButton label="Practice" fullWidth={true} href="/practice" style={style.chip}/>
 
-                                Study Theory
-
-                          </div>
-                        }
-                           />
-
-                           <Paper zDepth={2}
-                             children={<div>
-
-                                Study Objective
-
-                           </div>
-                         }
-                            />
-
-                            <Paper style={style} zDepth={2}
-                              children={<div>
-
-                                Practice
-
-                            </div>
-                          }
-                             />
-
-                    
                         </div>
                       </div>
                   </div>
                 </div>
-              </div>
-              }
-        />
+              </div> }/>
           </div>
 
           <div className="col-lg-3">
@@ -409,9 +350,9 @@ handleClose = () => {
                   <div className='col-sm-4'>
                     <div className="panel panel-info" style={{borderRightWidth:2, borderTopWidth:0, borderLeftWidth:0, borderBottomWidth:0, borderColor:'none', margin:0}}>
                       <div className="panel-heading"> CSC 158 </div>
-                      <div className="panel-body">
-                        <p>HIGH SCORE</p>
-                        <p> 50% </p> </div>
+                      <div className="panel-body" >
+                        <h3 style={{fontSize:15}}>HIGH SCORE</h3>
+                        <h3 style={{fontSize:15}}> 50% </h3> </div>
 
                     </div>
                   </div>
@@ -421,37 +362,20 @@ handleClose = () => {
                         children={<div>
                         <p>Introduction to Computer Science</p>
 
-                      </div>
-                    }
-                       />
+                      </div>}/>
 
                     </div>
                       <div className="row">
                         <div className="col-sm-10 col-sm-offset-1">
-                    <Chip
-                      style={style.chip}
-                    >
-                      Study Theory
-                    </Chip>
+                          <RaisedButton label="Study Theory" fullWidth={true} style={style.chip} />
+                          <RaisedButton label="Study Objective" fullWidth={true} style={style.chip} />
+                          <RaisedButton label="Practice" fullWidth={true} href="/practice" style={style.chip}/>
 
-                    <Chip
-                      style={style.chip}
-                    >
-                      Study Objective
-                    </Chip>
-
-                    <Chip
-                      style={style.chip}
-                    >
-                      Practice
-                    </Chip>
                         </div>
                       </div>
                   </div>
                 </div>
-              </div>
-              }
-        />
+              </div> }/>
           </div>
 
           <div className="col-lg-3">
