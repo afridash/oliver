@@ -5,8 +5,10 @@ import * as TimeStamp from '../auth/timestamp'
 import {Link} from 'react-router-dom'
 import moment from 'moment'
 import './App.css';
+var fileDownload = require('js-file-download')
 const firebase =  require('firebase')
-
+var json2csv = require('json2csv');
+var fields = ['Name', 'Last_Login', 'Tests_Started', 'Tests_Completed', 'Average_Score'];
 class Students extends Component {
   constructor (props) {
     super (props)
@@ -22,6 +24,7 @@ class Students extends Component {
     this.registeredRef = firebase.database().ref().child('registered_courses')
     this.statRef = firebase.database().ref().child('student_stats')
     this.activitiesRef = firebase.database().ref().child('course_activities')
+    this.students = []
   }
 
   handleUser (user) {
@@ -30,8 +33,7 @@ class Students extends Component {
       this.loadCourses()
     }
   }
-
- loadCourses () {
+  loadCourses () {
     this.studentsRef.child(this.state.userId).once('value', (snapshots)=>{
       this.courses = []
       snapshots.forEach((snapshot)=>{
@@ -41,9 +43,7 @@ class Students extends Component {
       })
     })
   }
-
   getStudents (key) {
-    this.students = []
     this.registeredRef.child(key).once('value', (snapshots)=>{
       snapshots.forEach((snapshot)=>{
         this.statRef.child(key).child(snapshot.key).child('total_started').once('value', (started)=>{
@@ -68,7 +68,18 @@ class Students extends Component {
       })
     })
   }
-
+  handleDownload = (event) => {
+    var myData = []
+    this.students.map ((student)=>
+    myData.push({Name:student.displayName,
+      Last_Login:TimeStamp.timeSince(student.last_seen),
+      Tests_Started:student.total_started,
+      Tests_Completed:student.total_completed,
+      Average_Score:student.average})
+    )
+    var result = json2csv({ data: myData, fields: fields })
+    fileDownload(result, 'oliver_stats.csv');
+  }
   render() {
     return (
 
@@ -85,6 +96,7 @@ class Students extends Component {
         {this.state.courses.map((course)=>
           <h3 className='text-center'>{course.name} ({course.code})</h3>
         )}
+        <button onClick={this.handleDownload} className='btn btn-primary pull-right' style={{margin:10}}>DOWNLOAD</button>
         <table className="table table-striped table-bordered bootstrap-datatable datatable">
   <thead>
     <tr>
