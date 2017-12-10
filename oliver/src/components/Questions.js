@@ -1,5 +1,10 @@
 import React, {Component} from 'react'
 import {FormGroup, FormControl, ControlLabel, Col, Panel, Button, Checkbox, HelpBlock} from 'react-bootstrap'
+import { EditorState, convertFromRaw, convertToRaw, ContentState} from 'draft-js';
+import { Editor } from 'react-draft-wysiwyg'
+import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css'
+import draftToHtml from 'draftjs-to-html';
+import htmlToDraft from 'html-to-draftjs';
 import {Firebase} from '../auth/firebase'
 const firebase =  require('firebase')
 export class Questions extends Component {
@@ -16,7 +21,9 @@ export class Questions extends Component {
       optionC:'',
       optionD:'',
       questionType:'objective',
+      editorState: EditorState.createEmpty()
     }
+    this.onChange = (editorState) => this.setState({editorState})
     this.questions = []
     this.courseKey = this.props.courseKey
     this.questionsRef = firebase.database().ref().child('questions')
@@ -24,6 +31,9 @@ export class Questions extends Component {
   }
   setChecked (event) {
     this.setState({checked:event.target.checked})
+  }
+  onContentStateChange = (content) => {
+    this.setState({question:draftToHtml(convertToRaw(this.state.editorState.getCurrentContent()))})
   }
   showNext () {
     if (this.state.number < this.questions.length-1) {
@@ -52,16 +62,23 @@ export class Questions extends Component {
   }
   showQuestion (number) {
     var question = this.questions[number]
-      this.setState({
-        type:question.type,
-        optionA:question.optionA,
-        optionB:question.optionB,
-        optionC:question.optionC,
-        optionD:question.optionD,
-        answer:question.answer,
-        checked:question.answered,
-        question:question.question,
-      })
+    const blocksFromHtml = htmlToDraft(question.question)
+    let editorState = null
+    if (blocksFromHtml) {
+      const contentState = ContentState.createFromBlockArray(blocksFromHtml.contentBlocks)
+      const editorState = EditorState.createWithContent(contentState)
+      this.setState({editorState})
+    }
+    this.setState({
+      type:question.type,
+      optionA:question.optionA,
+      optionB:question.optionB,
+      optionC:question.optionC,
+      optionD:question.optionD,
+      answer:question.answer,
+      checked:question.answered,
+      question:question.question,
+    })
   }
   async saveAssignment () {
     var result = false
@@ -116,7 +133,8 @@ export class Questions extends Component {
         answer:'',
         question:'',
         checked:false,
-        uploaded:false,})
+        uploaded:false,
+        editorState:EditorState.createEmpty()})
       return true
     }else {
       this.setState({error: "Question/Answers fields cannot be empty"})
@@ -144,14 +162,15 @@ export class Questions extends Component {
         <FormGroup
           controlId="formBasicText"
           >
-            <textarea
-              className='form-control'
-              style={{resize:'none'}}
-              type="text"
-              value={this.state.question}
-              name="question"
-              placeholder="Enter Question"
-              onChange={(event)=>this.handleChange(event)} />
+            <Editor
+              editorClassName='form-control'
+               editorState={this.state.editorState}
+               toolbarStyle={{backgroundColor:'white', borderWidth:1, borderColor:'lightgrey'}}
+               placeholder='Enter Question'
+               editorStyle={{backgroundColor:'white', height:100, borderWidth:1, borderColor:'lightgrey', padding:5}}
+               onEditorStateChange={this.onChange}
+               onContentStateChange={this.onContentStateChange}
+             />
             <FormControl.Feedback />
           </FormGroup>
 
@@ -215,14 +234,14 @@ export class Questions extends Component {
           <FormGroup
             controlId="formBasicText"
             >
-              <textarea
-                className='form-control'
-                style={{resize:'none'}}
-                type="text"
-                value={this.state.question}
-                name="question"
-                placeholder="Enter Question"
-                onChange={(event)=>this.handleChange(event)} />
+              <Editor
+                 editorState={this.state.editorState}
+                 toolbarStyle={{backgroundColor:'white', borderWidth:1, borderColor:'lightgrey'}}
+                 placeholder='Enter Question'
+                 editorStyle={{backgroundColor:'white', height:100, borderWidth:1, borderColor:'lightgrey', padding:5}}
+                 onEditorStateChange={this.onChange}
+                 onContentStateChange={this.onContentStateChange}
+               />
               <FormControl.Feedback />
             </FormGroup>
 

@@ -1,6 +1,11 @@
 import React, {Component} from 'react'
 import {FormControl, ControlLabel, FormGroup, Radio, Button, Glyphicon, Modal, Checkbox} from 'react-bootstrap'
 import {Firebase} from '../auth/firebase'
+import { EditorState, convertFromRaw, convertToRaw, ContentState } from 'draft-js';
+import { Editor } from 'react-draft-wysiwyg'
+import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css'
+import draftToHtml from 'draftjs-to-html';
+import htmlToDraft from 'html-to-draftjs';
 const firebase =  require('firebase')
 export class Questions extends Component {
   constructor (props) {
@@ -11,11 +16,16 @@ export class Questions extends Component {
       checkedAnswered:false,
       checkedUnanswered:false,
       checkedObjectives:false,
-      checkedTheoryQuestions:false
+      checkedTheoryQuestions:false,
+      editorState: EditorState.createEmpty()
     }
+    this.onChange = (editorState) => this.setState({editorState})
     this.ref = firebase.database().ref().child('questions')
     this.courseKey = this.props.courseKey
     this.questions = []
+  }
+  onContentStateChange = (content) => {
+    this.setState({question:draftToHtml(convertToRaw(this.state.editorState.getCurrentContent()))})
   }
   handleChange (event) {
     this.setState({[event.target.name]: event.target.value})
@@ -56,7 +66,7 @@ export class Questions extends Component {
       snapshots.forEach((snapshot)=>{
         if (snapshot.val().type === 'objective') {
           this.questions.push({
-            question:snapshot.val().question,
+            question: "<p>" + snapshot.val().question + "</p>",
             answer:snapshot.val().answer,
             optionA:snapshot.val().optionA,
             optionB:snapshot.val().optionB,
@@ -68,7 +78,7 @@ export class Questions extends Component {
             })
         } else {
           this.questions.push({
-            question:snapshot.val().question,
+            question:"<p>" + snapshot.val().question + "</p>",
             answer:snapshot.val().answer,
             key:snapshot.key,
             answered:snapshot.val().answered,
@@ -80,6 +90,13 @@ export class Questions extends Component {
     })
   }
   setItems (q,k) {
+    const blocksFromHtml = htmlToDraft(q.question)
+    let editorState = null
+    if (blocksFromHtml) {
+      const contentState = ContentState.createFromBlockArray(blocksFromHtml.contentBlocks)
+      const editorState = EditorState.createWithContent(contentState)
+      this.setState({editorState})
+    }
     if (q.type === 'objective') {
       this.setState({showModal:true,
         question:q.question,
@@ -125,7 +142,7 @@ export class Questions extends Component {
           </div>
         </div>
         <div id="1" className="panel-body">
-          <p style={{fontSize:18}}>{q.question}</p>
+          <div style={{fontSize:18}} dangerouslySetInnerHTML={{__html: q.question}}></div>
           <p style={{fontSize:14}}>Answer: {q.answer}</p>
         </div>
         <div className="panel-footer">
@@ -154,7 +171,7 @@ export class Questions extends Component {
           </div>
         </div>
         <div id="1" className="panel-body">
-          <p style={{fontSize:18}}>{q.question}</p>
+          <div style={{fontSize:18}} dangerouslySetInnerHTML={{__html: q.question}}></div>
           <p style={{fontSize:14}}>Answer: {q.answer}</p>
         </div>
       </div>
@@ -171,14 +188,14 @@ export class Questions extends Component {
             controlId="formBasicText"
             >
               <ControlLabel>Question</ControlLabel>
-              <FormControl
-                type="text"
-                value={this.state.question}
-                name="question"
-                placeholder="Enter Question"
-                onChange={(event)=>this.handleChange(event)}
-              />
-
+              <Editor
+                 editorState={this.state.editorState}
+                 toolbarStyle={{backgroundColor:'white', borderWidth:1, borderColor:'lightgrey'}}
+                 placeholder='Enter Question'
+                 editorStyle={{backgroundColor:'#f5f5f5', height:100, borderWidth:1, borderColor:'lightgrey', padding:5}}
+                 onEditorStateChange={this.onChange}
+                 onContentStateChange={this.onContentStateChange}
+               />
               <FormControl.Feedback />
             </FormGroup>
             <FormGroup
@@ -276,13 +293,14 @@ export class Questions extends Component {
             controlId="formBasicText"
             >
               <ControlLabel>Question</ControlLabel>
-              <FormControl
-                type="text"
-                value={this.state.question}
-                name="question"
-                placeholder="Enter Question"
-                onChange={(event)=>this.handleChange(event)}
-              />
+              <Editor
+                 editorState={this.state.editorState}
+                 toolbarStyle={{backgroundColor:'white', borderWidth:1, borderColor:'lightgrey'}}
+                 placeholder='Enter Question'
+                 editorStyle={{backgroundColor:'#f5f5f5', height:100, borderWidth:1, borderColor:'lightgrey', padding:5}}
+                 onEditorStateChange={this.onChange}
+                 onContentStateChange={this.onContentStateChange}
+               />
               <FormControl.Feedback />
             </FormGroup>
             <FormGroup
