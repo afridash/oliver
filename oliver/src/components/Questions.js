@@ -21,9 +21,19 @@ export class Questions extends Component {
       optionC:'',
       optionD:'',
       questionType:'objective',
-      editorState: EditorState.createEmpty()
+      editorState: EditorState.createEmpty(),
+      answerState: EditorState.createEmpty(),
+      optionAState: EditorState.createEmpty(),
+      optionBState: EditorState.createEmpty(),
+      optionCState: EditorState.createEmpty(),
+      optionDState: EditorState.createEmpty()
     }
     this.onChange = (editorState) => this.setState({editorState})
+    this.onChangeAnswer = (answerState) => this.setState({answerState})
+    this.onChangeAOption = (optionAState) => this.setState({optionAState})
+    this.onChangeBOption = (optionBState) => this.setState({optionBState})
+    this.onChangeCOption = (optionCState) => this.setState({optionCState})
+    this.onChangeDOption = (optionDState) => this.setState({optionDState})
     this.questions = []
     this.courseKey = this.props.courseKey
     this.questionsRef = firebase.database().ref().child('questions')
@@ -34,6 +44,21 @@ export class Questions extends Component {
   }
   onContentStateChange = (content) => {
     this.setState({question:draftToHtml(convertToRaw(this.state.editorState.getCurrentContent()))})
+  }
+  onContentStateChangeAnswer = (content) => {
+    this.setState({answer:draftToHtml(convertToRaw(this.state.answerState.getCurrentContent()))})
+  }
+  onAChange = () => {
+    this.setState({optionA:draftToHtml(convertToRaw(this.state.optionAState.getCurrentContent()))})
+  }
+  onBChange = () => {
+      this.setState({optionB:draftToHtml(convertToRaw(this.state.optionBState.getCurrentContent()))})
+  }
+  onCChange = () => {
+    this.setState({optionC:draftToHtml(convertToRaw(this.state.optionCState.getCurrentContent()))})
+  }
+  onDChange = () => {
+    this.setState({optionD:draftToHtml(convertToRaw(this.state.optionDState.getCurrentContent()))})
   }
   showNext () {
     if (this.state.number < this.questions.length-1) {
@@ -62,13 +87,52 @@ export class Questions extends Component {
   }
   showQuestion (number) {
     var question = this.questions[number]
-    const blocksFromHtml = htmlToDraft(question.question)
+    var blocksFromHtml = htmlToDraft(question.question)
     let editorState = null
+    let answerState = null
+
+    //Get the question stored in state as html
     if (blocksFromHtml) {
       const contentState = ContentState.createFromBlockArray(blocksFromHtml.contentBlocks)
       const editorState = EditorState.createWithContent(contentState)
       this.setState({editorState})
     }
+    //Get the answer stored as html
+    blocksFromHtml = htmlToDraft(question.answer)
+    if (blocksFromHtml) {
+      const contentState = ContentState.createFromBlockArray(blocksFromHtml.contentBlocks)
+      const answerState = EditorState.createWithContent(contentState)
+      this.setState({answerState})
+    }
+    //Get option A as html from state
+    blocksFromHtml = htmlToDraft(question.optionA)
+    if (blocksFromHtml) {
+      const contentState = ContentState.createFromBlockArray(blocksFromHtml.contentBlocks)
+      const optionAState = EditorState.createWithContent(contentState)
+      this.setState({optionAState})
+    }
+    //Get the second as stored in html
+    blocksFromHtml = htmlToDraft(question.optionB)
+    if (blocksFromHtml) {
+      const contentState = ContentState.createFromBlockArray(blocksFromHtml.contentBlocks)
+      const optionBState = EditorState.createWithContent(contentState)
+      this.setState({optionBState})
+    }
+    //Option C
+    blocksFromHtml = htmlToDraft(question.optionC)
+    if (blocksFromHtml) {
+      const contentState = ContentState.createFromBlockArray(blocksFromHtml.contentBlocks)
+      const optionCState = EditorState.createWithContent(contentState)
+      this.setState({optionCState})
+    }
+    //option D
+    blocksFromHtml = htmlToDraft(question.optionD)
+    if (blocksFromHtml) {
+      const contentState = ContentState.createFromBlockArray(blocksFromHtml.contentBlocks)
+      const optionDState = EditorState.createWithContent(contentState)
+      this.setState({optionDState})
+    }
+
     this.setState({
       type:question.type,
       optionA:question.optionA,
@@ -134,7 +198,13 @@ export class Questions extends Component {
         question:'',
         checked:false,
         uploaded:false,
-        editorState:EditorState.createEmpty()})
+        editorState:EditorState.createEmpty(),
+        answerState:EditorState.createEmpty(),
+        optionAState:EditorState.createEmpty(),
+        optionBState: EditorState.createEmpty(),
+        optionCState: EditorState.createEmpty(),
+        optionDState: EditorState.createEmpty(),
+      })
       return true
     }else {
       this.setState({error: "Question/Answers fields cannot be empty"})
@@ -162,6 +232,7 @@ export class Questions extends Component {
         <FormGroup
           controlId="formBasicText"
           >
+            <ControlLabel>Question</ControlLabel>
             <Editor
               editorClassName='form-control'
                editorState={this.state.editorState}
@@ -177,45 +248,57 @@ export class Questions extends Component {
           <FormGroup
             controlId="formBasicText"
             >
-              <ControlLabel>Enter Options Below</ControlLabel>
-              <FormControl
-                type="text"
-                value={this.state.optionA}
-                name="optionA"
-                placeholder="Option A"
-                onChange={(event)=>this.handleChange(event)}
-              />
+              <ControlLabel>Option A</ControlLabel>
+              <Editor
+                editorClassName='form-control'
+                 editorState={this.state.optionAState}
+                 toolbarStyle={{backgroundColor:'white', borderWidth:1, borderColor:'lightgrey'}}
+                 placeholder='Enter Option A'
+                 editorStyle={{backgroundColor:'white', height:100, borderWidth:1, borderColor:'lightgrey', padding:5}}
+                 onEditorStateChange={this.onChangeAOption}
+                 onContentStateChange={this.onAChange}
+               />
 
               <FormControl.Feedback />
             </FormGroup>
             <FormGroup>
-              <FormControl
-                type="text"
-                value={this.state.optionB}
-                name="optionB"
-                placeholder="Option B"
-                onChange={(event)=>this.handleChange(event)}
-              />
+              <ControlLabel>Options B</ControlLabel>
+              <Editor
+                editorClassName='form-control'
+                 editorState={this.state.optionBState}
+                 toolbarStyle={{backgroundColor:'white', borderWidth:1, borderColor:'lightgrey'}}
+                 placeholder='Enter Option B'
+                 editorStyle={{backgroundColor:'white', height:100, borderWidth:1, borderColor:'lightgrey', padding:5}}
+                 onEditorStateChange={this.onChangeBOption}
+                 onContentStateChange={this.onBChange}
+               />
             </FormGroup>
             <FormGroup>
-              <FormControl
-                type="text"
-                value={this.state.optionC}
-                name="optionC"
-                placeholder="Option C"
-                onChange={(event)=>this.handleChange(event)}
-              />
+              <ControlLabel>Options C</ControlLabel>
+              <Editor
+                editorClassName='form-control'
+                 editorState={this.state.optionCState}
+                 toolbarStyle={{backgroundColor:'white', borderWidth:1, borderColor:'lightgrey'}}
+                 placeholder='Enter Option C'
+                 editorStyle={{backgroundColor:'white', height:100, borderWidth:1, borderColor:'lightgrey', padding:5}}
+                 onEditorStateChange={this.onChangeCOption}
+                 onContentStateChange={this.onCChange}
+               />
             </FormGroup>
             <FormGroup>
-              <FormControl
-                type="text"
-                value={this.state.optionD}
-                name="optionD"
-                placeholder="Option D"
-                onChange={(event)=>this.handleChange(event)}
-              />
+              <ControlLabel>Options D</ControlLabel>
+              <Editor
+                editorClassName='form-control'
+                 editorState={this.state.optionDState}
+                 toolbarStyle={{backgroundColor:'white', borderWidth:1, borderColor:'lightgrey'}}
+                 placeholder='Enter Option D'
+                 editorStyle={{backgroundColor:'white', height:100, borderWidth:1, borderColor:'lightgrey', padding:5}}
+                 onEditorStateChange={this.onChangeDOption}
+                 onContentStateChange={this.onDChange}
+               />
             </FormGroup>
             <FormGroup>
+              <ControlLabel>Answer (Option)</ControlLabel>
               <FormControl
                 type="text"
                 value={this.state.answer}
@@ -234,7 +317,9 @@ export class Questions extends Component {
           <FormGroup
             controlId="formBasicText"
             >
+              <ControlLabel>Question</ControlLabel>
               <Editor
+                editorClassName='form-control'
                  editorState={this.state.editorState}
                  toolbarStyle={{backgroundColor:'white', borderWidth:1, borderColor:'lightgrey'}}
                  placeholder='Enter Question'
@@ -246,13 +331,16 @@ export class Questions extends Component {
             </FormGroup>
 
             <FormGroup>
-              <FormControl
-                type="text"
-                value={this.state.answer}
-                name="answer"
-                placeholder="Answer (Option)"
-                onChange={(event)=>this.handleChange(event)}
-              />
+              <ControlLabel>Answer</ControlLabel>
+              <Editor
+                editorClassName='form-control'
+                 editorState={this.state.answerState}
+                 toolbarStyle={{backgroundColor:'white', borderWidth:1, borderColor:'lightgrey'}}
+                 placeholder='Enter Answer'
+                 editorStyle={{backgroundColor:'white', height:100, borderWidth:1, borderColor:'lightgrey', padding:5}}
+                 onEditorStateChange={this.onChangeAnswer}
+                 onContentStateChange={this.onContentStateChangeAnswer}
+               />
               <HelpBlock>Enter the correct option</HelpBlock>
             </FormGroup>
         </div>

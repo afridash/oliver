@@ -20,12 +20,32 @@ export class Questions extends Component {
       editorState: EditorState.createEmpty()
     }
     this.onChange = (editorState) => this.setState({editorState})
+    this.onChangeAnswer = (answerState) => this.setState({answerState})
+    this.onChangeAOption = (optionAState) => this.setState({optionAState})
+    this.onChangeBOption = (optionBState) => this.setState({optionBState})
+    this.onChangeCOption = (optionCState) => this.setState({optionCState})
+    this.onChangeDOption = (optionDState) => this.setState({optionDState})
     this.ref = firebase.database().ref().child('questions')
     this.courseKey = this.props.courseKey
     this.questions = []
   }
   onContentStateChange = (content) => {
     this.setState({question:draftToHtml(convertToRaw(this.state.editorState.getCurrentContent()))})
+  }
+  onContentStateChangeAnswer = (content) => {
+    this.setState({answer:draftToHtml(convertToRaw(this.state.answerState.getCurrentContent()))})
+  }
+  onAChange = () => {
+    this.setState({optionA:draftToHtml(convertToRaw(this.state.optionAState.getCurrentContent()))})
+  }
+  onBChange = () => {
+      this.setState({optionB:draftToHtml(convertToRaw(this.state.optionBState.getCurrentContent()))})
+  }
+  onCChange = () => {
+    this.setState({optionC:draftToHtml(convertToRaw(this.state.optionCState.getCurrentContent()))})
+  }
+  onDChange = () => {
+    this.setState({optionD:draftToHtml(convertToRaw(this.state.optionDState.getCurrentContent()))})
   }
   handleChange (event) {
     this.setState({[event.target.name]: event.target.value})
@@ -67,19 +87,19 @@ export class Questions extends Component {
         if (snapshot.val().type === 'objective') {
           this.questions.push({
             question: "<p>" + snapshot.val().question + "</p>",
-            answer:snapshot.val().answer,
-            optionA:snapshot.val().optionA,
-            optionB:snapshot.val().optionB,
-            optionC:snapshot.val().optionC,
-            optionD:snapshot.val().optionD,
+            answer: snapshot.val().answer,
+            optionA: "<p>" + snapshot.val().optionA + "</p>",
+            optionB: "<p>" + snapshot.val().optionB + "</p>",
+            optionC: "<p>" + snapshot.val().optionC + "</p>",
+            optionD: "<p>" + snapshot.val().optionD + "</p>",
             key:snapshot.key,
-            answered:snapshot.val().answered,
+            answered: snapshot.val().answered,
             type:snapshot.val().type
             })
         } else {
           this.questions.push({
             question:"<p>" + snapshot.val().question + "</p>",
-            answer:snapshot.val().answer,
+            answer: "<p> Answer: " + snapshot.val().answer + "</p>",
             key:snapshot.key,
             answered:snapshot.val().answered,
             type:snapshot.val().type
@@ -90,12 +110,48 @@ export class Questions extends Component {
     })
   }
   setItems (q,k) {
-    const blocksFromHtml = htmlToDraft(q.question)
+    var blocksFromHtml = htmlToDraft(q.question)
     let editorState = null
     if (blocksFromHtml) {
       const contentState = ContentState.createFromBlockArray(blocksFromHtml.contentBlocks)
       const editorState = EditorState.createWithContent(contentState)
       this.setState({editorState})
+    }
+
+    //Get the answer stored as html
+    blocksFromHtml = htmlToDraft(q.answer)
+    if (blocksFromHtml) {
+      const contentState = ContentState.createFromBlockArray(blocksFromHtml.contentBlocks)
+      const answerState = EditorState.createWithContent(contentState)
+      this.setState({answerState})
+    }
+    //Get option A as html from state
+    blocksFromHtml = htmlToDraft(q.optionA)
+    if (blocksFromHtml) {
+      const contentState = ContentState.createFromBlockArray(blocksFromHtml.contentBlocks)
+      const optionAState = EditorState.createWithContent(contentState)
+      this.setState({optionAState})
+    }
+    //Get the second as stored in html
+    blocksFromHtml = htmlToDraft(q.optionB)
+    if (blocksFromHtml) {
+      const contentState = ContentState.createFromBlockArray(blocksFromHtml.contentBlocks)
+      const optionBState = EditorState.createWithContent(contentState)
+      this.setState({optionBState})
+    }
+    //Option C
+    blocksFromHtml = htmlToDraft(q.optionC)
+    if (blocksFromHtml) {
+      const contentState = ContentState.createFromBlockArray(blocksFromHtml.contentBlocks)
+      const optionCState = EditorState.createWithContent(contentState)
+      this.setState({optionCState})
+    }
+    //option D
+    blocksFromHtml = htmlToDraft(q.optionD)
+    if (blocksFromHtml) {
+      const contentState = ContentState.createFromBlockArray(blocksFromHtml.contentBlocks)
+      const optionDState = EditorState.createWithContent(contentState)
+      this.setState({optionDState})
     }
     if (q.type === 'objective') {
       this.setState({showModal:true,
@@ -147,10 +203,22 @@ export class Questions extends Component {
         </div>
         <div className="panel-footer">
           <div className="row">
-            <div className="col-sm-3"><p>A: {q.optionA}</p></div>
-            <div className="col-sm-3"><p>B: {q.optionB}</p></div>
-            <div className="col-sm-3"><p>C: {q.optionC}</p></div>
-            <div className="col-sm-3"><p>D: {q.optionD}</p></div>
+            <div className="col-sm-3">
+              <span className='pull-left'>A: </span>
+              <p style={{fontSize:14}} dangerouslySetInnerHTML={{__html: q.optionA}}></p>
+            </div>
+            <div className="col-sm-3">
+                <span className='pull-left'>B: </span>
+            <p style={{fontSize:14}} dangerouslySetInnerHTML={{__html: q.optionB}}></p>
+            </div>
+            <div className="col-sm-3">
+              <span className='pull-left'>C: </span>
+              <p style={{fontSize:14}} dangerouslySetInnerHTML={{__html: q.optionC}}></p>
+            </div>
+            <div className="col-sm-3">
+              <span className='pull-left'>D: </span>
+              <p style={{fontSize:14}} dangerouslySetInnerHTML={{__html: q.optionD}}></p>
+            </div>
           </div>
         </div>
       </div>
@@ -172,7 +240,7 @@ export class Questions extends Component {
         </div>
         <div id="1" className="panel-body">
           <div style={{fontSize:18}} dangerouslySetInnerHTML={{__html: q.question}}></div>
-          <p style={{fontSize:14}}>Answer: {q.answer}</p>
+          <p style={{fontSize:14}} dangerouslySetInnerHTML={{__html: q.answer}}></p>
         </div>
       </div>
     )
@@ -190,9 +258,10 @@ export class Questions extends Component {
               <ControlLabel>Question</ControlLabel>
               <Editor
                  editorState={this.state.editorState}
+                 editorClassName='form-control'
                  toolbarStyle={{backgroundColor:'white', borderWidth:1, borderColor:'lightgrey'}}
                  placeholder='Enter Question'
-                 editorStyle={{backgroundColor:'#f5f5f5', height:100, borderWidth:1, borderColor:'lightgrey', padding:5}}
+                 editorStyle={{backgroundColor:'white', height:100, borderWidth:1, borderColor:'lightgrey', padding:5}}
                  onEditorStateChange={this.onChange}
                  onContentStateChange={this.onContentStateChange}
                />
@@ -217,13 +286,15 @@ export class Questions extends Component {
                 controlId="formBasicText"
                 >
                   <ControlLabel>Option A</ControlLabel>
-                  <FormControl
-                    type="text"
-                    value={this.state.optionA}
-                    name="optionA"
-                    placeholder="Enter Option A"
-                    onChange={(event)=>this.handleChange(event)}
-                  />
+                  <Editor
+                    editorClassName='form-control'
+                     editorState={this.state.optionAState}
+                     toolbarStyle={{backgroundColor:'white', borderWidth:1, borderColor:'lightgrey'}}
+                     placeholder='Enter Option A'
+                     editorStyle={{backgroundColor:'white', height:100, borderWidth:1, borderColor:'lightgrey', padding:5}}
+                     onEditorStateChange={this.onChangeAOption}
+                     onContentStateChange={this.onAChange}
+                   />
 
                   <FormControl.Feedback />
                 </FormGroup>
@@ -232,13 +303,15 @@ export class Questions extends Component {
                   controlId="formBasicText"
                   >
                     <ControlLabel>Option B</ControlLabel>
-                    <FormControl
-                      type="text"
-                      value={this.state.optionB}
-                      name="optionB"
-                      placeholder="Enter Answer"
-                      onChange={(event)=>this.handleChange(event)}
-                    />
+                    <Editor
+                      editorClassName='form-control'
+                       editorState={this.state.optionBState}
+                       toolbarStyle={{backgroundColor:'white', borderWidth:1, borderColor:'lightgrey'}}
+                       placeholder='Enter Option B'
+                       editorStyle={{backgroundColor:'white', height:100, borderWidth:1, borderColor:'lightgrey', padding:5}}
+                       onEditorStateChange={this.onChangeBOption}
+                       onContentStateChange={this.onBChange}
+                     />
 
                     <FormControl.Feedback />
                   </FormGroup>
@@ -247,13 +320,15 @@ export class Questions extends Component {
                     controlId="formBasicText"
                     >
                       <ControlLabel>Option C</ControlLabel>
-                      <FormControl
-                        type="text"
-                        value={this.state.optionC}
-                        name="optionC"
-                        placeholder="Enter Answer"
-                        onChange={(event)=>this.handleChange(event)}
-                      />
+                      <Editor
+                        editorClassName='form-control'
+                         editorState={this.state.optionCState}
+                         toolbarStyle={{backgroundColor:'white', borderWidth:1, borderColor:'lightgrey'}}
+                         placeholder='Enter Option C'
+                         editorStyle={{backgroundColor:'white', height:100, borderWidth:1, borderColor:'lightgrey', padding:5}}
+                         onEditorStateChange={this.onChangeCOption}
+                         onContentStateChange={this.onCChange}
+                       />
 
                       <FormControl.Feedback />
                     </FormGroup>
@@ -262,14 +337,15 @@ export class Questions extends Component {
                       controlId="formBasicText"
                       >
                         <ControlLabel>Option D</ControlLabel>
-                        <FormControl
-                          type="text"
-                          value={this.state.optionD}
-                          name="optionD"
-                          placeholder="Enter Answer"
-                          onChange={(event)=>this.handleChange(event)}
-                        />
-
+                        <Editor
+                          editorClassName='form-control'
+                           editorState={this.state.optionDState}
+                           toolbarStyle={{backgroundColor:'white', borderWidth:1, borderColor:'lightgrey'}}
+                           placeholder='Enter Option D'
+                           editorStyle={{backgroundColor:'white', height:100, borderWidth:1, borderColor:'lightgrey', padding:5}}
+                           onEditorStateChange={this.onChangeDOption}
+                           onContentStateChange={this.onDChange}
+                         />
                         <FormControl.Feedback />
                       </FormGroup>
                       <Checkbox checked={this.state.answered} onChange={(event)=>this.setState({answered:!this.state.answered})}>Answered</Checkbox>
@@ -294,10 +370,11 @@ export class Questions extends Component {
             >
               <ControlLabel>Question</ControlLabel>
               <Editor
+                 editorClassName='form-control'
                  editorState={this.state.editorState}
                  toolbarStyle={{backgroundColor:'white', borderWidth:1, borderColor:'lightgrey'}}
                  placeholder='Enter Question'
-                 editorStyle={{backgroundColor:'#f5f5f5', height:100, borderWidth:1, borderColor:'lightgrey', padding:5}}
+                 editorStyle={{backgroundColor:'white', height:100, borderWidth:1, borderColor:'lightgrey', padding:5}}
                  onEditorStateChange={this.onChange}
                  onContentStateChange={this.onContentStateChange}
                />
@@ -307,14 +384,15 @@ export class Questions extends Component {
               controlId="formBasicText"
               >
                 <ControlLabel>Answer</ControlLabel>
-                <FormControl
-                  type="text"
-                  value={this.state.answer}
-                  name="answer"
-                  placeholder="Enter Answer"
-                  onChange={(event)=>this.handleChange(event)}
-                />
-
+                <Editor
+                  editorClassName='form-control'
+                   editorState={this.state.answerState}
+                   toolbarStyle={{backgroundColor:'white', borderWidth:1, borderColor:'lightgrey'}}
+                   placeholder='Enter Answer'
+                   editorStyle={{backgroundColor:'white', height:100, borderWidth:1, borderColor:'lightgrey', padding:5}}
+                   onEditorStateChange={this.onChangeAnswer}
+                   onContentStateChange={this.onContentStateChangeAnswer}
+                 />
                 <FormControl.Feedback />
               </FormGroup>
               <Checkbox checked={this.state.answered} onChange={(event)=>this.setState({answered:!this.state.answered})}>Answered</Checkbox>
