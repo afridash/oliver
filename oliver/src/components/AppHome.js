@@ -32,6 +32,7 @@ import Divider from 'material-ui/Divider';
 import Dialog from 'material-ui/Dialog';
 import {RadioButton, RadioButtonGroup} from 'material-ui/RadioButton';
 import {Link} from 'react-router-dom'
+import  { Redirect } from 'react-router-dom'
 
 import {
   blue300,
@@ -41,7 +42,7 @@ import {
   pink400,
   purple500,
 } from 'material-ui/styles/colors';
-
+const firebase = require('firebase')
 const styles = {
   radioButton: {
     marginTop: 16,
@@ -58,7 +59,10 @@ const style = {
   paper:{
     textAlign: 'center',
     margin: 20,
+
   },
+    height:50,
+    textAlign: 'center',
 };
 
 
@@ -121,32 +125,64 @@ Logged.muiName = 'IconMenu';
      color:'#2d6ca1',
    },
  })
-class AppHome extends Component {
-  constructor(props) {
-  super(props);
-  this.state = {
-    open: false,
-    logged: true,
-    selectedIndex: 0,
-  };
-}
-
+ class AppHome extends Component {
+   constructor(props) {
+     super(props);
+     this.state = {
+       open: false,
+       logged: true,
+       selectedIndex: 0,
+       name:'',
+       code:'',
+       data:[],
+       refreshing: false,
+       noCourses:false,
+       status:'',
+     };
+     firebase.auth().onAuthStateChanged(this.handleUser.bind(this))
+     this.ref = firebase.database().ref().child('user_courses')
+   }
+  // returnHome = () =>  {
+  //   this.state.redirect ? <Redirect to ="/AppHome" push/>
+    // };
+   handleUser(user){
+       if(user){
+         this.setState({
+          displayName:user.displayName,
+          userPhoto:user.photoURL,
+          userId:user.uid,
+         })
+         this.readAddCourses()
+       }
+     }
+   async readAddCourses() {
+      /* 1. Set courses to empty before reloading online data to avoid duplicate entries
+        2. Retrieve users courses from firebase and store them locally using AsyncStorage */
+    this.data = []
+    this.setState({refreshing:true})
+    await this.ref.child(this.state.userId).once('value', (snapshot)=>{
+      if (!snapshot.exists()) {
+        this.setState({refreshing:false, noCourses:true})
+      }
+      snapshot.forEach((course)=>{
+        this.data.push({key:course.key, name:course.val().name, code:course.val().code})
+        this.setState({data:this.data, refreshing:false,noCourses:false, isLoading:false})
+      })
+    })
+  }
   handleChange = (event, logged) => {
     this.setState({logged: logged});
-  };
-
+  }
   handleOnRequestChange = (value) => {
     this.setState({
       openMenu: value,
     });
   }
-
   handleOpenMenu = () => {
    this.setState({
      openMenu: true,
    });
  }
-
  handleOpen = () => {
   this.setState({open: true});
 };
@@ -222,11 +258,10 @@ handleClose = () => {
                 iconButtonElement={<Avatar
                   src="images/client_2.png"
                   size={35}
-                  style={{marginBottom:10,cursor:'pointer'}}
+                  style={{marginBottom:10}}
                   label='Jane Doe'
                   //onMouseEnter={this.handleOpenMenu}
                   //onMouseLeave={this.handleCloseMenu}
-                  onClick={this.handleOpenMenu}
                 />}
                 anchorOrigin={{horizontal: 'left', vertical: 'bottom'}}
                 targetOrigin={{horizontal: 'left', vertical: 'top'}}
@@ -273,167 +308,43 @@ handleClose = () => {
         <br/>
 
         <div className="row">
-          <div className="col-lg-3">
-            <Paper style={style.paper} zDepth={2} rounded={true}
-              children={<div>
-                <div className="row">
-                  <div className='col-sm-4'>
-                    <div className="panel panel-info" style={{borderRightWidth:2, borderTopWidth:0, borderLeftWidth:0, borderBottomWidth:0, borderColor:'none', margin:0}}>
-                      <div className="panel-heading"> CSC 158 </div>
-                      <div className="panel-body">
-                        <h3 style={{fontSize:15}}>HIGH SCORE</h3>
-                        <h3 style={{fontSize:15}}> 50% </h3> </div>
+          {this.state.data.map((course)=>
+            <div className="col-lg-3" >
+              <Paper style={style.paper} zDepth={2} rounded={true}
+                children={<div>
+                  <div className="row">
+                    <div className='col-sm-4'>
+                      <div className="panel panel-info" style={{borderRightWidth:2, borderTopWidth:0, borderLeftWidth:0, borderBottomWidth:0, borderColor:'none', margin:0}}>
+                        <div className="panel-heading" style={{background:blue300,color:'white'}}> {course.code} </div>
+                        <div className="panel-body">
+                          <h3 style={{fontSize:15}}>HIGH SCORE</h3>
+                          <h3 style={{fontSize:15}}> 50% </h3> </div>
 
+                      </div>
                     </div>
-                  </div>
-                  <div className="col-sm-8">
-                    <div>
-                      <Paper style={style} zDepth={2}
-                        children={<div>
-                        <p>Introduction to Computer Science</p>
+                    <div className="col-sm-8">
+                      <div>
+                        <Paper style={style} zDepth={2}
+                          children={<div>
+                          <p>{course.name}</p>
 
-                      </div>}/>
+                        </div>}/>
 
-                    </div>
-                      <div className="row">
-                        <div className="col-sm-10 col-sm-offset-1">
-                          <RaisedButton label="Study Theory" fullWidth={true} style={style.chip} />
-                          <RaisedButton label="Study Objective" fullWidth={true} style={style.chip} />
-                          <RaisedButton label="Practice" fullWidth={true} href="/practice" style={style.chip}/>
+                      </div>
+                        <div className="row">
+                          <div className="col-sm-10 col-sm-offset-1">
+                            <RaisedButton label="Theory" fullWidth={true} style={style.chip} />
+                            <RaisedButton label="Objective" fullWidth={true} style={style.chip} />
+                            <RaisedButton label="Exam" fullWidth={true} href="/practice" style={style.chip}/>
 
+                          </div>
                         </div>
-                      </div>
-                  </div>
-                </div>
-              </div> }/>
-          </div>
-
-          <div className="col-lg-3">
-            <Paper style={style.paper} zDepth={2} rounded={true}
-              children={<div>
-                <div className="row">
-                  <div className='col-sm-4'>
-                    <div className="panel panel-info" style={{borderRightWidth:2, borderTopWidth:0, borderLeftWidth:0, borderBottomWidth:0, borderColor:'none', margin:0}}>
-                      <div className="panel-heading"> CSC 158 </div>
-                      <div className="panel-body">
-                        <h3 style={{fontSize:15}}>HIGH SCORE</h3>
-                        <h3 style={{fontSize:15}}> 50% </h3> </div>
-
                     </div>
                   </div>
-                  <div className="col-sm-8">
-                    <div>
-                      <Paper style={style} zDepth={2}
-                        children={<div>
-                        <p>Introduction to Computer Science</p>
-
-                      </div>}/>
-
-                    </div>
-                      <div className="row">
-                        <div className="col-sm-10 col-sm-offset-1">
-                          <RaisedButton label="Study Theory" fullWidth={true} style={style.chip} />
-                          <RaisedButton label="Study Objective" fullWidth={true} style={style.chip} />
-                          <RaisedButton label="Practice" fullWidth={true} href="/practice" style={style.chip}/>
-
-                        </div>
-                      </div>
-                  </div>
-                </div>
-              </div> }/>
-          </div>
-
-          <div className="col-lg-3">
-            <Paper style={style.paper} zDepth={2} rounded={true}
-              children={<div>
-                <div className="row">
-                  <div className='col-sm-4'>
-                    <div className="panel panel-info" style={{borderRightWidth:2, borderTopWidth:0, borderLeftWidth:0, borderBottomWidth:0, borderColor:'none', margin:0}}>
-                      <div className="panel-heading"> CSC 158 </div>
-                      <div className="panel-body" >
-                        <h3 style={{fontSize:15}}>HIGH SCORE</h3>
-                        <h3 style={{fontSize:15}}> 50% </h3> </div>
-
-                    </div>
-                  </div>
-                  <div className="col-sm-8">
-                    <div>
-                      <Paper style={style} zDepth={2}
-                        children={<div>
-                        <p>Introduction to Computer Science</p>
-
-                      </div>}/>
-
-                    </div>
-                      <div className="row">
-                        <div className="col-sm-10 col-sm-offset-1">
-                          <RaisedButton label="Study Theory" fullWidth={true} style={style.chip} />
-                          <RaisedButton label="Study Objective" fullWidth={true} style={style.chip} />
-                          <RaisedButton label="Practice" fullWidth={true} href="/practice" style={style.chip}/>
-
-                        </div>
-                      </div>
-                  </div>
-                </div>
-              </div> }/>
-          </div>
-
-          <div className="col-lg-3">
-            <Paper style={style.paper} zDepth={2} rounded={true}
-              children={<div>
-                <div className="row">
-                  <div className='col-sm-4'>
-                    <div className="panel panel-info" style={{borderRightWidth:2, borderTopWidth:0, borderLeftWidth:0, borderBottomWidth:0, borderColor:'none', margin:0}}>
-                      <div className="panel-heading"> CSC 158 </div>
-                      <div className="panel-body">
-                        <p>HIGH SCORE</p>
-                        <p> 50% </p> </div>
-
-                    </div>
-                  </div>
-                  <div className="col-sm-8">
-                    <div>
-                      <Paper style={style} zDepth={2}
-                        children={<div>
-                        <p>Introduction to Computer Science</p>
-
-                      </div>
-                    }
-                       />
-
-                    </div>
-                      <div className="row">
-                        <div className="col-sm-10 col-sm-offset-1">
-                    <Chip
-                      style={style.chip}
-                    >
-                      Study Theory
-                    </Chip>
-
-                    <Chip
-                      style={style.chip}
-                    >
-                      Study Objective
-                    </Chip>
-
-                    <Chip
-                      style={style.chip}
-                    >
-                      Practice
-                    </Chip>
-                        </div>
-                      </div>
-                  </div>
-                </div>
-              </div>
-              }
-        />
-          </div>
-
+                </div> }/>
             </div>
-
-
-
+          )}
+          </div>
       </div>
        </MuiThemeProvider>
     );

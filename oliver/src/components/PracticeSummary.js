@@ -261,7 +261,7 @@ class PracticeSummary extends Component {
               <Paper  zDepth={2}
                 children={<div>
                <div className="panel panel-default">
-                 <div className="panel-heading">
+                 <div className="panel-heading" style={{background:'#F5F5F5'}}>
                 <p style={{ fontSize:20}}> 2.  An electronic tool that allows information to be input, processed, and output </p>
                  </div>
                  <div className="panel-body">

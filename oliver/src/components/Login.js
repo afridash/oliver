@@ -14,10 +14,7 @@ class Login extends Component {
       error: '',
       redirect:false,
     }
-  }
-
-  componentWillMount () {
-    firebase.auth().onAuthStateChanged(this.handleUser)
+    firebase.auth().onAuthStateChanged(this.handleUser.bind(this))
   }
 
   handleUser(user){
@@ -93,26 +90,6 @@ class Login extends Component {
                 </FormGroup>
                   </div>
                 </form>
-                <div className="col-md-4 col-md-offset-4" style={styles.box}>
-                  <h3 className='text-center'>Login</h3>
-              <TextField
-                hintText="Enter Your Username or Email"
-                floatingLabelText="Username"
-                onChange = {this.handleEmailChange.bind(this)}
-              />
-              <br/>
-              <TextField
-                type="password"
-                hintText="Enter Your Password"
-                floatingLabelText="Password"
-                onChange = {this.handlePasswordChange.bind(this)}
-              />
-              <br/>
-              <p style={{color:'red'}}>{this.state.error}</p>
-
-              <RaisedButton raised color="primary" type="submit" label="Submit" primary={true} style={styles.button} onClick={(event) =>
-              this.handleSubmit(event)} />
-                </div>
             </div>
             </div>
         </div>

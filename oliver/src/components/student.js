@@ -76,7 +76,7 @@ class Student extends Component {
     	<section id="STUDENT">
     	<header className="App-header">
           <h1 className="App-title">FYE Class Analytics</h1>
-
+          <h3 className='pull-right'>Sign Out</h3>
       </header>
         <div class="container">
           <br/>

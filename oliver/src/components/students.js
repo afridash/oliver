@@ -65,7 +65,8 @@ class Students extends Component {
 
         <header className="App-header">
           <h1 className="App-title">FYE Class Analytics</h1>
-          <h3>Welcome, {this.state.username}</h3>
+          <h3 className='pull-left'>Welcome, {this.state.username}</h3>
+          <h3 className='pull-right'><Link to="/home">Sign Out</Link></h3>
         </header>
 
       <div className="container">
