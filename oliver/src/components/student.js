@@ -1,11 +1,11 @@
 import React, { Component } from 'react'
 import {Firebase} from '../auth/firebase'
 import moment from 'moment'
+import {Redirect} from 'react-router-dom'
 import { BarChart } from 'react-easy-chart'
 import * as TimeStamp from '../auth/timestamp'
 import { FormGroup, FormControl, ControlLabel, Button, Modal} from 'react-bootstrap'
 const firebase =  require('firebase')
-
 
 class Student extends Component {
   constructor(props){
@@ -65,96 +65,102 @@ class Student extends Component {
    }
  }
 
+ handleLogout (event) {
+   firebase.auth().signOut().then(function() {
+   }).catch(function(error) {
+  // An error happened.
+    });
+      this.setState({redirect:true})
+ }
+
  mouseOutHandler =() => {
    this.setState({showToolTip: false});
  }
 
-
   render() {
     return (
-    	<div className="App">
-    	<section id="STUDENT">
-    	<header className="App-header">
-          <h1 className="App-title">FYE Class Analytics</h1>
-          <h3 className='pull-right'>Sign Out</h3>
-      </header>
-        <div class="container">
-          <br/>
+     this.state.redirect ? <Redirect to='/Login' push/> : <div className="App">
+     <section id="STUDENT">
+     <header className="App-header">
+         <h1 className="App-title">FYE Class Analytics</h1>
+         <button className='btn btn-danger pull-right' onClick={(event) => this.handleLogout(event)}>Sign Out</button>
+     </header>
+       <div class="container">
+         <br/>
 
-          <h3>Information for: {this.state.displayName}</h3>
+         <h3>Information for: {this.state.displayName}</h3>
 
-          <div className="col-sm-10 col-sm-offset-1 ">
+         <div className="col-sm-10 col-sm-offset-1 ">
 
-            <table className="table table-striped table-bordered bootstrap-datatable datatable">
-      <thead>
-        <tr>
-          <th scope="col">#</th>
-          <th scope="col">Student's Name</th>
-          <th scope="col">Last Login</th>
-          <th scope="col">Tests Started</th>
-          <th scope="col">Tests completed</th>
-          <th scope="col">Total Likes</th>
-          <th scope="col">Total Comments</th>
-          <th scope="col">Total Posts to Explore</th>
-          <th scope="col"># of Tests started from Explore</th>
-          <th scope="col"># of Bookmarked Questions</th>
-        </tr>
-      </thead>
+           <table className="table table-striped table-bordered bootstrap-datatable datatable">
+     <thead>
+       <tr>
+         <th scope="col">#</th>
+         <th scope="col">Student's Name</th>
+         <th scope="col">Last Login</th>
+         <th scope="col">Tests Started</th>
+         <th scope="col">Tests completed</th>
+         <th scope="col">Total Likes</th>
+         <th scope="col">Total Comments</th>
+         <th scope="col">Total Posts to Explore</th>
+         <th scope="col"># of Tests started from Explore</th>
+         <th scope="col"># of Bookmarked Questions</th>
+       </tr>
+     </thead>
 
-      <tbody>
-          <tr>
-            <th scope="row">1</th>
-            <td>{this.state.displayName}</td>
-            <td>{TimeStamp.timeSince(this.state.last_seen)}</td>
-            <td>{this.state.total_started}</td>
-            <td>{this.state.total_completed}</td>
-            <td>{this.state.likes}</td>
-            <td>{this.state.total_comments}</td>
-            <td>{this.state.explore_posts}</td>
-            <td>{this.state.explore_origin}</td>
-            <td>{this.state.total_bookmarked}</td>
-          </tr>
-      </tbody>
-    </table>
+     <tbody>
+         <tr>
+           <th scope="row">1</th>
+           <td>{this.state.displayName}</td>
+           <td>{TimeStamp.timeSince(this.state.last_seen)}</td>
+           <td>{this.state.total_started}</td>
+           <td>{this.state.total_completed}</td>
+           <td>{this.state.likes}</td>
+           <td>{this.state.total_comments}</td>
+           <td>{this.state.explore_posts}</td>
+           <td>{this.state.explore_origin}</td>
+           <td>{this.state.total_bookmarked}</td>
+         </tr>
+     </tbody>
+   </table>
 
-          </div>
+         </div>
 
-		</div>
+   </div>
 
-    	</section>
+     </section>
 
-    <div>
-    <br/>
-    <br/>
-    <BarChart
-    axes
-    grid
-    colorBars
-    axisLabels={{x: 'Session (Weekly)', y: 'Time (Sec)'}}
-    yAxisOrientLeft
-    //xDomainRange={['0', 'sessionDate']}
-    //yDomainRange={[0, 5000]}
-    //datePattern="%d-%b-%y %H:%M"
-    height={250}
-    width={550}
-    margin={{top: 40, right: 50, bottom: 50, left: 60}}
-    data={[
-          { x: 'Monday', y: 20 },
-          { x: 'Tuesday', y: 30 },
-          { x: 'Wednesday', y: 40 },
-          { x: 'Thursday', y: 30 },
-          { x: 'Friday', y: 30 },
-          { x: 'Saturday', y: 20 },
-          { x: 'Sunday', y: 6 }
-    ]}
-    mouseOverHandler={this.mouseOverHandler}
-    mouseOutHandler={this.mouseOutHandler}
-    mouseMoveHandler={this.mouseMoveHandler}
-  />
+   <div>
+   <br/>
+   <br/>
+   <BarChart
+   axes
+   grid
+   colorBars
+   axisLabels={{x: 'Session (Weekly)', y: 'Time (Sec)'}}
+   yAxisOrientLeft
+   //xDomainRange={['0', 'sessionDate']}
+   //yDomainRange={[0, 5000]}
+   //datePattern="%d-%b-%y %H:%M"
+   height={250}
+   width={550}
+   margin={{top: 40, right: 50, bottom: 50, left: 60}}
+   data={[
+         { x: 'Monday', y: 20 },
+         { x: 'Tuesday', y: 30 },
+         { x: 'Wednesday', y: 40 },
+         { x: 'Thursday', y: 30 },
+         { x: 'Friday', y: 30 },
+         { x: 'Saturday', y: 20 },
+         { x: 'Sunday', y: 6 }
+   ]}
+   mouseOverHandler={this.mouseOverHandler}
+   mouseOutHandler={this.mouseOutHandler}
+   mouseMoveHandler={this.mouseMoveHandler}
+ />
 
-    </div>
-    	</div>
-     );
+   </div>
+     </div>);
   }
 }
 

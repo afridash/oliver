@@ -119,7 +119,6 @@ class PracticeSummary extends Component {
   this.state = {
 
   };
-
 }
 
   render() {

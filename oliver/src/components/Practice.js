@@ -35,7 +35,7 @@ import Menu from 'material-ui/Menu';
 import Divider from 'material-ui/Divider';
 import {Nav, Navbar, NavDropdown, Tabs, ButtonToolbar, Button, Table, ButtonGroup, Row, Col, Grid, Panel, FormGroup, FormControl} from 'react-bootstrap';
 import FileFileDownload from 'material-ui/svg-icons/file/file-download';
-
+import {Firebase} from '../auth/firebase'
 import {
   blue300,
   indigo900,
@@ -44,7 +44,7 @@ import {
   pink400,
   purple500,
 } from 'material-ui/styles/colors';
-
+const firebase = require('firebase')
 const styles = {
   radioButton: {
     marginTop: 16,
@@ -142,9 +142,10 @@ class Practice extends Component {
     timeColor: '#1969a3',
     bookColor: blue300
   };
+  this.courseId = this.props.match.params.id
     this.timer = 0;
     this.countDown = this.countDown.bind(this);
-
+    this.questionsRef = firebase.database().ref().child('questions').child(this.courseId)
    this.handleFocus = this.handleFocus.bind(this);
 }
 
@@ -159,23 +160,19 @@ class Practice extends Component {
   changeColor = () =>  {
     this.setState({ divColor: blue300});
     };
-
   handleChange = (event, logged) => {
     this.setState({logged: logged});
   };
-
   handleOnRequestChange = (value) => {
     this.setState({
       openMenu: value,
     });
   }
-
   handleOpenMenu = () => {
    this.setState({
      openMenu: true,
    });
  }
-
  handleOpen = () => {
   this.setState({open: true});
   };
