@@ -13,7 +13,6 @@ import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import {cyan500} from 'material-ui/styles/colors';
 import FontIcon from 'material-ui/FontIcon';
-import {BottomNavigation, BottomNavigationItem} from 'material-ui/BottomNavigation';
 import Paper from 'material-ui/Paper';
 import IconLocationOn from 'material-ui/svg-icons/communication/location-on';
 import SearchBar from 'material-ui-search-bar';
@@ -31,7 +30,8 @@ import Chip from 'material-ui/Chip';
 import Divider from 'material-ui/Divider';
 import Dialog from 'material-ui/Dialog';
 import {RadioButton, RadioButtonGroup} from 'material-ui/RadioButton';
-
+import {Firebase} from '../auth/firebase'
+import {Redirect} from 'react-router-dom'
 import {
   blue300,
   indigo900,
@@ -40,6 +40,7 @@ import {
   pink400,
   purple500,
 } from 'material-ui/styles/colors';
+const firebase =  require('firebase')
 
 const styles = {
   radioButton: {
@@ -130,6 +131,14 @@ class AppHome extends Component {
   };
 }
 
+  handleLogout (event) {
+    firebase.auth().signOut().then(function() {
+    }).catch(function(error) {
+      // An error happened.
+    });
+      this.setState({redirect:true})
+    }
+
   handleChange = (event, logged) => {
     this.setState({logged: logged});
   };
@@ -146,13 +155,13 @@ class AppHome extends Component {
    });
  }
 
- handleOpen = () => {
+  handleOpen = () => {
   this.setState({open: true});
-};
+ };
 
-handleClose = () => {
-  this.setState({open: false});
-};
+  handleClose = () => {
+    this.setState({open: false});
+  };
 
    select = (index) => this.setState({selectedIndex: index});
 
@@ -193,7 +202,7 @@ handleClose = () => {
     }
 
     return (
-        <MuiThemeProvider muiTheme={muiTheme} >
+        this.state.redirect ? <Redirect to='/' push/> : <MuiThemeProvider muiTheme={muiTheme} >
       <div>
 
         <AppBar
@@ -241,7 +250,7 @@ handleClose = () => {
                  <Divider />
                 <MenuItem value="1" primaryText="Share" />
                 <MenuItem value="2" primaryText="Help" />
-                <MenuItem value="3" primaryText="Sign out" />
+                <MenuItem value="3" primaryText="Sign out" onClick={(event) => this.handleLogout(event)}/>
 
                </IconMenu>
 
@@ -392,7 +401,7 @@ handleClose = () => {
                           }
                              />
 
-                    
+
                         </div>
                       </div>
                   </div>

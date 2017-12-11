@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import {Firebase} from '../auth/firebase'
 import { FormGroup, FormControl, ControlLabel, Button, Modal} from 'react-bootstrap'
 import * as TimeStamp from '../auth/timestamp'
-import {Link} from 'react-router-dom'
+import {Link, Redirect} from 'react-router-dom'
 import moment from 'moment'
 import './App.css';
 const firebase =  require('firebase')
@@ -28,6 +28,14 @@ class Students extends Component {
       this.setState({userId:user.uid, username:user.displayName})
       this.loadCourses()
     }
+  }
+
+  handleLogout (event) {
+    firebase.auth().signOut().then(function() {
+    }).catch(function(error) {
+   // An error happened.
+     });
+       this.setState({redirect:true})
   }
 
  loadCourses () {
@@ -61,12 +69,12 @@ class Students extends Component {
   render() {
     return (
 
-      <div className="Students">
+    this.state.redirect ? <Redirect to='/Login' push/> : <div className="Students">
 
         <header className="App-header">
           <h1 className="App-title">FYE Class Analytics</h1>
           <h3 className='pull-left'>Welcome, {this.state.username}</h3>
-          <h3 className='pull-right'><Link to="/home">Sign Out</Link></h3>
+          <button className='btn btn-danger pull-right' onClick={(event) => this.handleLogout(event)}>Sign Out</button>
         </header>
 
       <div className="container">
