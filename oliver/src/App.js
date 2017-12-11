@@ -22,7 +22,6 @@ export default class App extends Component {
         <Downloads></Downloads>
         <Subscribe></Subscribe>
         <CopyRight></CopyRight>
-
       </div>
     );
   }

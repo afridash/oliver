@@ -12,8 +12,8 @@ import Policy from './components/policy'
 import Home from './components/App'
 import AppHome from './components/AppHome.js'
 import Practice from './components/Practice.js'
+import Login from './components/Login'
 import RecentActivities from './components/recentActivities'
-import Weblogin from './components/weblogin'
 import Students from './components/students.js'
 import Student from './components/student.js'
 import App from './App';
@@ -33,7 +33,7 @@ ReactDOM.render(<BrowserRouter >
        <Route path={'/view'} component={View} />
        <Route path={'/stats'} component={Stats} />
         <Route path={'/policy'} component={Policy} />
-       <Route path={'/weblogin'} component={Weblogin}/>
+       <Route path={'/Login'} component={Login}/>
        <Route path={'/recentActivities'} component={RecentActivities} />
     </Switch>
   </div>
