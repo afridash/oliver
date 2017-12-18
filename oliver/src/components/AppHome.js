@@ -31,7 +31,7 @@ import Divider from 'material-ui/Divider';
 import Dialog from 'material-ui/Dialog';
 import {RadioButton, RadioButtonGroup} from 'material-ui/RadioButton';
 import {Firebase} from '../auth/firebase'
-import {Redirect} from 'react-router-dom'
+import {Link, Redirect} from 'react-router-dom'
 import {
   blue300,
   indigo900,
@@ -63,7 +63,6 @@ const style = {
     textAlign: 'center',
 };
 
-
 const iconStyles = {
   marginRight: 24,
 };
@@ -73,7 +72,6 @@ const HomeIcon = (props) => (
     <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z" />
   </SvgIcon>
 );
-
 
 const recentsIcon = <FontIcon className="material-icons">restore</FontIcon>;
 const favoritesIcon = <FontIcon className="material-icons">favorite</FontIcon>;
@@ -247,8 +245,9 @@ Logged.muiName = 'IconMenu';
           />}
           children={
             <div>
-
-              <FlatButton label="Activities" style={{color:'white'}}/>
+              <Link to={"/recentActivities"}>
+              <FlatButton label="Activities"  style={{color:'white'}}/>
+              </Link>
               <FlatButton label="Explore" style={{color:'white'}}/>
               <FlatButton label="Bookmarks" style={{color:'white'}}/>
 

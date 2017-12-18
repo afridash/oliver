@@ -1,9 +1,7 @@
 import React, { Component } from 'react'
 import {Firebase} from '../auth/firebase'
-import { FormGroup, FormControl, ControlLabel, Button, Modal} from 'react-bootstrap'
 import * as TimeStamp from '../auth/timestamp'
 import {Link, Redirect} from 'react-router-dom'
-import moment from 'moment'
 import './App.css';
 const firebase =  require('firebase')
 
