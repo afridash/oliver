@@ -7,8 +7,6 @@ import FlatButton from 'material-ui/FlatButton';
 import RaisedButton from 'material-ui/RaisedButton';
 import Toggle from 'material-ui/Toggle';
 import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
-import NavigationClose from 'material-ui/svg-icons/navigation/close';
-import darkBaseTheme from 'material-ui/styles/baseThemes/darkBaseTheme';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import {cyan500} from 'material-ui/styles/colors';
@@ -16,25 +14,16 @@ import FontIcon from 'material-ui/FontIcon';
 import {BottomNavigation, BottomNavigationItem} from 'material-ui/BottomNavigation';
 import Paper from 'material-ui/Paper';
 import IconLocationOn from 'material-ui/svg-icons/communication/location-on';
-import SearchBar from 'material-ui-search-bar';
 import {blue500, red500, greenA200} from 'material-ui/styles/colors';
 import SvgIcon from 'material-ui/SvgIcon';
 import Badge from 'material-ui/Badge';
 import NotificationsIcon from 'material-ui/svg-icons/social/notifications';
 import BookMark from 'material-ui/svg-icons/action/bookmark';
 import Restore from 'material-ui/svg-icons/action/restore';
-import Avatar from 'material-ui/Avatar';
-import FileFolder from 'material-ui/svg-icons/file/folder';
-import List from 'material-ui/List/List';
-import ListItem from 'material-ui/List/ListItem';
-import Chip from 'material-ui/Chip';
 import Dialog from 'material-ui/Dialog';
-import {RadioButton, RadioButtonGroup} from 'material-ui/RadioButton';
-import Popover, {PopoverAnimationVertical} from 'material-ui/Popover';
-import Menu from 'material-ui/Menu';
-import Divider from 'material-ui/Divider';
+import CircularProgress from 'material-ui/CircularProgress';
+
 import {Nav, Navbar, NavDropdown, Tabs, ButtonToolbar, Button, Table, ButtonGroup, Row, Col, Grid, Panel, FormGroup, FormControl} from 'react-bootstrap';
-import FileFileDownload from 'material-ui/svg-icons/file/file-download';
 import {Firebase} from '../auth/firebase'
 import {
   blue300,
@@ -45,12 +34,6 @@ import {
   purple500,
 } from 'material-ui/styles/colors';
 const firebase = require('firebase')
-const styles = {
-  radioButton: {
-    marginTop: 16,
-  },
-};
-
 const style = {
   chip: {
     margin: 4,
@@ -116,10 +99,6 @@ const Logged = (props) => (
 
 Logged.muiName = 'IconMenu';
 
-/**
- * This example is taking advantage of the composability of the `AppBar`
- * to render different components depending on the application state.
- */
  const muiTheme = getMuiTheme({
    palette: {
      textColor: '#424242',
@@ -131,56 +110,66 @@ Logged.muiName = 'IconMenu';
  })
 class Practice extends Component {
   constructor(props) {
-  super(props);
-  this.state = {
-    open: false,
-    logged: true,
-    selectedIndex: 0,
-    divColor: 'white',
-    time: {}, //  1800
-    seconds: 20,
-    timeColor: '#1969a3',
-    bookColor: blue300
-  };
-  this.courseId = this.props.match.params.id
+    super(props);
+    this.state = {
+      open: false,
+      logged: true,
+      selectedIndex: 0,
+      divColor: 'white',
+      time: {}, //  1800
+      seconds: 20,
+      timeColor: '#1969a3',
+      bookColor: blue300,
+      questions:[],
+      index:0, //use to navigate questions
+      loading:true,
+    }
+    this.courseId = this.props.match.params.id
     this.timer = 0;
-    this.countDown = this.countDown.bind(this);
+    this.countDown = this.countDown.bind(this)
+    this.courseRef = firebase.database().ref().child('user_courses')
     this.questionsRef = firebase.database().ref().child('questions').child(this.courseId)
-   this.handleFocus = this.handleFocus.bind(this);
+    firebase.auth().onAuthStateChanged(this.handleUser)
 }
-
+  handleUser = (user) => {
+    if (user) {
+      this.getCourseInfo (user.uid)
+    }
+  }
+  getCourseInfo (userId) {
+    this.courseRef.child(userId).child(this.courseId).once('value', (course) => {
+      this.setState({code:course.val().code, title:course.val().name})
+    })
+  }
+  componentWillMount () {
+    this.getQuestions()
+  }
+  async getQuestions () {
+    //Get questions from questions db using courseId
+    await this.questionsRef.orderByChild('type').equalTo('objective').once('value', (questions)=> {
+      this.questions = []
+      console.log(questions.val())
+      //If questions are not found under courseId, course does not exist
+      if (!questions.exists()) alert('Course Not Found!')
+      //Loop through each question
+      questions.forEach ((question) => {
+        //If answered, add to questions array, and update state of questions
+        if (question.val().answered) {
+          this.questions.push({key:question.key, answer:question.val().answer, optionA:question.val().optionA,
+            optionB:question.val().optionB, optionC:question.val().optionC, optionD:question.val().optionD,question:
+            question.val().question, selected:''})
+            this.setState({questions:this.questions, loading:false})
+        }
+      })
+    })
+    //this.randomizeQuestions(this.questions)
+  }
   handleFocus = () =>  {
     this.setState({ divColor: '#cfecf7'});
-    };
-
-    handleFocus2 = () =>  {
-      this.setState({ divColor: 'white'});
-
-      };
+    }
   changeColor = () =>  {
     this.setState({ divColor: blue300});
     };
-  handleChange = (event, logged) => {
-    this.setState({logged: logged});
-  };
-  handleOnRequestChange = (value) => {
-    this.setState({
-      openMenu: value,
-    });
-  }
-  handleOpenMenu = () => {
-   this.setState({
-     openMenu: true,
-   });
- }
- handleOpen = () => {
-  this.setState({open: true});
-  };
-
-  handleClose = () => {
-    this.setState({open: false});
-  };
-
   secondsToTime(secs){
     let hours = Math.floor(secs / (60 * 60));
 
@@ -215,7 +204,6 @@ class Practice extends Component {
     }
 
   }
-
   countDown() {
     // Remove one second, set state so a re-render happens.
     let seconds = this.state.seconds - 1;
@@ -233,128 +221,27 @@ class Practice extends Component {
     if (seconds == 0) {
       clearInterval(this.timer);
     }
-
-
   }
-
-
   select = (index) => this.setState({selectedIndex: index});
-
+  selectOption (option) {
+    var item  = this.state.questions[this.state.index]
+    item.selected = option
+    var clone = this.state.questions
+    clone[this.state.index] = item
+    this.setState({questions:clone})
+  }
   render() {
-    var styles = {
-      appBar: {
-        flexWrap: 'wrap'
-      },
-      tabs: {
-        width: '100%'
-      }
-    }
-
-    const actions = [
-      <FlatButton
-        label="Cancel"
-        primary={true}
-        onClick={this.handleClose}
-      />,
-      <FlatButton
-        label="Submit"
-        primary={true}
-        keyboardFocused={true}
-        onClick={this.handleClose}
-      />,
-    ];
-
-    const radios = [];
-    for (let i = 0; i < 4; i++) {
-      radios.push(
-        <RadioButton
-          key={i}
-          value={`value${i + 1}`}
-          label={`Option ${i + 1}`}
-          style={styles.radioButton}
-        />
-      );
-    }
-
-
+    const {index} = this.state
     return (
         <MuiThemeProvider muiTheme={muiTheme} >
       <div>
-
-        <AppBar
-          iconElementLeft={<Avatar
-            src="images/oliverLogo.png"
-            size={45}
-            style={{backgroundColor:"#2d6ca1"}}
-          />}
-          children={
-            <div>
-
-              <FlatButton label="Activities" style={{color:'white'}}/>
-              <FlatButton label="Explore" style={{color:'white'}}/>
-              <FlatButton label="Bookmarks" style={{color:'white'}}/>
-
-              <Badge
-                 badgeContent={4}
-                badgeStyle={{color:'white', backgroundColor:'red', top:10, left:25}}
-               >
-                 <NotificationsIcon  style={{color:'white'}} />
-               </Badge>
-
-               <IconMenu
-
-                iconButtonElement={<Avatar
-                  src="images/client_2.png"
-                  size={35}
-                  style={{marginBottom:10,cursor:'pointer'}}
-                  label='Jane Doe'
-                  //onMouseEnter={this.handleOpenMenu}
-                  //onMouseLeave={this.handleCloseMenu}
-                  onClick={this.handleOpenMenu}
-                />}
-                anchorOrigin={{horizontal: 'left', vertical: 'bottom'}}
-                targetOrigin={{horizontal: 'left', vertical: 'top'}}
-                open={this.state.openMenu}
-                onRequestChange={this.handleOnRequestChange}
-              >
-                <Divider />
-                 <MenuItem primaryText="Jane Doe" leftIcon={<Avatar
-                   src="images/client_2.png"
-                   //size={50}
-                   //iconStyle={{color:'red'}}
-                 />} />
-                 <Divider />
-                <MenuItem value="1" primaryText="Share" />
-                <MenuItem value="2" primaryText="Help" />
-                <MenuItem value="3" primaryText="Sign out" />
-
-              </IconMenu>
-
-              <IconMenu
-              iconButtonElement={<IconButton><MoreVertIcon /></IconButton>}
-              anchorOrigin={{horizontal: 'right', vertical: 'bottom'}}
-              targetOrigin={{horizontal: 'right', vertical: 'top'}}
-              iconStyle={{color:'white'}}
-            >
-              <MenuItem value="1" primaryText="Afridash Oliver" href='https://oliver.afridash.com' target='_blank'/>
-              <MenuItem value="2" primaryText="About" href='http://www.afridash.com' target='_blank'/>
-              <MenuItem value="3" primaryText="Contact" />
-              <MenuItem value="4" primaryText="Privacy" />
-              <MenuItem value="4" primaryText="Copyright" />
-            </IconMenu>
-            <div className='hidden-sm hidden-xs'>
-              <SearchBar
-              onChange={() => console.log('onChange')}
-              onRequestSearch={() => console.log('onRequestSearch')}
-              style={{position:'absolute', top:10, left:0, marginLeft:'35%'}}
-            />
-            </div>
-            </div>}
-          title="Oliver"
-
-        />
         <br/>
-
+        {this.state.loading ? <div className='row'>
+          <div className='col-sm-6 col-sm-offset-3'>
+              <br />  <br /><CircularProgress size={60} thickness={7} />
+            </div>
+              </div>
+              :
         <div className="container">
           <div className="row">
             <div className="col-lg-4 ">
@@ -363,12 +250,11 @@ class Practice extends Component {
                 <div>
                   <Paper style={{padding:20,  textAlign:'center',backgroundColor:blue300}} zDepth={2}
                     children={<div>
-                    <p style={{fontSize:20,color:'white'}}>CSC 158</p>
+                    <p style={{fontSize:20,color:'white'}}>{this.state.code}</p>
 
                   </div>
                 }
                    />
-
                 </div>
                 <div className="panel-body" >
                   <div className="row">
@@ -376,37 +262,18 @@ class Practice extends Component {
                       High Score: 70% <br/>
                       Last Score: 60% <br/>
                     </div>
-                        <div className="col-lg-6" style={{marginTop:-10,fontSize:40,color:this.state.timeColor, textAlign:'right'}}> {this.state.time.m} : {this.state.time.s} </div>
+
+                  <div className="col-lg-6" style={{marginTop:-10,fontSize:40,color:this.state.timeColor, textAlign:'right'}}> {this.state.time.m} : {this.state.time.s} </div>
 
                   </div>
-
-
                     <div style={{padding:10, textAlign:'center'}}>
-              <p style={{ fontSize:20}}>   Navigation </p>
+                      <p style={{ fontSize:20}}>   Navigation </p>
                   </div>
 
                     <div className="btn-toolbar"  >
-                        <Button style={style.button}>1</Button>
-                        <Button style={style.button}>2</Button>
-                        <Button style={style.button}>3</Button>
-                        <Button style={style.button}>4</Button>
-                        <Button style={style.button}>5</Button>
-                        <Button style={style.button}>6</Button>
-                        <Button style={style.button}>7</Button>
-                        <Button style={style.button}>8</Button>
-                        <Button style={style.button}>9</Button>
-                        <Button style={style.button}>10</Button>
-                        <Button style={style.button}>11</Button>
-                        <Button style={style.button}>12</Button>
-                        <Button style={style.button}>13</Button>
-                        <Button style={style.button}>14</Button>
-                        <Button style={style.button}>15</Button>
-                        <Button style={style.button}>16</Button>
-                        <Button style={style.button}>17</Button>
-                        <Button style={style.button}>18</Button>
-                        <Button style={style.button}>19</Button>
-                        <Button style={style.button}>20</Button>
-
+                      {this.state.questions.map((question, key)=>
+                        <Button onClick={()=>this.setState({index:key})} style={{margin:3, background:question.selected && blue300}}>{key+1}</Button>
+                      )}
                       <br/>
 
                     </div>
@@ -419,7 +286,7 @@ class Practice extends Component {
                 <div>
                   <Paper style={{padding:20,  textAlign:'center',backgroundColor:blue300}} zDepth={2}
                     children={<div>
-                    <p style={{fontSize:20,color:'white'}}>Introduction to Computer Science</p>
+                    <p style={{fontSize:20,color:'white'}}>{this.state.title}</p>
 
                   </div>
                 }
@@ -427,38 +294,40 @@ class Practice extends Component {
 
                 </div>
 
-                <div className="panel-body">
-                <p style={{padding:10, fontSize:20}}>
-
-                  An electronic tool that allows information to be input, processed, and output</p>
-                  <div onClick={this.handleBookMark}>
-                      <BookMark  style={{color:this.state.bookColor, cursor:'pointer'}}/>
-                  </div>
-                          <div style={{textAlign:'center', fontSize:20}} onClick={this.changeColor}>
-                            <div className='panel panel-default'  style={{paddingTop:10, margin:3, background:this.state.divColor, cursor:'pointer'}} onMouseEnter={this.handleFocus}  onMouseLeave={this.handleFocus2}><p style={{fontSize:20}}>Operating system</p></div>
-                            <div  className='panel panel-default' style={{paddingTop:10, margin:3,background:this.state.divColor,  cursor:'pointer'}} onMouseEnter={this.handleFocus} onMouseLeave={this.handleFocus2}><p style={{fontSize:20}}>Motherboard</p></div>
-                            <div className='panel panel-default' style={{paddingTop:10, margin:3,  background:this.state.divColor,cursor:'pointer'}} onMouseEnter={this.handleFocus} onMouseLeave={this.handleFocus2}><p style={{fontSize:20}}>Computer</p></div>
-                            <div className='panel panel-default' style={{paddingTop:10, margin:3, background:this.state.divColor,cursor:'pointer'}} onMouseEnter={this.handleFocus} onMouseLeave={this.handleFocus2}><p style={{fontSize:20}}>CPU</p></div>
-
-                          </div>
-
-
-                          <div className="col-sm-10 col-sm-offset-1">
-                            <FlatButton label="Previous" style={{position:'absolute',left:0} } />
-                            <FlatButton label="Next" href="/PracticeSummary" style={{position:'absolute',right:0}}   />
-                              <br/>   <br/>
-
-
-                          </div>
-
-
+              <div className="panel-body">
+              <p style={{padding:10, fontSize:20}}>{index+1}. {this.state.questions[index].question}</p>
+                <div onClick={this.handleBookMark}>
+                    <BookMark  style={{color:this.state.bookColor, cursor:'pointer'}}/>
                 </div>
+                        <div style={{textAlign:'center', fontSize:20}} >
+                          <div onClick={()=>this.selectOption('A')} className='panel panel-default'  style={{paddingTop:10, margin:3, background: this.state.questions[index].selected === 'A' ? blue300 : 'white', cursor:'pointer'}} >
+                            <p style={{fontSize:20}}>{this.state.questions[index].optionA}</p>
+                          </div>
+                          <div onClick={()=>this.selectOption('B')}  className='panel panel-default' style={{paddingTop:10, margin:3,background:this.state.questions[index].selected === 'B' ? blue300 : 'white',  cursor:'pointer'}} >
+                            <p style={{fontSize:20}}>{this.state.questions[index].optionB}</p>
+                          </div>
+                          <div onClick={()=>this.selectOption('C')} className='panel panel-default' style={{paddingTop:10, margin:3,  background:this.state.questions[index].selected === 'C' ? blue300 : 'white', cursor:'pointer'}} >
+                            <p style={{fontSize:20}}>{this.state.questions[index].optionD}</p>
+                          </div>
+                          <div onClick={()=>this.selectOption('D')} className='panel panel-default' style={{paddingTop:10, margin:3, background:this.state.questions[index].selected === 'D' ? blue300 : 'white', cursor:'pointer'}} >
+                            <p style={{fontSize:20}}>{this.state.questions[index].optionC}</p>
+                          </div>
+
+                        </div>
+                        <div className="col-sm-10 col-sm-offset-1">
+                          {index > 0 && <FlatButton label="Previous" onClick={()=>this.setState({index: this.state.index -=1})} style={{position:'absolute',left:0} } />}
+                          {index < this.state.questions.length-1 ? <FlatButton label="Next" onClick={()=>this.setState({index: this.state.index +=1})} style={{position:'absolute',right:0,}}   /> :
+                          <FlatButton label="Submit" style={{position:'absolute',right:0}}   />
+                          }
+                            <br/>   <br/>
+                        </div>
+                      </div>
+
               </div>
-
-
               </div>
           </div>
         </div>
+            }
         <br/>
 
       <Paper className='hidden-sm hidden-xs' zDepth={1} style={{bottom:0, position:'absolute', width:'100%'}}>
