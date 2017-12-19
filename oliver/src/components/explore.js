@@ -69,7 +69,6 @@ const HomeIcon = (props) => (
   </SvgIcon>
 );
 
-
 const recentsIcon = <FontIcon className="material-icons">restore</FontIcon>;
 const favoritesIcon = <FontIcon className="material-icons">favorite</FontIcon>;
 const nearbyIcon = <IconLocationOn />;
@@ -228,7 +227,7 @@ Logged.muiName = 'IconMenu';
                     </div>
                     <div >
 
-                        <h3 style={{fontSize:40, color:blue300}}> {explore.percentage} </h3>
+                        <h3 style={{fontSize:40, color:blue300}}> {explore.percentage}% </h3>
                       </div>
 
                         <div className="row">

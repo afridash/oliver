@@ -109,11 +109,11 @@ Logged.muiName = 'IconMenu';
 
 
             <Badge
-               badgeContent={4}
-              badgeStyle={{color:'white', backgroundColor:'red', top:10, left:25}}
+               badgeContent={3}
+               badgeStyle={{color:'white', backgroundColor:'red', top:10, left:25}}
              >
                <NotificationsIcon  style={{color:'white'}} />
-             </Badge>
+            </Badge>
 
              <IconMenu
 
@@ -151,7 +151,7 @@ Logged.muiName = 'IconMenu';
              <MenuItem value="1" primaryText="Afridash Oliver" href='https://oliver.afridash.com' target='_blank'/>
              <MenuItem value="2" primaryText="About" href='http://www.afridash.com' target='_blank'/>
              <MenuItem value="3" primaryText="Contact" />
-             <MenuItem value="4" primaryText="Privacy" />
+             <MenuItem value="4" primaryText="Privacy" href={'https://oliver.afridash.com/policy'} target='_blank'/>
              <MenuItem value="4" primaryText="Copyright" />
              </IconMenu>
 
