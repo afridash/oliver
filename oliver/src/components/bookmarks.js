@@ -36,6 +36,8 @@ import Menu from 'material-ui/Menu';
 import Divider from 'material-ui/Divider';
 import {Nav, Navbar, NavDropdown, Tabs, ButtonToolbar, Button, Table, ButtonGroup, Row, Col, Grid, Panel, FormGroup, FormControl} from 'react-bootstrap';
 import FileFileDownload from 'material-ui/svg-icons/file/file-download';
+import Remove from 'material-ui/svg-icons/content/remove-circle-outline';
+import CircularProgress from 'material-ui/CircularProgress';
 
 import {
   blue300,
@@ -117,13 +119,16 @@ class Bookmarks extends Component {
   constructor(props) {
   super(props);
   this.state = {
-    questions:[],
+    bookmarks:[],
     data:[],
+    isloading:true,
+    noActivity:false
   };
   firebase.auth().onAuthStateChanged(this.handleUser)
   this.bookmarksRef = firebase.database().ref().child('bookmarks')
 
 }
+
       handleUser = (user) => {
         if (user) {
           this.setState({username:user.displayName, userId:user.uid, photoURL:user.photoURL})
@@ -136,7 +141,11 @@ class Bookmarks extends Component {
           this.data = []
         //  console.log(bookmarks.val())
         //If bookmarks are not found
-         if (!bookmarks.exists()) alert('No BookMark Found!');
+         if (!bookmarks.exists()) {
+           this.setState({
+           isloading:false,
+           noActivity:true})
+         }
           //Loop through each bookmark
           bookmarks.forEach((question)=>{
             var answer = ''
@@ -147,10 +156,72 @@ class Bookmarks extends Component {
 
             this.data.push({key:question.key, answer:answer,question:
               question.val().question})
-            this.setState({questions:this.data})
+            this.setState({bookmarks:this.data,isloading:false})
           })
         })
       }
+
+      handleDelete (key) {
+        //Delete entry with userId and key of entry
+        this.bookmarksRef.child(this.state.userId).child(key).remove()
+       //Filter activities and return items whose key is not equal to item deleted
+       this.data = this.data.filter ((bookmark)=> bookmark.key !== key)
+       //update state with remaining items
+       this.setState({bookmarks:this.data})
+       }
+
+       spinner () {
+         return (
+           <div className='container'>
+             <div className='col-md-2 col-md-offset-5'>
+               <br />  <br />   <br />  <br />    <br />  <br />
+               <CircularProgress size={60} thickness={7} />
+             </div>
+           </div>
+         )
+       }
+
+       noActivity () {
+         return (
+           <p>No Activity</p>
+         )
+       }
+
+       showPageContent () {
+         return(
+           <div className="container">
+             <div className="row">
+
+               <div >
+                 {this.state.bookmarks.map((bookmark)=>
+                 <Paper  zDepth={2}
+                   children={<div>
+                  <div className="panel panel-default">
+                    <div className="panel-heading">
+                   <p style={{ fontSize:20}}>{bookmark.question }
+                     <span className="pull-right">
+                       <IconButton tooltip="Remove" onClick={()=> this.handleDelete(bookmark.key)}>
+                         <Remove />
+                       </IconButton>
+                     </span></p>
+                    </div>
+                    <div className="panel-body">
+                      <div style={{fontSize:20}} >
+                        <div className='panel panel-default'  style={{paddingTop:10, margin:3, background:this.state.divColor, cursor:'pointer'}}>
+                         <p style={{fontSize:20}}>Correct Answer: {bookmark.answer}</p></div>
+                      </div>
+
+                    </div>
+                  </div>
+                </div>
+              }/>
+            )}
+
+               </div>
+             </div>
+           </div>
+         )
+       }
 
   render() {
 
@@ -159,33 +230,19 @@ class Bookmarks extends Component {
       <div>
 
         <br/>
-
-        <div className="container">
-          <div className="row">
-
-            <div >
-              {this.state.questions.map((question)=>
-              <Paper  zDepth={2}
-                children={<div>
-               <div className="panel panel-default">
-                 <div className="panel-heading">
-                <p style={{ fontSize:20}}> {question.question } </p>
-                 </div>
-                 <div className="panel-body">
-                   <div style={{fontSize:20}} >
-                     <div className='panel panel-default'  style={{paddingTop:10, margin:3, background:this.state.divColor, cursor:'pointer'}} onMouseEnter={this.handleFocus}  onMouseLeave={this.handleFocus2}><p style={{fontSize:20}}>Correct Answer: {question.answer}</p></div>
-
-
-                   </div>
-                 </div>
-               </div>
-             </div>
-           }/>
-         )}
-
-            </div>
-          </div>
-        </div>
+        {
+          (()=>{
+          if (this.state.isloading){
+            return this.spinner()
+          }
+          else if (this.state.noActivity) {
+            return this.noActivity()
+          }
+          else {
+            return this.showPageContent()
+          }
+        })()
+      }
 
       </div>
        </MuiThemeProvider>

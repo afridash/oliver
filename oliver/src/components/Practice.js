@@ -122,7 +122,8 @@ class Practice extends Component {
       bookColor: blue300,
       questions:[],
       index:0, //use to navigate questions
-      loading:true,
+      isloading:true,
+      noActivity:false
     }
     this.courseId = this.props.match.params.id
     this.timer = 0;
@@ -150,7 +151,9 @@ class Practice extends Component {
       this.questions = []
       console.log(questions.val())
       //If questions are not found under courseId, course does not exist
-      if (!questions.exists()) alert('Course Not Found!')
+      if (!questions.exists()) {
+        this.setState({isloading:false,noActivity:true})
+      }
       //Loop through each question
       questions.forEach ((question) => {
         //If answered, add to questions array, and update state of questions
@@ -158,7 +161,7 @@ class Practice extends Component {
           this.questions.push({key:question.key, answer:question.val().answer, optionA:question.val().optionA,
             optionB:question.val().optionB, optionC:question.val().optionC, optionD:question.val().optionD,question:
             question.val().question, selected:''})
-            this.setState({questions:this.questions, loading:false})
+            this.setState({questions:this.questions, isloading:false})
         }
       })
     })
@@ -230,104 +233,131 @@ class Practice extends Component {
     clone[this.state.index] = item
     this.setState({questions:clone})
   }
-  render() {
+  spinner () {
+    return (
+      <div className='container'>
+        <div className='col-md-2 col-md-offset-5'>
+          <br />  <br />   <br />  <br />    <br />  <br />
+          <CircularProgress size={60} thickness={7} />
+        </div>
+      </div>
+    )
+  }
+
+  noActivity () {
+    return (
+      <p>No Activity</p>
+    )
+  }
+  showPageContent () {
     const {index} = this.state
+    return(
+      <div className="container">
+        <div className="row">
+          <div className="col-lg-4 ">
+            <div className="panel panel-info">
+
+              <div>
+                <Paper style={{padding:20,  textAlign:'center',backgroundColor:blue300}} zDepth={2}
+                  children={<div>
+                  <p style={{fontSize:20,color:'white'}}>{this.state.code}</p>
+
+                </div>
+              }
+                 />
+              </div>
+              <div className="panel-body" >
+                <div className="row">
+                  <div className="col-lg-6" style={{textShadow:"2px 2px 5px #cfecf7"}}>
+                    High Score: 70% <br/>
+                    Last Score: 60% <br/>
+                  </div>
+
+                <div className="col-lg-6" style={{marginTop:-10,fontSize:40,color:this.state.timeColor, textAlign:'right'}}> {this.state.time.m} : {this.state.time.s} </div>
+
+                </div>
+                  <div style={{padding:10, textAlign:'center'}}>
+                    <p style={{ fontSize:20}}>   Navigation </p>
+                </div>
+
+                  <div className="btn-toolbar"  >
+                    {this.state.questions.map((question, key)=>
+                      <Button onClick={()=>this.setState({index:key})} style={{margin:3, background:question.selected && blue300}}>{key+1}</Button>
+                    )}
+                    <br/>
+
+                  </div>
+
+              </div>
+            </div>
+          </div>
+        <div className="col-lg-8 ">
+            <div className="panel panel-info">
+              <div>
+                <Paper style={{padding:20,  textAlign:'center',backgroundColor:blue300}} zDepth={2}
+                  children={<div>
+                  <p style={{fontSize:20,color:'white'}}>{this.state.title}</p>
+
+                </div>
+              }
+                 />
+
+              </div>
+
+            <div className="panel-body">
+            <p style={{padding:10, fontSize:20}}>{index+1}. {this.state.questions[index].question}</p>
+              <div onClick={this.handleBookMark}>
+                  <BookMark  style={{color:this.state.bookColor, cursor:'pointer'}}/>
+              </div>
+                      <div style={{textAlign:'center', fontSize:20}} >
+                        <div onClick={()=>this.selectOption('A')} className='panel panel-default'  style={{paddingTop:10, margin:3, background: this.state.questions[index].selected === 'A' ? blue300 : 'white', cursor:'pointer'}} >
+                          <p style={{fontSize:20}}>{this.state.questions[index].optionA}</p>
+                        </div>
+                        <div onClick={()=>this.selectOption('B')}  className='panel panel-default' style={{paddingTop:10, margin:3,background:this.state.questions[index].selected === 'B' ? blue300 : 'white',  cursor:'pointer'}} >
+                          <p style={{fontSize:20}}>{this.state.questions[index].optionB}</p>
+                        </div>
+                        <div onClick={()=>this.selectOption('C')} className='panel panel-default' style={{paddingTop:10, margin:3,  background:this.state.questions[index].selected === 'C' ? blue300 : 'white', cursor:'pointer'}} >
+                          <p style={{fontSize:20}}>{this.state.questions[index].optionD}</p>
+                        </div>
+                        <div onClick={()=>this.selectOption('D')} className='panel panel-default' style={{paddingTop:10, margin:3, background:this.state.questions[index].selected === 'D' ? blue300 : 'white', cursor:'pointer'}} >
+                          <p style={{fontSize:20}}>{this.state.questions[index].optionC}</p>
+                        </div>
+
+                      </div>
+                      <div className="col-sm-10 col-sm-offset-1">
+                        {index > 0 && <FlatButton label="Previous" onClick={()=>this.setState({index: this.state.index -=1})} style={{position:'absolute',left:0} } />}
+                        {index < this.state.questions.length-1 ? <FlatButton label="Next" onClick={()=>this.setState({index: this.state.index +=1})} style={{position:'absolute',right:0,}}   /> :
+                        <FlatButton label="Submit" style={{position:'absolute',right:0}}   />
+                        }
+                          <br/>   <br/>
+                      </div>
+                    </div>
+
+            </div>
+            </div>
+        </div>
+      </div>
+    )
+  }
+  render() {
+
     return (
         <MuiThemeProvider muiTheme={muiTheme} >
       <div>
         <br/>
-        {this.state.loading ? <div className='row'>
-          <div className='col-sm-6 col-sm-offset-3'>
-              <br />  <br /><CircularProgress size={60} thickness={7} />
-            </div>
-              </div>
-              :
-        <div className="container">
-          <div className="row">
-            <div className="col-lg-4 ">
-              <div className="panel panel-info">
-
-                <div>
-                  <Paper style={{padding:20,  textAlign:'center',backgroundColor:blue300}} zDepth={2}
-                    children={<div>
-                    <p style={{fontSize:20,color:'white'}}>{this.state.code}</p>
-
-                  </div>
-                }
-                   />
-                </div>
-                <div className="panel-body" >
-                  <div className="row">
-                    <div className="col-lg-6" style={{textShadow:"2px 2px 5px #cfecf7"}}>
-                      High Score: 70% <br/>
-                      Last Score: 60% <br/>
-                    </div>
-
-                  <div className="col-lg-6" style={{marginTop:-10,fontSize:40,color:this.state.timeColor, textAlign:'right'}}> {this.state.time.m} : {this.state.time.s} </div>
-
-                  </div>
-                    <div style={{padding:10, textAlign:'center'}}>
-                      <p style={{ fontSize:20}}>   Navigation </p>
-                  </div>
-
-                    <div className="btn-toolbar"  >
-                      {this.state.questions.map((question, key)=>
-                        <Button onClick={()=>this.setState({index:key})} style={{margin:3, background:question.selected && blue300}}>{key+1}</Button>
-                      )}
-                      <br/>
-
-                    </div>
-
-                </div>
-              </div>
-            </div>
-          <div className="col-lg-8 ">
-              <div className="panel panel-info">
-                <div>
-                  <Paper style={{padding:20,  textAlign:'center',backgroundColor:blue300}} zDepth={2}
-                    children={<div>
-                    <p style={{fontSize:20,color:'white'}}>{this.state.title}</p>
-
-                  </div>
-                }
-                   />
-
-                </div>
-
-              <div className="panel-body">
-              <p style={{padding:10, fontSize:20}}>{index+1}. {this.state.questions[index].question}</p>
-                <div onClick={this.handleBookMark}>
-                    <BookMark  style={{color:this.state.bookColor, cursor:'pointer'}}/>
-                </div>
-                        <div style={{textAlign:'center', fontSize:20}} >
-                          <div onClick={()=>this.selectOption('A')} className='panel panel-default'  style={{paddingTop:10, margin:3, background: this.state.questions[index].selected === 'A' ? blue300 : 'white', cursor:'pointer'}} >
-                            <p style={{fontSize:20}}>{this.state.questions[index].optionA}</p>
-                          </div>
-                          <div onClick={()=>this.selectOption('B')}  className='panel panel-default' style={{paddingTop:10, margin:3,background:this.state.questions[index].selected === 'B' ? blue300 : 'white',  cursor:'pointer'}} >
-                            <p style={{fontSize:20}}>{this.state.questions[index].optionB}</p>
-                          </div>
-                          <div onClick={()=>this.selectOption('C')} className='panel panel-default' style={{paddingTop:10, margin:3,  background:this.state.questions[index].selected === 'C' ? blue300 : 'white', cursor:'pointer'}} >
-                            <p style={{fontSize:20}}>{this.state.questions[index].optionD}</p>
-                          </div>
-                          <div onClick={()=>this.selectOption('D')} className='panel panel-default' style={{paddingTop:10, margin:3, background:this.state.questions[index].selected === 'D' ? blue300 : 'white', cursor:'pointer'}} >
-                            <p style={{fontSize:20}}>{this.state.questions[index].optionC}</p>
-                          </div>
-
-                        </div>
-                        <div className="col-sm-10 col-sm-offset-1">
-                          {index > 0 && <FlatButton label="Previous" onClick={()=>this.setState({index: this.state.index -=1})} style={{position:'absolute',left:0} } />}
-                          {index < this.state.questions.length-1 ? <FlatButton label="Next" onClick={()=>this.setState({index: this.state.index +=1})} style={{position:'absolute',right:0,}}   /> :
-                          <FlatButton label="Submit" style={{position:'absolute',right:0}}   />
-                          }
-                            <br/>   <br/>
-                        </div>
-                      </div>
-
-              </div>
-              </div>
-          </div>
-        </div>
-            }
+        {
+          (()=>{
+          if (this.state.isloading){
+            return this.spinner()
+          }
+          else if (this.state.noActivity) {
+            return this.noActivity()
+          }
+          else {
+            return this.showPageContent()
+          }
+        })()
+      }
         <br/>
 
       <Paper className='hidden-sm hidden-xs' zDepth={1} style={{bottom:0, position:'absolute', width:'100%'}}>

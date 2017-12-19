@@ -6,6 +6,7 @@ import FlatButton from 'material-ui/FlatButton';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import {Redirect, Link} from 'react-router-dom'
+import CircularProgress from 'material-ui/CircularProgress';
 import {
   blue300,
   indigo900,
@@ -64,6 +65,8 @@ function handleClick() {
        refreshing: false,
        noCourses:false,
        status:'',
+       isloading:true,
+       noActivity:false
      };
      firebase.auth().onAuthStateChanged(this.handleUser.bind(this))
      this.ref = firebase.database().ref().child('user_courses')
@@ -88,11 +91,15 @@ function handleClick() {
     this.setState({refreshing:true})
     await this.ref.child(this.state.userId).once('value', (snapshot)=>{
       if (!snapshot.exists()) {
-        this.setState({refreshing:false, noCourses:true})
+        this.setState({
+        noActivity:true,
+        isloading:false})
+
       }
       snapshot.forEach((course)=>{
         this.data.push({key:course.key, name:course.val().name, code:course.val().code})
-        this.setState({data:this.data, refreshing:false,noCourses:false, isLoading:false})
+        this.setState({data:this.data, isloading:false})
+
       })
     })
   }
@@ -126,6 +133,73 @@ function handleClick() {
   };
 
    select = (index) => this.setState({selectedIndex: index});
+
+   spinner () {
+     return (
+       <div className='container'>
+         <div className='col-md-2 col-md-offset-5'>
+           <br />  <br />   <br />  <br />    <br />  <br />
+           <CircularProgress size={60} thickness={7} />
+         </div>
+       </div>
+     )
+   }
+
+   noActivity () {
+     return (
+       <p>No Activity</p>
+     )
+   }
+
+   showPageContent () {
+     return (
+       <div className="row">
+         {this.state.data.map((course)=>
+           <div className="col-lg-3" >
+             <Paper style={style.paper} zDepth={2} rounded={true}
+               children={<div>
+                 <div className="row">
+                   <div className='col-sm-4'>
+                     <div className="panel panel-info" style={{borderRightWidth:2, borderTopWidth:0, borderLeftWidth:0, borderBottomWidth:0, borderColor:'none', margin:0}}>
+                       <div className="panel-heading" style={{background:blue300,color:'white'}}> {course.code} </div>
+                       <div className="panel-body">
+                         <h3 style={{fontSize:15}}>HIGH SCORE</h3>
+                         <h3 style={{fontSize:15}}> 50% </h3> </div>
+
+                     </div>
+                   </div>
+                   <div className="col-sm-8">
+                     <div>
+                       <Paper style={style} zDepth={2}
+                         children={<div>
+                         <p>{course.name}</p>
+
+                       </div>}/>
+
+                     </div>
+                       <div className="row">
+                         <div className="col-sm-10 col-sm-offset-1">
+                           <Link to={"/theory/"+course.key}>
+                             <RaisedButton label="Theory" fullWidth={true} style={style.chip} />
+                           </Link>
+                           <Link to={"/objective/"+course.key}>
+                             <RaisedButton label="Objective" fullWidth={true} style={style.chip} />
+                           </Link>
+
+                           <Link to={"/practice/"+course.key}>
+                             <RaisedButton label="Exam" fullWidth={true} style={style.chip}/>
+                           </Link>
+
+                         </div>
+                       </div>
+                   </div>
+                 </div>
+               </div> }/>
+           </div>
+         )}
+         </div>
+     )
+   }
 
   render() {
     var styles = {
@@ -164,51 +238,19 @@ function handleClick() {
     return (
         this.state.redirect ? <Redirect to='/' push/> : <MuiThemeProvider muiTheme={muiTheme} >
       <div>
-        <div className="row">
-          {this.state.data.map((course)=>
-            <div className="col-lg-3" >
-              <Paper style={style.paper} zDepth={2} rounded={true}
-                children={<div>
-                  <div className="row">
-                    <div className='col-sm-4'>
-                      <div className="panel panel-info" style={{borderRightWidth:2, borderTopWidth:0, borderLeftWidth:0, borderBottomWidth:0, borderColor:'none', margin:0}}>
-                        <div className="panel-heading" style={{background:blue300,color:'white'}}> {course.code} </div>
-                        <div className="panel-body">
-                          <h3 style={{fontSize:15}}>HIGH SCORE</h3>
-                          <h3 style={{fontSize:15}}> 50% </h3> </div>
-
-                      </div>
-                    </div>
-                    <div className="col-sm-8">
-                      <div>
-                        <Paper style={style} zDepth={2}
-                          children={<div>
-                          <p>{course.name}</p>
-
-                        </div>}/>
-
-                      </div>
-                        <div className="row">
-                          <div className="col-sm-10 col-sm-offset-1">
-                            <Link to={"/theory/"+course.key}>
-                              <RaisedButton label="Theory" fullWidth={true} style={style.chip} />
-                            </Link>
-                            <Link to={"/objective/"+course.key}>
-                              <RaisedButton label="Objective" fullWidth={true} style={style.chip} />
-                            </Link>
-
-                            <Link to={"/practice/"+course.key}>
-                              <RaisedButton label="Exam" fullWidth={true} style={style.chip}/>
-                            </Link>
-
-                          </div>
-                        </div>
-                    </div>
-                  </div>
-                </div> }/>
-            </div>
-          )}
-          </div>
+        {
+          (()=>{
+          if (this.state.isloading){
+            return this.spinner()
+          }
+          else if (this.state.noActivity) {
+            return this.noActivity()
+          }
+          else {
+            return this.showPageContent()
+          }
+        })()
+      }
       </div>
        </MuiThemeProvider>
     );
