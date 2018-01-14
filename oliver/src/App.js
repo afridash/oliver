@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import oliver from './oliver.jpg'
+//import oliver from './oliver.jpg'
 import './App.css'
 import Home from './components/home'
 import About from './components/about'

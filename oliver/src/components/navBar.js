@@ -7,31 +7,14 @@ import FlatButton from 'material-ui/FlatButton';
 import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
-import FontIcon from 'material-ui/FontIcon';
-import IconLocationOn from 'material-ui/svg-icons/communication/location-on';
 import SearchBar from 'material-ui-search-bar';
 import Badge from 'material-ui/Badge';
 import NotificationsIcon from 'material-ui/svg-icons/social/notifications';
-import PlusOne from 'material-ui/svg-icons/action/bookmark';
-import Restore from 'material-ui/svg-icons/action/restore';
 import Avatar from 'material-ui/Avatar';
-import FileFolder from 'material-ui/svg-icons/file/folder';
-import List from 'material-ui/List/List';
-import ListItem from 'material-ui/List/ListItem';
 import Divider from 'material-ui/Divider';
 import {Redirect} from 'react-router-dom'
 import {Link} from 'react-router-dom'
 const firebase = require('firebase')
-
-class Login extends Component {
-  static muiName = 'FlatButton';
-
-  render() {
-    return (
-      <FlatButton {...this.props} label="Login" />
-    );
-  }
-}
 
 const Logged = (props) => (
   <IconMenu
@@ -109,11 +92,11 @@ Logged.muiName = 'IconMenu';
 
 
             <Badge
-               badgeContent={4}
-              badgeStyle={{color:'white', backgroundColor:'red', top:10, left:25}}
+               badgeContent={3}
+               badgeStyle={{color:'white', backgroundColor:'red', top:10, left:25}}
              >
                <NotificationsIcon  style={{color:'white'}} />
-             </Badge>
+            </Badge>
 
              <IconMenu
 
@@ -151,7 +134,7 @@ Logged.muiName = 'IconMenu';
              <MenuItem value="1" primaryText="Afridash Oliver" href='https://oliver.afridash.com' target='_blank'/>
              <MenuItem value="2" primaryText="About" href='http://www.afridash.com' target='_blank'/>
              <MenuItem value="3" primaryText="Contact" />
-             <MenuItem value="4" primaryText="Privacy" />
+             <MenuItem value="4" primaryText="Privacy" href={'https://oliver.afridash.com/policy'} target='_blank'/>
              <MenuItem value="4" primaryText="Copyright" />
              </IconMenu>
 

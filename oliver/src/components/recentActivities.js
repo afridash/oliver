@@ -1,7 +1,18 @@
 import React, {Component} from 'react'
 import {Firebase} from '../auth/firebase'
 import * as timestamp from '../auth/timestamp'
+import {Link, Redirect} from 'react-router-dom'
+import CircularProgress from 'material-ui/CircularProgress'
+import Paper from 'material-ui/Paper'
+import IconButton from 'material-ui/IconButton'
+import Delete from 'material-ui/svg-icons/action/delete'
+import {Card, CardHeader, CardTitle, CardText} from 'material-ui/Card'
+import {Panel, OverlayTrigger, Tooltip} from 'react-bootstrap'
 const firebase = require('firebase')
+
+const tooltip = (
+  <Tooltip id="tooltip">Delete</Tooltip>
+);
 
 class RecentActivities extends Component {
   constructor (props) {
@@ -9,6 +20,8 @@ class RecentActivities extends Component {
     this.state = {
       activities:[],
       userId:'',
+      loading: true,
+      noActivities: false,
     }
     firebase.auth().onAuthStateChanged(this.handleUser)
     this.activitiesRef = firebase.database().ref().child('activities')
@@ -18,20 +31,75 @@ class RecentActivities extends Component {
   handleUser = (user) => {
     if (user){
       this.setState({userId:user.uid, username:user.displayName})
-      this.recentActivities(user.uid)
+      this.readActivities(user.uid)
     }
   }
 
-  recentActivities (userId) {
-   this.activitiesRef.child(userId).once('value', (snapshots)=>{
+  readActivities (userId) {
     this.activities = []
-    snapshots.forEach((snapshot)=>{
-      this.activities.push({key:snapshot.key, code:snapshot.val().code, title:snapshot.val().title, total:snapshot.val().total,
+      this.activitiesRef.child(userId).once('value', (snapshots)=>{
+        if(!snapshots.exists())this.setState({noActivities:true, loading:false})
+        snapshots.forEach((snapshot)=>{
+          this.activities.push({key:snapshot.key, code:snapshot.val().code, title:snapshot.val().title, total:snapshot.val().total,
               score:snapshot.val().score, createdAt:snapshot.val().createdAt, Percentage:snapshot.val().percentage})
-      this.setState({activities:this.activities})
+      this.setState({activities:this.activities, loading:false})
 
       })
     })
+  }
+
+  showPageContent (){
+    return (
+      <div className="col-sm-8 col-sm-offset-2">
+        {this.state.activities.map((activity) =>
+          <Paper zDepth={3}>
+            <Panel>
+              <div className="card">
+                <div className="card-header">
+                  <h4>{activity.title}<span className="pull-right">{activity.code}
+                        <OverlayTrigger placement="bottom" overlay={tooltip}>
+                            <i className="fa fa-trash-o fa-lg" style={{cursor:'pointer'}} onClick={()=> this.handleDelete(activity.key)}></i>
+                        </OverlayTrigger>
+                  </span></h4>
+                </div>
+                <div className="card card-body">
+                  <br/>
+                  <h4>Score: {activity.score} out of {activity.total}</h4>
+                  <h4>Percentage: {activity.Percentage}%</h4>
+                </div>
+                <div className="card-footer">
+                  <span className="pull-right">{timestamp.timeSince(activity.createdAt)}</span>
+                </div>
+              </div>
+            </Panel>
+          </Paper>
+        )}
+
+      </div>
+    )
+  }
+
+  noActivities (){
+    return (
+      <div className="col-sm-4 col-sm-offset-4">
+        <p style={{color:'red', fontSize:'20'}}>You Have No Activity!</p>
+      </div>
+    )
+  }
+
+  spinner () {
+    return (
+      <div className="row">
+        <div className="col-md-2 col-md-offset-5">
+          <br/>
+          <br/>
+          <br/>
+          <br/>
+          <br/>
+          <CircularProgress size={60} thickness={7} />
+        </div>
+      </div>
+    )
   }
 
   handleDelete (key) {
@@ -45,28 +113,22 @@ class RecentActivities extends Component {
 
   render(){
     return(
-
       <div className="center">
-              <br/>
+        <br/>
         <div className="row">
-          <div className="col-sm-8 col-sm-offset-2">
-            {this.state.activities.map((activity) =>
-              <div className="panel panel-info">
-                <div className="panel-heading">
-                  <h4>{activity.title}<span className="pull-right">{activity.code}
-                    <span className="btn btn-danger btn-sm" onClick={()=> this.handleDelete(activity.key)}>
-                    <i className="fa fa-trash-o fa-lg"></i> Delete</span>
-                  </span></h4>
-                </div>
-                <div className="panel-body">
-                    <h4>Score: {activity.score} out of {activity.total}</h4>
-                    <h4>Percentage: {activity.Percentage}%</h4>
-                </div>
-                <div className="panel-footer">{timestamp.timeSince(activity.createdAt)}</div>
-              </div>
-            )}
-
-          </div>
+          {
+            (()=>{
+              if (this.state.loading){
+                return this.spinner()
+              }
+              else if (this.state.noActivities) {
+                return this.noActivities()
+              }
+              else {
+                return this.showPageContent()
+              }
+            })()
+          }
         </div>
       </div>
     );

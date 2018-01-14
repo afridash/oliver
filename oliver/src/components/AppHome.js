@@ -94,7 +94,6 @@ function handleClick() {
         this.setState({
         noActivity:true,
         isloading:false})
-
       }
       snapshot.forEach((course)=>{
         this.data.push({key:course.key, name:course.val().name, code:course.val().code})

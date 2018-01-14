@@ -26,7 +26,7 @@ import FileFolder from 'material-ui/svg-icons/file/folder';
 import List from 'material-ui/List/List';
 import Divider from 'material-ui/Divider';
 import Fav from 'material-ui/svg-icons/action/favorite-border';
-import Chat from 'material-ui/svg-icons/communication/chat-bubble-outline';
+import Comment from 'material-ui/svg-icons/communication/comment';
 import {Firebase} from '../auth/firebase'
 import {Redirect, Link} from 'react-router-dom'
 import CircularProgress from 'material-ui/CircularProgress';
@@ -70,7 +70,6 @@ const HomeIcon = (props) => (
     <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z" />
   </SvgIcon>
 );
-
 
 const recentsIcon = <FontIcon className="material-icons">restore</FontIcon>;
 const favoritesIcon = <FontIcon className="material-icons">favorite</FontIcon>;
@@ -128,6 +127,7 @@ Logged.muiName = 'IconMenu';
        firebase.auth().onAuthStateChanged(this.handleUser)
        this.usersRef = firebase.database().ref().child('users')
        this.exploreRef = firebase.database().ref().child('explore')
+
 
    }
    handleUser = (user) => {
@@ -224,7 +224,7 @@ Logged.muiName = 'IconMenu';
                  </div>
                  <div >
 
-                     <h3 style={{fontSize:40, color:blue300}}> {explore.percentage} </h3>
+                     <h3 style={{fontSize:40, color:blue300}}> {explore.percentage}% </h3>
                    </div>
 
                      <div className="row">
@@ -241,7 +241,7 @@ Logged.muiName = 'IconMenu';
                          </Link>
                          <br /> <br />
                          <Fav style={{cursor:'pointer', position:'absolute',left:0}}></Fav>
-                         <Chat  style={{cursor:'pointer', position:'absolute',right:0}}></Chat>
+                         <Comment  style={{cursor:'pointer', position:'absolute',right:0}}></Comment>
                            <br />   <br />  <br />
                            {timestamp.timeSince(explore.createdAt)}
                          </div>

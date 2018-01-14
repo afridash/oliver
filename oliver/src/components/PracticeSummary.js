@@ -58,18 +58,6 @@ function handleClick() {
   alert('You clicked the Chip.');
 }
 
-
-
-class Login extends Component {
-  static muiName = 'FlatButton';
-
-  render() {
-    return (
-      <FlatButton {...this.props} label="Login" />
-    );
-  }
-}
-
 const Logged = (props) => (
   <IconMenu
     {...props}
@@ -100,6 +88,10 @@ Logged.muiName = 'IconMenu';
      color:'#2d6ca1',
    },
  })
+
+
+
+
 class PracticeSummary extends Component {
   constructor(props) {
   super(props);
@@ -108,14 +100,9 @@ class PracticeSummary extends Component {
   };
 }
 
-  render() {
 
-    return (
-        <MuiThemeProvider muiTheme={muiTheme} >
-      <div>
-
-        <br/>
-
+      showSummary () {
+      return (
         <div className="container">
           <div className="row">
             <div className="col-lg-4">
@@ -128,7 +115,7 @@ class PracticeSummary extends Component {
                   </div>
                 }/>
                 </div>
-              <h3 style={{fontSize:30, padding:40}}> Score: 10/20 (50%)</h3>
+              <h3 style={{fontSize:30, padding:40}}> Score: {this.state.correct}/{this.state.questions.length} ({this.state.percentage})</h3>
               <div className="row">
                   <div className="col-sm-10 col-sm-offset-1">
                   <RaisedButton label="Another One !" backgroundColor={blue300} labelColor={'white'} fullWidth={true}  style={{margin: 4,
@@ -155,18 +142,18 @@ class PracticeSummary extends Component {
                 </div>
               </div>
             </div>
-
+            {this.state.questions.map((question)=>
             <div className="col-lg-8">
               <Paper  zDepth={2}
                 children={<div>
                <div className="panel panel-default">
                  <div className="panel-heading">
-                <p style={{ fontSize:20}}> 1.  An electronic tool that allows information to be input, processed, and output </p>
+                <p style={{ fontSize:20}}> {question.question} </p>
                  </div>
                  <div className="panel-body">
                    <div style={{fontSize:20}} >
-                     <div className='panel panel-default'  style={{paddingTop:10, margin:3, background:this.state.divColor, cursor:'pointer'}} onMouseEnter={this.handleFocus}  onMouseLeave={this.handleFocus2}><p style={{fontSize:20}}>Correct Answer: Operating system</p></div>
-                     <div  className='panel panel-default' style={{borderColor:'red',paddingTop:10, margin:3,background:this.state.divColor,  cursor:'pointer'}} onMouseEnter={this.handleFocus} onMouseLeave={this.handleFocus2}><p style={{fontSize:20}}>Selected Answer: Motherboard</p></div>
+                     <div className='panel panel-default'  style={{paddingTop:10, margin:3, background:this.state.divColor, cursor:'pointer'}} onMouseEnter={this.handleFocus}  onMouseLeave={this.handleFocus2}><p style={{fontSize:20}}>Correct Answer: {question.answer} </p></div>
+                     <div  className='panel panel-default' style={{borderColor:'red',paddingTop:10, margin:3,background:this.state.divColor,  cursor:'pointer'}} onMouseEnter={this.handleFocus} onMouseLeave={this.handleFocus2}><p style={{fontSize:20}}>Selected Answer: {question.selected} </p></div>
 
 
                    </div>
@@ -174,45 +161,30 @@ class PracticeSummary extends Component {
                </div>
              </div>
            }/>
-              <Paper  zDepth={2}
-                children={<div>
-               <div className="panel panel-default">
-                 <div className="panel-heading" style={{background:'#F5F5F5'}}>
-                <p style={{ fontSize:20}}> 2.  An electronic tool that allows information to be input, processed, and output </p>
-                 </div>
-                 <div className="panel-body">
-                   <div style={{fontSize:20}} >
-                     <div className='panel panel-default'  style={{paddingTop:10, margin:3, background:this.state.divColor, cursor:'pointer'}} onMouseEnter={this.handleFocus}  onMouseLeave={this.handleFocus2}><p style={{fontSize:20}}>Correct Answer: Operating system</p></div>
-                     <div  className='panel panel-default' style={{paddingTop:10, margin:3,background:this.state.divColor,  cursor:'pointer'}} onMouseEnter={this.handleFocus} onMouseLeave={this.handleFocus2}><p style={{fontSize:20}}>Selected Answer: Operating system</p></div>
 
-
-                   </div>
-                 </div>
-               </div>
-             </div>
-           }/>
-           <Paper  zDepth={2}
-             children={<div>
-            <div className="panel panel-default">
-              <div className="panel-heading">
-             <p style={{ fontSize:20}}>3. An electronic tool that allows information to be input, processed, and output An electronic tool that allows information to be input, processed, and output An electronic tool that allows information to be input, processed, and output </p>
-              </div>
-              <div className="panel-body">
-                <div style={{fontSize:20}} >
-                  <div className='panel panel-default'  style={{paddingTop:10, margin:3, background:this.state.divColor, cursor:'pointer'}} onMouseEnter={this.handleFocus}  onMouseLeave={this.handleFocus2}><p style={{fontSize:20}}>Correct Answer: Operating system</p></div>
-                  <div  className='panel panel-default' style={{borderColor:'red',paddingTop:10, margin:3,background:this.state.divColor,  cursor:'pointer'}} onMouseEnter={this.handleFocus} onMouseLeave={this.handleFocus2}><p style={{fontSize:20}}>Selected Answer: Motherboard</p></div>
-
-
-                </div>
-              </div>
             </div>
-          </div>
-        }/>
-            </div>
+             )}
           </div>
         </div>
+      )
+      }
+  render() {
 
+    return (
+        <MuiThemeProvider muiTheme={muiTheme} >
+      <div>
 
+        <br/>
+        {
+          (()=>{
+          if (this.state.isloading){
+            return this.spinner()
+          }
+          else {
+            return this.showSummary()
+          }
+        })()
+      }
 
       </div>
        </MuiThemeProvider>
