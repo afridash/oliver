@@ -116,6 +116,7 @@ class Practice extends Component {
       seconds: 150,
       correct:0,
       finished:false,
+      shareExplore:false,
       timeColor: '#1969a3',
       bookColor:[],
       questions:[],
@@ -232,9 +233,10 @@ class Practice extends Component {
       questions:[]
     })
     this.timer = 0
-  if (this.timer == 0) {
+  if (this.timer === 0) {
     this.timer = setInterval(this.countDown, 1000);
       }
+        this.setState({shareExplore:false})
     }
 
   bookmarkQuestion (question){
@@ -291,7 +293,8 @@ class Practice extends Component {
       if (snapshot.exists()) snapshot.ref.set(snapshot.val() + 1)
       else snapshot.ref.set(1)
     })
-    alert("Your post was shared")
+    //alert("Your post was shared")
+      this.setState({shareExplore:true})
   }
 
   handleFocus = () =>  {
@@ -490,6 +493,22 @@ class Practice extends Component {
     )
   }
 
+  _sharetoExplore = ()  =>  {
+    return (
+      <div>
+        <Paper style={{padding:10,  textAlign:'center',backgroundColor:red500}} zDepth={2}
+          children={<div>
+          <p style={{fontSize:15,color:'white'}}>Thanks for Sharing to  Explore !</p>
+
+        </div>
+      }/>
+
+      </div>
+
+
+    )
+  }
+
   showSummary () {
    return (
     <div className="container">
@@ -519,12 +538,23 @@ class Practice extends Component {
 
                 <div className="col-sm-6">
 
-                <button onClick={()=>this.shareToExplore()} style={{padding:8,borderWidth:0, background:blue300, margin:4,width:'100%'}} type="button" className="btn btn-primary">
+                <button onClick={()=>this.shareToExplore()} name="share" style={{padding:8,borderWidth:0, background:blue300, margin:4,width:'100%'}} type="button" className="btn btn-primary">
                   SHARE</button>
 
                   </div>
 
+
+
           </div>
+          {
+            (()=>{
+            if (this.state.shareExplore){
+
+              return this._sharetoExplore()
+            }
+
+          })()
+          }
 
               </div>
 

@@ -133,7 +133,18 @@ class PracticeSummary extends Component {
                     <button style={{padding:8,borderWidth:0, background:blue300, margin:4,width:'100%'}} type="button" className="btn btn-primary">
                       SHARE</button>
 
+                      <div>
+                        <Paper style={{padding:10,  textAlign:'center',backgroundColor:blue300}} zDepth={2}
+                          children={<div>
+                          <p style={{fontSize:15,color:'white'}}>Thanks for Sharing to  Explore !</p>
+
+                        </div>
+                      }/>
                       </div>
+
+                      </div>
+
+
 
               </div>
 
