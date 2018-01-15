@@ -538,7 +538,7 @@ class Practice extends Component {
 
                 <div className="col-sm-6">
 
-                <button onClick={()=>this.shareToExplore()} name="share" style={{padding:8,borderWidth:0, background:blue300, margin:4,width:'100%'}} type="button" className="btn btn-primary">
+                <button onClick={()=>this.shareToExplore()} disabled={this.state.shareExplore} name="share" style={{padding:8,borderWidth:0, background:blue300, margin:4,width:'100%'}} type="button" className="btn btn-primary">
                   SHARE</button>
 
                   </div>

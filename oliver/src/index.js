@@ -17,7 +17,6 @@ import Bookmarks from './components/bookmarks'
 import Explore from './components/explore'
 import Objective from './components/objective'
 import Theory from './components/theory'
-import PracticeSummary from './components/PracticeSummary'
 import Login from './components/Login'
 import RecentActivities from './components/recentActivities'
 import Students from './components/students'
@@ -47,7 +46,6 @@ ReactDOM.render(
           <Route exact path={"/objective/:id"} component={Objective} />
           <Route exact path={"/theory/:id"} component={Theory} />
           <Route exact path={"/bookmarks"} component={Bookmarks} />
-          <Route exact path={"/PracticeSummary"} component={PracticeSummary} />
           <Route path={'/recentActivities'} component={RecentActivities} />
        </NavBar>
 
