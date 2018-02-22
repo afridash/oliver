@@ -88,7 +88,9 @@ Logged.muiName = 'IconMenu';
      super(props);
      this.state = {
        data:[],
-       questions:[]
+       questions:[],
+       isloading:true,
+       noActivity:false
      };
      this.courseId = this.props.match.params.id
        this.usersRef = firebase.database().ref().child('users')
@@ -114,7 +116,9 @@ Logged.muiName = 'IconMenu';
          this.data = []
       // console.log(questions.val())
        //If questions are not found under courseId, course does not exist
-       if (!questions.exists()) alert('objectives Not Found!')
+       if (!questions.exists()) {
+         this.setState({isloading:false, noActivity:true})
+       }
 
        questions.forEach((question)=>{
           if (question.val().answered) {
@@ -126,7 +130,7 @@ Logged.muiName = 'IconMenu';
 
             this.data.push({key:question.key, answer:answer,question:
               question.val().question})
-            this.setState({questions:this.data})
+            this.setState({questions:this.data,isloading:false})
           }
 
        })
@@ -144,21 +148,27 @@ Logged.muiName = 'IconMenu';
 
    select = (index) => this.setState({selectedIndex: index});
 
-  render() {
+   spinner () {
+     return (
+       <div className='container'>
+         <div className='col-md-2 col-md-offset-5'>
+           <br />  <br />   <br />  <br />    <br />  <br />
+           <CircularProgress size={60} thickness={7} />
+         </div>
+       </div>
+     )
+   }
 
+   noActivity () {
+     return (
+       <p>No Activity</p>
+     )
+   }
 
-    return (
-        this.state.redirect ? <Redirect to='/' push/> : <MuiThemeProvider muiTheme={muiTheme} >
-      <div>
-
-        <br/>
-        {this.state.loading ? <div className='row'>
-          <div className='col-sm-6 col-sm-offset-3'>
-              <br />  <br /><CircularProgress size={60} thickness={7} />
-            </div>
-              </div>
-              :
+   showPageContent () {
+     return(
        <div className="container">
+
           <div className="row">
 
             <div >
@@ -166,6 +176,7 @@ Logged.muiName = 'IconMenu';
               <Paper  zDepth={2}
                 children={<div>
                <div className="panel panel-default">
+
                  <div className="panel-heading">
                 <p style={{ fontSize:20}}> {question.question}</p>
                  </div>
@@ -183,7 +194,31 @@ Logged.muiName = 'IconMenu';
 
             </div>
           </div>
+
         </div>
+     )
+   }
+  render() {
+
+
+    return (
+        this.state.redirect ? <Redirect to='/' push/> : <MuiThemeProvider muiTheme={muiTheme} >
+      <div>
+
+        <br/>
+
+        {
+          (()=>{
+          if (this.state.isloading){
+            return this.spinner()
+          }
+          else if (this.state.noActivity) {
+            return this.noActivity()
+          }
+          else {
+            return this.showPageContent()
+          }
+        })()
       }
       </div>
        </MuiThemeProvider>

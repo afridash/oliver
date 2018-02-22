@@ -16,12 +16,16 @@ import Practice from './components/Practice'
 import Bookmarks from './components/bookmarks'
 import Explore from './components/explore'
 import Objective from './components/objective'
-import Theory from './components/theory'
+import Theories from './components/theories'
 import PracticeSummary from './components/PracticeSummary'
 import Login from './components/Login'
 import RecentActivities from './components/recentActivities'
+import Notifications from './components/notifications'
+import ExploreView from './components/exploreView'
+import Question from './components/question'
 import Students from './components/students'
 import Student from './components/student'
+import Theory from './components/theory'
 import App from './App';
 import registerServiceWorker from './registerServiceWorker';
 
@@ -45,10 +49,14 @@ ReactDOM.render(
           <Route path={"/Practice/:id"} component={Practice} />
           <Route exact path={"/explore"} component={Explore} />
           <Route exact path={"/objective/:id"} component={Objective} />
-          <Route exact path={"/theory/:id"} component={Theory} />
+          <Route exact path={"/theories/:id"} component={Theories} />
           <Route exact path={"/bookmarks"} component={Bookmarks} />
           <Route exact path={"/PracticeSummary"} component={PracticeSummary} />
           <Route path={'/recentActivities'} component={RecentActivities} />
+          <Route path={'/notifications'} component={Notifications} />
+          <Route path={'/explore/:id'} component={ExploreView} />
+          <Route path={'/question/:id'} component={Question} />
+          <Route path={'/theory/:id/:question'} component={Theory} />
        </NavBar>
 
     </Switch>

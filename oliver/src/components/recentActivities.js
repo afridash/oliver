@@ -5,6 +5,7 @@ import {Link, Redirect} from 'react-router-dom'
 import CircularProgress from 'material-ui/CircularProgress'
 import Paper from 'material-ui/Paper'
 import IconButton from 'material-ui/IconButton'
+import Divider from 'material-ui/Divider'
 import Delete from 'material-ui/svg-icons/action/delete'
 import {Card, CardHeader, CardTitle, CardText} from 'material-ui/Card'
 import {Panel, OverlayTrigger, Tooltip} from 'react-bootstrap'
@@ -56,12 +57,13 @@ class RecentActivities extends Component {
             <Panel>
               <div className="card">
                 <div className="card-header">
-                  <h4>{activity.title}<span className="pull-right">{activity.code}
-                        <OverlayTrigger placement="bottom" overlay={tooltip}>
-                            <i className="fa fa-trash-o fa-lg" style={{cursor:'pointer'}} onClick={()=> this.handleDelete(activity.key)}></i>
-                        </OverlayTrigger>
-                  </span></h4>
+                  <h4><strong>{activity.title}<span className="pull-right">{activity.code}&nbsp;&nbsp;
+                    <OverlayTrigger placement="bottom" overlay={tooltip}>
+                      <i className="fa fa-trash-o fa-lg" style={{cursor:'pointer'}} onClick={()=> this.handleDelete(activity.key)}></i>
+                    </OverlayTrigger>
+                  </span></strong></h4>
                 </div>
+                <Divider/>
                 <div className="card card-body">
                   <br/>
                   <h4>Score: {activity.score} out of {activity.total}</h4>

@@ -60,9 +60,12 @@ function handleClick() {
        isLoading: true,
        noCourses:false,
        status:'',
+       isloading:true,
+       noActivity:false
      };
      firebase.auth().onAuthStateChanged(this.handleUser.bind(this))
      this.ref = firebase.database().ref().child('user_courses')
+     this.badgesRef = firebase.database().ref().child('badges')
    }
    handleUser(user){
        if(user){
@@ -90,6 +93,7 @@ function handleClick() {
       })
     })
   }
+
   handleChange = (event, logged) => {
     this.setState({logged: logged});
   }
@@ -103,7 +107,7 @@ function handleClick() {
      openMenu: true,
    });
  }
- handleLogout (event) {
+  handleLogout (event) {
     firebase.auth().signOut().then(function() {
     }).catch(function(error) {
       // An error happened.
@@ -119,84 +123,54 @@ function handleClick() {
   };
   select = (index) => this.setState({selectedIndex: index});
   showPageContent () {
-    var styles = {
-      appBar: {
-        flexWrap: 'wrap'
-      },
-      tabs: {
-        width: '100%'
-      }
-    }
-    const muiTheme = getMuiTheme({
-       palette: {
-         textColor: '#424242',
-       },
-       appBar: {
-         height: 50,
-         color:'#2d6ca1',
-       },
-     })
-    const actions = [
-      <FlatButton
-        label="Cancel"
-        primary={true}
-        onClick={this.handleClose}
-      />,
-      <FlatButton
-        label="Submit"
-        primary={true}
-        keyboardFocused={true}
-        onClick={this.handleClose}
-      />,
-    ];
-    return (
-      <MuiThemeProvider muiTheme={muiTheme} >
-        <div>
-          <div className="row">
-            {this.state.data.map((course)=>
-              <div className="col-lg-4" >
-                <Paper style={style.paper} zDepth={2} rounded={true}
-                  children={<div>
-                    <div className="row">
-                      <div className='col-sm-4'>
-                        <div className="panel panel-info" style={{borderRightWidth:2, borderTopWidth:0, borderLeftWidth:0, borderBottomWidth:0, borderColor:'none', margin:0}}>
-                          <div className="panel-heading" style={{background:blue300,color:'white'}}> {course.code} </div>
-                          <div className="panel-body">
-                            <h3 style={{fontSize:15}}>HIGH SCORE</h3>
-                            <h3 style={{fontSize:15}}> 50% </h3> </div>
-                        </div>
-                      </div>
-                      <div className="col-sm-8">
-                        <div>
-                          <Paper style={style} zDepth={2}
-                            children={<div>
-                            <p>{course.name}</p>
-                          </div>}/>
-                        </div>
-                          <div className="row">
-                            <div className="col-sm-10 col-sm-offset-1">
-                              <Link to={"/theory/"+course.key}>
-                                <RaisedButton label="Theory" fullWidth={true} style={style.chip} />
-                              </Link>
-                              <Link to={"/objective/"+course.key}>
-                                <RaisedButton label="Objective" fullWidth={true} style={style.chip} />
-                              </Link>
-                              <Link to={"/practice/"+course.key}>
-                                <RaisedButton label="Exam" fullWidth={true} style={style.chip}/>
-                              </Link>
-                            </div>
-                          </div>
-                      </div>
-                    </div>
-                  </div> }/>
-              </div>
-            )}
-            </div>
-          { this.state.redirect && <Redirect to='/' push/>}
-        </div>
-         </MuiThemeProvider>
-    )
-  }
+     return (
+       <div className="row">
+         {this.state.data.map((course)=>
+           <div className="col-lg-4" >
+             <Paper style={style.paper} zDepth={2} rounded={true}
+               children={<div>
+                 <div className="row">
+                   <div className='col-sm-4'>
+                     <div className="panel panel-info" style={{borderRightWidth:2, borderTopWidth:0, borderLeftWidth:0, borderBottomWidth:0, borderColor:'none', margin:0}}>
+                       <div className="panel-heading" style={{background:blue300,color:'white'}}> {course.code} </div>
+                       <div className="panel-body">
+                         <h3 style={{fontSize:15}}>HIGH SCORE</h3>
+                         <h3 style={{fontSize:15}}> 50% </h3> </div>
+
+                     </div>
+                   </div>
+                   <div className="col-sm-8">
+                     <div>
+                       <Paper style={style} zDepth={2}
+                         children={<div>
+                         <p>{course.name}</p>
+
+                       </div>}/>
+
+                     </div>
+                       <div className="row">
+                         <div className="col-sm-10 col-sm-offset-1">
+                           <Link to={"/theories/"+course.key}>
+                             <RaisedButton label="Theory" fullWidth={true} style={style.chip} />
+                           </Link>
+                           <Link to={"/objective/"+course.key}>
+                             <RaisedButton label="Objective" fullWidth={true} style={style.chip} />
+                           </Link>
+
+                           <Link to={"/practice/"+course.key}>
+                             <RaisedButton label="Exam" fullWidth={true} style={style.chip}/>
+                           </Link>
+
+                         </div>
+                       </div>
+                   </div>
+                 </div>
+               </div> }/>
+           </div>
+         )}
+         </div>
+     )
+   }
   loading () {
     const muiTheme = getMuiTheme({
        palette: {
