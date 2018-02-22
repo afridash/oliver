@@ -20,6 +20,9 @@ import Theory from './components/theory'
 import PracticeSummary from './components/PracticeSummary'
 import Login from './components/Login'
 import RecentActivities from './components/recentActivities'
+import Notifications from './components/notifications'
+import ExploreView from './components/exploreView'
+import Question from './components/question'
 import Students from './components/students'
 import Student from './components/student'
 import App from './App';
@@ -49,6 +52,9 @@ ReactDOM.render(
           <Route exact path={"/bookmarks"} component={Bookmarks} />
           <Route exact path={"/PracticeSummary"} component={PracticeSummary} />
           <Route path={'/recentActivities'} component={RecentActivities} />
+          <Route path={'/notifications'} component={Notifications} />
+          <Route path={'/explore/:id'} component={ExploreView} />
+          <Route path={'/question/:id'} component={Question} />
        </NavBar>
 
     </Switch>

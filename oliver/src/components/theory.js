@@ -88,7 +88,9 @@ Logged.muiName = 'IconMenu';
      super(props);
      this.state = {
        data:[],
-       questions:[]
+       questions:[],
+       isloading:true,
+       noActivity:false,
      };
      this.courseId = this.props.match.params.id
        this.usersRef = firebase.database().ref().child('users')
@@ -108,21 +110,30 @@ Logged.muiName = 'IconMenu';
    componentWillMount () {
      this.getQuestions()
    }
+
    async getQuestions () {
      //Get questions from questions db using courseId
      await this.questionsRef.orderByChild('type').equalTo('theory').once('value', (questions)=> {
          this.data = []
-      // console.log(questions.val())
+      console.log(questions.val())
        //If questions are not found under courseId, course does not exist
-       if (!questions.exists()) alert('objectives Not Found!')
+       //console.log(questions)
+       if (!questions.exists()) {
+         alert('Theory Not Found!');
+         this.setState({
+           noActivity:true,
+           isloading:false
+         })
+       }
        //Loop through each question
        questions.forEach ((question) => {
          //If answered, add to questions array, and update state of questions
-         if (question.val().answered) {
            this.data.push({key:question.key, answer:question.val().answer,question:
              question.val().question, selected:''})
-             this.setState({questions:this.data, loading:false})
-         }
+             this.setState({
+               questions:this.data,
+                isloading:false,
+              })
        })
      })
    }
@@ -138,20 +149,25 @@ Logged.muiName = 'IconMenu';
 
    select = (index) => this.setState({selectedIndex: index});
 
-  render() {
+   spinner () {
+     return (
+       <div className='container'>
+         <div className='col-md-2 col-md-offset-5'>
+           <br />  <br />   <br />  <br />    <br />  <br />
+           <CircularProgress size={60} thickness={7} />
+         </div>
+       </div>
+     )
+   }
 
+   noActivity () {
+     return (
+       <p>No Activity</p>
+     )
+   }
 
-    return (
-        this.state.redirect ? <Redirect to='/' push/> : <MuiThemeProvider muiTheme={muiTheme} >
-      <div>
-
-        <br/>
-        {this.state.loading ? <div className='row'>
-          <div className='col-sm-6 col-sm-offset-3'>
-              <br />  <br /><CircularProgress size={60} thickness={7} />
-            </div>
-              </div>
-              :
+   showPageContent () {
+     return (
        <div className="container">
           <div className="row">
 
@@ -178,7 +194,33 @@ Logged.muiName = 'IconMenu';
             </div>
           </div>
         </div>
-      }
+     )
+
+   }
+
+  render() {
+
+
+    return (
+        this.state.redirect ? <Redirect to='/' push/> : <MuiThemeProvider muiTheme={muiTheme} >
+      <div>
+
+        <br/>
+          {
+            (()=>{
+            if (this.state.isloading){
+              return this.spinner()
+            }
+            else if (this.state.noActivity) {
+              return this.noActivity()
+            }
+            else {
+              return this.showPageContent()
+            }
+          })()
+        }
+
+
       </div>
        </MuiThemeProvider>
     );

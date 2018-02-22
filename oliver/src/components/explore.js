@@ -29,6 +29,8 @@ import Fav from 'material-ui/svg-icons/action/favorite-border';
 import Chat from 'material-ui/svg-icons/communication/chat-bubble-outline';
 import {Firebase} from '../auth/firebase'
 import {Redirect, Link} from 'react-router-dom'
+import CircularProgress from 'material-ui/CircularProgress';
+import * as timestamp from '../auth/timestamp'
 import {
   blue300,
   indigo900,
@@ -118,7 +120,9 @@ Logged.muiName = 'IconMenu';
      super(props);
      this.state = {
        data:[],
-       explores:[]
+       explores:[],
+       isloading:true,
+       noActivity:false
      };
        firebase.auth().onAuthStateChanged(this.handleUser)
        this.usersRef = firebase.database().ref().child('users')
@@ -136,13 +140,16 @@ Logged.muiName = 'IconMenu';
    async getExplore (collegeId) {
      await this.exploreRef.child(collegeId).once('value', (explores)=> {
        this.data = []
-      // if (!explores.exists()) alert('Nothing to display!');
+       if (!explores.exists()) this.setState({
+         isloading:false,
+         noActivity:true
+       })
        //Loop through each question
        explores.forEach ((explore) => {
            this.data.push({key:explore.key, course:explore.val().course, courseCode:explore.val().courseCode, createdAt:explore.val().createdAt,
              message:explore.val().message,profilePicture:explore.val().profilePicture, percentage:explore.val().percentage, uid:explore.val().userId,
              username:explore.val().username, starCount:explore.val().starCount, courseId:explore.val().courseId})
-             this.setState({explores:this.data})
+             this.setState({explores:this.data,isloading:false})
 
        })
      })
@@ -177,7 +184,77 @@ Logged.muiName = 'IconMenu';
     this.setState({open: false});
   };
 
-   select = (index) => this.setState({selectedIndex: index});
+  select = (index) => this.setState({selectedIndex: index});
+
+  spinner () {
+     return (
+       <div className='container'>
+         <div className='col-md-2 col-md-offset-5'>
+           <br />  <br />   <br />  <br />    <br />  <br />
+           <CircularProgress size={60} thickness={7} />
+         </div>
+       </div>
+     )
+   }
+
+  noActivity () {
+     return (
+       <p>No Activity</p>
+     )
+   }
+
+  showPageContent () {
+     return (
+     <div className="row">
+       {this.state.explores.map((explore)=>
+         <div className="col-md-8 col-md-offset-2" >
+
+           <Paper style={style.paper} zDepth={2} rounded={true}
+             children={<div>
+               <div className="row">
+                 <br/>
+                 <div className="col-md-6">
+                   <Avatar
+                     src={explore.profilePicture}
+                     size={80}
+                   />
+                   <h2 style={{fontSize:25}}>{explore.username}</h2>
+
+                 </div>
+                 <div >
+
+                     <h3 style={{fontSize:40, color:blue300}}> {explore.percentage}% </h3>
+                   </div>
+
+                     <div className="row">
+
+                         <div className="col-sm-10 col-sm-offset-1">
+                           <div className="well">
+                             <p style={{fontSize:20}}> {explore.message} </p>
+                           </div>
+                         <h4 style={{fontSize:15}}> {explore.percentage} % in {explore.course} {explore.courseCode} </h4>
+
+                         <div className="col-sm-8 col-sm-offset-2"><br />
+                         <Link to={'/practice/'+ explore.courseId}>
+                           <RaisedButton label="Start" fullWidth={true} style={style.chip}/>
+                         </Link>
+                         <br /> <br />
+                         <Fav style={{cursor:'pointer', position:'absolute',left:0}}></Fav>
+                         <Chat  style={{cursor:'pointer', position:'absolute',right:0}}></Chat>
+                           <br />    <br />
+                           {timestamp.timeSince(explore.createdAt)}
+                         </div>
+                           </div>
+
+                     </div>
+
+               </div>
+             </div> }/>
+         </div>
+               )}
+       </div>
+        )
+   }
 
   render() {
     var styles = {
@@ -205,57 +282,23 @@ Logged.muiName = 'IconMenu';
 
     return (
         this.state.redirect ? <Redirect to='/' push/> : <MuiThemeProvider muiTheme={muiTheme} >
-      <div>
-
-        <br/>
-
+      <div className="center">
         <div className="row">
-          {this.state.explores.map((explore)=>
-            <div className="col-md-8 col-md-offset-2" >
-
-              <Paper style={style.paper} zDepth={2} rounded={true}
-                children={<div>
-                  <div className="row">
-                    <br/>
-                    <div className="col-md-6">
-                      <Avatar
-                        src={explore.profilePicture}
-                        size={80}
-                      />
-                      <h2 style={{fontSize:25}}>{explore.username}</h2>
-
-                    </div>
-                    <div >
-
-                        <h3 style={{fontSize:40, color:blue300}}> {explore.percentage}% </h3>
-                      </div>
-
-                        <div className="row">
-
-                            <div className="col-sm-10 col-sm-offset-1">
-                              <div className="well">
-                                <p style={{fontSize:20}}>    {explore.message} </p>
-                              </div>
-                            <h4 style={{fontSize:15}}> {explore.percentage} % in {explore.course} {explore.courseCode} </h4>
-
-                            <div className="col-sm-8 col-sm-offset-2"><br />
-                            <Link to={'/practice/'+ explore.courseId}>
-                              <RaisedButton label="Start" fullWidth={true} style={style.chip}/>
-                            </Link>
-                            <br /> <br />
-                            <Fav style={{cursor:'pointer', position:'absolute',left:0}}></Fav>
-                            <Chat  style={{cursor:'pointer', position:'absolute',right:0}}></Chat>
-                              <br />   <br />  <br />
-                            </div>
-                              </div>
-
-                        </div>
-
-                  </div>
-                </div> }/>
-            </div>
-                  )}
-          </div>
+          <br/>
+          {
+            (()=>{
+            if (this.state.isloading){
+              return this.spinner()
+            }
+            else if (this.state.noActivity) {
+              return this.noActivity()
+            }
+            else {
+              return this.showPageContent()
+            }
+          })()
+        }
+        </div>
       </div>
        </MuiThemeProvider>
     );

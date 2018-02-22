@@ -50,7 +50,6 @@ const Logged = (props) => (
 
 Logged.muiName = 'IconMenu';
 
-
  const muiTheme = getMuiTheme({
    palette: {
      textColor: '#424242',
@@ -66,22 +65,41 @@ Logged.muiName = 'IconMenu';
      super(props);
      this.state = {
        logged: true,
+       userId:'',
+       notificationCount: [],
+       noNotificationCount: false,
      };
      firebase.auth().onAuthStateChanged(this.handleUser)
+     this.notificationRef = firebase.database().ref().child('badges')
    }
-   handleUser = (user) => {
+
+  handleUser = (user) => {
      if (user) {
        this.setState({username:user.displayName, userId:user.uid, photoURL:user.photoURL})
+       this.retrieveNotificationCount(user.uid)
      }
    }
-   handleLogout (event) {
+
+  retrieveNotificationCount (userId){
+    this.notificationCount = []
+    this.notificationRef.child(userId).once('value', (snapshots) => {
+      if (!snapshots.exists())this.setState({noNotificationCount: true})
+      snapshots.forEach((snapshot) => {
+        this.notificationCount.push({key:snapshot.key, type:snapshot.val().type, })
+        this.setState({notificationCount:this.notificationCount})
+      })
+    })
+  }
+
+  handleLogout (event) {
       firebase.auth().signOut().then(function() {
       }).catch(function(error) {
         // An error happened.
       });
         this.setState({redirect:true})
-      }
-   render() {
+    }
+
+  render() {
        return (
            this.state.redirect ? <Redirect to='/' push/> : <MuiThemeProvider muiTheme={muiTheme} >
          <div>
@@ -106,14 +124,15 @@ Logged.muiName = 'IconMenu';
             <Link to={"/bookmarks"}>
                 <FlatButton label="Bookmarks" style={{color:'white'}}/>
             </Link>
-
-
+            <Link to={"/notifications"}>
             <Badge
-               badgeContent={3}
+               badgeContent={2}
                badgeStyle={{color:'white', backgroundColor:'red', top:10, left:25}}
+               style={{cursor:'pointer'}}
              >
                <NotificationsIcon  style={{color:'white'}} />
             </Badge>
+            </Link>
 
              <IconMenu
 
@@ -157,9 +176,10 @@ Logged.muiName = 'IconMenu';
 
           <div className='hidden-sm hidden-xs'>
             <SearchBar
-            onChange={() => console.log('onChange')}
-            onRequestSearch={() => console.log('onRequestSearch')}
-            style={{position:'absolute', top:10, left:0, marginLeft:'35%'}}
+              onChange={() => console.log('onChange')}
+              onRequestSearch={() => console.log('onRequestSearch')}
+              style={{position:'absolute', top:10, left:0, marginLeft:'35%'}}
+              placeholder='Search for a course'
           />
           </div>
           </div>}
@@ -169,6 +189,8 @@ Logged.muiName = 'IconMenu';
        {this.props.children}
     </div>
      </MuiThemeProvider>
-  );
-    }
+
+    );
+  }
+
       }
