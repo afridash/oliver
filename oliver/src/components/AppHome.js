@@ -6,6 +6,7 @@ import FlatButton from 'material-ui/FlatButton';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import {Redirect, Link} from 'react-router-dom'
+import CircularProgress from 'material-ui/CircularProgress';
 import {
   blue300,
   indigo900,
@@ -25,28 +26,23 @@ const style = {
   chip: {
     margin: 4,
     backgroundColor:'#cfecf7',
-    //width:'100%'
-
   },
   paper:{
     textAlign: 'center',
     margin: 20,
 
   },
-    height:50,
-    textAlign: 'center',
+  height:50,
+  textAlign: 'center',
 };
-
 const iconStyles = {
   marginRight: 24,
 };
-
 const HomeIcon = (props) => (
   <SvgIcon {...props}>
     <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z" />
   </SvgIcon>
 );
-
 function handleClick() {
   alert('You clicked the Chip.');
 }
@@ -61,16 +57,13 @@ function handleClick() {
        name:'',
        code:'',
        data:[],
-       refreshing: false,
+       isLoading: true,
        noCourses:false,
        status:'',
      };
      firebase.auth().onAuthStateChanged(this.handleUser.bind(this))
      this.ref = firebase.database().ref().child('user_courses')
    }
-  // returnHome = () =>  {
-  //   this.state.redirect ? <Redirect to ="/AppHome" push/>
-    // };
    handleUser(user){
        if(user){
          this.setState({
@@ -79,20 +72,21 @@ function handleClick() {
           userId:user.uid,
          })
          this.readAddCourses()
+       }else{
+         this.setState({redirect:true})
        }
      }
    async readAddCourses() {
       /* 1. Set courses to empty before reloading online data to avoid duplicate entries
         2. Retrieve users courses from firebase and store them locally using AsyncStorage */
     this.data = []
-    this.setState({refreshing:true})
     await this.ref.child(this.state.userId).once('value', (snapshot)=>{
       if (!snapshot.exists()) {
-        this.setState({refreshing:false, noCourses:true})
+        this.setState({isLoading:false, noCourses:true})
       }
       snapshot.forEach((course)=>{
         this.data.push({key:course.key, name:course.val().name, code:course.val().code})
-        this.setState({data:this.data, refreshing:false,noCourses:false, isLoading:false})
+        this.setState({data:this.data, refreshing:false, noCourses:false, isLoading:false})
       })
     })
   }
@@ -120,14 +114,11 @@ function handleClick() {
   handleOpen = () => {
   this.setState({open: true});
  };
-
   handleClose = () => {
     this.setState({open: false});
   };
-
-   select = (index) => this.setState({selectedIndex: index});
-
-  render() {
+  select = (index) => this.setState({selectedIndex: index});
+  showPageContent () {
     var styles = {
       appBar: {
         flexWrap: 'wrap'
@@ -136,8 +127,7 @@ function handleClick() {
         width: '100%'
       }
     }
-
-     const muiTheme = getMuiTheme({
+    const muiTheme = getMuiTheme({
        palette: {
          textColor: '#424242',
        },
@@ -146,7 +136,6 @@ function handleClick() {
          color:'#2d6ca1',
        },
      })
-
     const actions = [
       <FlatButton
         label="Cancel"
@@ -160,58 +149,104 @@ function handleClick() {
         onClick={this.handleClose}
       />,
     ];
-
     return (
-        this.state.redirect ? <Redirect to='/' push/> : <MuiThemeProvider muiTheme={muiTheme} >
-      <div>
-        <div className="row">
-          {this.state.data.map((course)=>
-            <div className="col-lg-3" >
-              <Paper style={style.paper} zDepth={2} rounded={true}
-                children={<div>
-                  <div className="row">
-                    <div className='col-sm-4'>
-                      <div className="panel panel-info" style={{borderRightWidth:2, borderTopWidth:0, borderLeftWidth:0, borderBottomWidth:0, borderColor:'none', margin:0}}>
-                        <div className="panel-heading" style={{background:blue300,color:'white'}}> {course.code} </div>
-                        <div className="panel-body">
-                          <h3 style={{fontSize:15}}>HIGH SCORE</h3>
-                          <h3 style={{fontSize:15}}> 50% </h3> </div>
-
-                      </div>
-                    </div>
-                    <div className="col-sm-8">
-                      <div>
-                        <Paper style={style} zDepth={2}
-                          children={<div>
-                          <p>{course.name}</p>
-
-                        </div>}/>
-
-                      </div>
-                        <div className="row">
-                          <div className="col-sm-10 col-sm-offset-1">
-                            <Link to={"/theory/"+course.key}>
-                              <RaisedButton label="Theory" fullWidth={true} style={style.chip} />
-                            </Link>
-                            <Link to={"/objective/"+course.key}>
-                              <RaisedButton label="Objective" fullWidth={true} style={style.chip} />
-                            </Link>
-
-                            <Link to={"/practice/"+course.key}>
-                              <RaisedButton label="Exam" fullWidth={true} style={style.chip}/>
-                            </Link>
-
-                          </div>
+      <MuiThemeProvider muiTheme={muiTheme} >
+        <div>
+          <div className="row">
+            {this.state.data.map((course)=>
+              <div className="col-lg-4" >
+                <Paper style={style.paper} zDepth={2} rounded={true}
+                  children={<div>
+                    <div className="row">
+                      <div className='col-sm-4'>
+                        <div className="panel panel-info" style={{borderRightWidth:2, borderTopWidth:0, borderLeftWidth:0, borderBottomWidth:0, borderColor:'none', margin:0}}>
+                          <div className="panel-heading" style={{background:blue300,color:'white'}}> {course.code} </div>
+                          <div className="panel-body">
+                            <h3 style={{fontSize:15}}>HIGH SCORE</h3>
+                            <h3 style={{fontSize:15}}> 50% </h3> </div>
                         </div>
+                      </div>
+                      <div className="col-sm-8">
+                        <div>
+                          <Paper style={style} zDepth={2}
+                            children={<div>
+                            <p>{course.name}</p>
+                          </div>}/>
+                        </div>
+                          <div className="row">
+                            <div className="col-sm-10 col-sm-offset-1">
+                              <Link to={"/theory/"+course.key}>
+                                <RaisedButton label="Theory" fullWidth={true} style={style.chip} />
+                              </Link>
+                              <Link to={"/objective/"+course.key}>
+                                <RaisedButton label="Objective" fullWidth={true} style={style.chip} />
+                              </Link>
+                              <Link to={"/practice/"+course.key}>
+                                <RaisedButton label="Exam" fullWidth={true} style={style.chip}/>
+                              </Link>
+                            </div>
+                          </div>
+                      </div>
                     </div>
-                  </div>
-                </div> }/>
+                  </div> }/>
+              </div>
+            )}
             </div>
-          )}
-          </div>
-      </div>
-       </MuiThemeProvider>
-    );
+          { this.state.redirect && <Redirect to='/' push/>}
+        </div>
+         </MuiThemeProvider>
+    )
+  }
+  loading () {
+    const muiTheme = getMuiTheme({
+       palette: {
+         textColor: '#424242',
+       },
+       appBar: {
+         height: 50,
+         color:'#2d6ca1',
+       },
+     })
+    return (
+      <MuiThemeProvider muiTheme={muiTheme} >
+      <div className='row text-center'>
+        <div className='col-sm-6 col-sm-offset-3'>
+          <br />  <br />
+          <CircularProgress size={60} thickness={5} />
+        </div>
+        </div>
+      </MuiThemeProvider>
+    )
+  }
+  showNoCourses () {
+    const muiTheme = getMuiTheme({
+       palette: {
+         textColor: '#424242',
+       },
+       appBar: {
+         height: 50,
+         color:'#2d6ca1',
+       },
+     })
+    return (
+      <MuiThemeProvider muiTheme={muiTheme} >
+      <div className='row text-center'>
+        <div className='col-sm-6 col-sm-offset-3'>
+          <br />  <br />
+          <p>No Courses...Search To Add</p>
+        </div>
+        </div>
+      </MuiThemeProvider>
+    )
+  }
+  render() {
+      if (this.state.isLoading) {
+        return this.loading()
+      }else if (this.state.noCourses) {
+        return this.showNoCourses()
+      }else {
+        return this.showPageContent()
+      }
   }
 }
 
