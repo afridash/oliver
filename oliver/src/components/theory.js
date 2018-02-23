@@ -22,6 +22,9 @@ export default class Theory extends Component {
       this.item = {
         post:notification.val().question,
         createdAt: moment(),
+        key:this.questionId,
+        answer:notification.val().answer,
+        code:notification.val().code,
       }
       this.setState({item:this.item})
     })

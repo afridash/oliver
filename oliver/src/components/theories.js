@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import IconButton from 'material-ui/IconButton';
 import IconMenu from 'material-ui/IconMenu';
 import MenuItem from 'material-ui/MenuItem';
+import RaisedButton from 'material-ui/RaisedButton';
 import FlatButton from 'material-ui/FlatButton';
 import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
 import darkBaseTheme from 'material-ui/styles/baseThemes/darkBaseTheme';
@@ -30,7 +31,19 @@ const Logged = (props) => (
     <MenuItem primaryText="Sign out" />
   </IconMenu>
 );
+const style = {
+  chip: {
+    margin: 4,
+    backgroundColor:'#cfecf7',
+  },
+  paper:{
+    textAlign: 'center',
+    margin: 20,
 
+  },
+  height:50,
+  textAlign: 'center',
+};
 Logged.muiName = 'IconMenu';
 
  const muiTheme = getMuiTheme({
@@ -43,7 +56,7 @@ Logged.muiName = 'IconMenu';
    },
  })
  export default class Theories extends Component {
-   constructor(props) {
+  constructor(props) {
      super(props);
      this.state = {
        data:[],
@@ -58,7 +71,7 @@ Logged.muiName = 'IconMenu';
        firebase.auth().onAuthStateChanged(this.handleUser)
 
    }
-   handleUser = (user) => {
+  handleUser = (user) => {
      if (user) {
        this.setState({username:user.displayName, userId:user.uid, photoURL:user.photoURL})
        this.usersRef.child(user.uid).child('collegeId').once('value', (college)=>{
@@ -66,10 +79,10 @@ Logged.muiName = 'IconMenu';
        })
      }
    }
-   componentWillMount () {
+  componentWillMount () {
      this.getQuestions()
    }
-   async getQuestions () {
+  async getQuestions () {
      //Get questions from questions db using courseId
      await this.questionsRef.orderByChild('type').equalTo('theory').once('value', (questions)=> {
          this.data = []
@@ -90,15 +103,8 @@ Logged.muiName = 'IconMenu';
        })
      })
    }
-   handleLogout (event) {
-    firebase.auth().signOut().then(function() {
-    }).catch(function(error) {
-      // An error happened.
-    });
-      this.setState({redirect:true})
-    }
-   select = (index) => this.setState({selectedIndex: index});
-   spinner () {
+  select = (index) => this.setState({selectedIndex: index});
+  spinner () {
      return (
        <div className='row text-center'>
          <div className='col-md-6 col-md-offset-3'>
@@ -108,16 +114,23 @@ Logged.muiName = 'IconMenu';
        </div>
      )
    }
-   noActivity () {
+  noActivity () {
      return (
-       <p>No Activity</p>
+       <div className='row text-center'>
+         <div className='col-sm-6 col-sm-offset-3'>
+           <br />  <br />
+           <p className='text-info lead'>No Theories...</p>
+           <Link to={"/AppHome"}>
+             <RaisedButton label="Return Home" secondary={true} fullWidth={true} style={style.chip}/>
+           </Link>
+         </div>
+         </div>
      )
    }
-   showPageContent () {
+  showPageContent () {
      return (
        <div className="container">
           <div className="row">
-
             <div >
                 {this.state.questions.map((question)=>
                   <Link to={'/theory/'+this.courseId +'/'+question.key}>
@@ -144,7 +157,6 @@ Logged.muiName = 'IconMenu';
         </div>
      )
    }
-
   render() {
     return (
         this.state.redirect ? <Redirect to='/' push/> : <MuiThemeProvider muiTheme={muiTheme} >

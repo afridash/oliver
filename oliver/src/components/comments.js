@@ -38,6 +38,16 @@ export default class Comments extends Component {
                     <div className="row">
                       <div className="col-sm-10 col-sm-offset-1">
                           <div>
+                            {this.props.user ?
+                              <div>
+                                <Avatar
+                                  src={this.props.item['profilePicture']}
+                                  size={60}
+                                /><span className='lead'> @{this.props.item['code']}<h4></h4></span>
+                              </div>
+                            :
+                            <h4>{this.props.item['code']}</h4>
+                          }
                             {this.props.item['post']}
                           </div>
                           <br/>

@@ -65,16 +65,15 @@ class Notifications extends Component {
                 <br/>
                 <div className="card card-body">
                   <div className="row">
-                    <div className="col-sm-3">
+                    <div className="col-sm-2">
                       <Avatar
                         src={notification.profilePicture}
-                        size={80}
+                        size={60}
                       />
-                      <h4>{notification.displayName}</h4>
                     </div>
-                    <div className="col-sm-9" style={{cursor:'pointer'}}>
-                      <Link to={'/explore/'+ notification.key}>
-                        {message}
+                    <div className="col-sm-10" style={{cursor:'pointer'}}>
+                      <Link style={{textDecoration:'none'}} to={'/notifications/'+ notification.key}>
+                        <span className='lead'> {notification.displayName} {message}</span>
                       </Link>
                     </div>
                   </div>
@@ -88,7 +87,6 @@ class Notifications extends Component {
       </div>
     )
   }
-
   showTheoryVote (notification, index, message) {
     return (
       <div className="col-sm-8 col-sm-offset-2">
@@ -107,16 +105,16 @@ class Notifications extends Component {
                 <br/>
                 <div className="card card-body">
                   <div className="row">
-                    <div className="col-sm-3">
+                    <div className="col-sm-2">
                       <Avatar
                         src={notification.profilePicture}
-                        size={80}
+                        size={60}
                       />
-                      <h4>{notification.displayName}</h4>
+
                     </div>
-                    <div className="col-sm-9" stle={{curosr:'pointer'}}>
-                      <Link to={'/question/'+ notification.key}>
-                        {message}
+                    <div className="col-sm-10" stle={{curosr:'pointer'}}>
+                      <Link style={{textDecoration:'none'}} to={'/notifications/'+ notification.key}>
+                        <h4>{notification.displayName} {message}</h4>
                       </Link>
                     </div>
                   </div>
@@ -130,7 +128,6 @@ class Notifications extends Component {
       </div>
     )
   }
-
   renderItem(item, index) {
     if (item.type === 'upvote') return this.showExploreVote(item, index, 'upvoted your comment')
     else if (item.type === 'downvote') return this.showExploreVote(item, index, 'downvoted your comment')
@@ -157,14 +154,11 @@ class Notifications extends Component {
   }
   spinner () {
     return (
-      <div className="row">
-        <div className="col-md-2 col-md-offset-5">
+      <div className="row text-center">
+        <div className="col-md-6 col-md-offset-3">
           <br/>
           <br/>
-          <br/>
-          <br/>
-          <br/>
-          <CircularProgress size={60} thickness={7} />
+          <CircularProgress size={60} thickness={5} />
         </div>
       </div>
     )

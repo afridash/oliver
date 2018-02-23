@@ -63,49 +63,7 @@ const style = {
 
 const iconStyles = {
   marginRight: 24,
-};
-
-const HomeIcon = (props) => (
-  <SvgIcon {...props}>
-    <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z" />
-  </SvgIcon>
-);
-
-const recentsIcon = <FontIcon className="material-icons">restore</FontIcon>;
-const favoritesIcon = <FontIcon className="material-icons">favorite</FontIcon>;
-const nearbyIcon = <IconLocationOn />;
-
-function handleClick() {
-  alert('You clicked the Chip.');
 }
-
-class Login extends Component {
-  static muiName = 'FlatButton';
-
-  render() {
-    return (
-      <FlatButton {...this.props} label="Login" />
-    );
-  }
-}
-
-const Logged = (props) => (
-  <IconMenu
-    {...props}
-    iconButtonElement={
-      <IconButton><MoreVertIcon /></IconButton>
-    }
-    targetOrigin={{horizontal: 'right', vertical: 'top'}}
-    anchorOrigin={{horizontal: 'right', vertical: 'top'}}
-  >
-    <MenuItem primaryText="Refresh" />
-    <MenuItem primaryText="Help" />
-    <MenuItem primaryText="Sign out" />
-  </IconMenu>
-);
-
-Logged.muiName = 'IconMenu';
-
  const muiTheme = getMuiTheme({
    palette: {
      textColor: '#424242',
@@ -115,8 +73,8 @@ Logged.muiName = 'IconMenu';
      color:'#2d6ca1',
    },
  })
- class Explore extends Component {
-   constructor(props) {
+ export default class Explore extends Component {
+  constructor(props) {
      super(props);
      this.state = {
        data:[],
@@ -129,7 +87,7 @@ Logged.muiName = 'IconMenu';
        this.exploreRef = firebase.database().ref().child('explore')
 
    }
-   handleUser = (user) => {
+  handleUser = (user) => {
      if (user) {
        this.setState({username:user.displayName, userId:user.uid, photoURL:user.photoURL})
        this.usersRef.child(user.uid).child('collegeId').once('value', (college)=>{
@@ -137,7 +95,7 @@ Logged.muiName = 'IconMenu';
        })
      }
    }
-   async getExplore (collegeId) {
+  async getExplore (collegeId) {
      await this.exploreRef.child(collegeId).once('value', (explores)=> {
        this.data = []
        if (!explores.exists()) this.setState({
@@ -155,54 +113,30 @@ Logged.muiName = 'IconMenu';
      })
 
    }
-  handleChange = (event, logged) => {
-    this.setState({logged: logged});
-  }
-  handleOnRequestChange = (value) => {
-    this.setState({
-      openMenu: value,
-    });
-  }
-  handleOpenMenu = () => {
-   this.setState({
-     openMenu: true,
-   });
- }
- handleLogout (event) {
-    firebase.auth().signOut().then(function() {
-    }).catch(function(error) {
-      // An error happened.
-    });
-      this.setState({redirect:true})
-    }
-
-  handleOpen = () => {
-  this.setState({open: true});
- };
-
-  handleClose = () => {
-    this.setState({open: false});
-  };
-
   select = (index) => this.setState({selectedIndex: index});
-
   spinner () {
      return (
        <div className='container'>
          <div className='col-md-2 col-md-offset-5'>
-           <br />  <br />   <br />  <br />    <br />  <br />
-           <CircularProgress size={60} thickness={7} />
+           <br />  <br />
+           <CircularProgress size={60} thickness={5} />
          </div>
        </div>
      )
    }
-
   noActivity () {
      return (
-       <p>No Activity</p>
+       <div className='row text-center'>
+         <div className='col-sm-6 col-sm-offset-3'>
+           <br />  <br />
+           <p className='text-info lead'>No explorers on your campus...</p>
+           <Link to={"/AppHome"}>
+             <RaisedButton label="Return Home" secondary={true} fullWidth={true} style={style.chip}/>
+           </Link>
+         </div>
+         </div>
      )
    }
-
   showPageContent () {
      return (
      <div className="row">
@@ -227,20 +161,20 @@ Logged.muiName = 'IconMenu';
                    </div>
 
                      <div className="row">
-
                          <div className="col-sm-10 col-sm-offset-1">
                            <div className="well">
-                             <p style={{fontSize:20}}> {explore.message} </p>
+                             <p style={{fontSize:20}}> {explore.message}...I got {explore.percentage} % in {explore.course} {explore.courseCode} </p>
                            </div>
-                         <h4 style={{fontSize:15}}> {explore.percentage} % in {explore.course} {explore.courseCode} </h4>
-
                          <div className="col-sm-8 col-sm-offset-2"><br />
                          <Link to={'/practice/'+ explore.courseId}>
                            <RaisedButton label="Start" fullWidth={true} style={style.chip}/>
                          </Link>
                          <br /> <br />
                          <Fav style={{cursor:'pointer', position:'absolute',left:0}}></Fav>
-                         <Chat  style={{cursor:'pointer', position:'absolute',right:0}}></Chat>
+                         <Link to={'/explore/'+explore.key}>
+                           <Chat  style={{cursor:'pointer', position:'absolute',right:0}}></Chat>
+                         </Link>
+
                            <br />    <br />
                            {timestamp.timeSince(explore.createdAt)}
                          </div>
@@ -255,7 +189,6 @@ Logged.muiName = 'IconMenu';
        </div>
         )
    }
-
   render() {
     var styles = {
       appBar: {
@@ -265,21 +198,6 @@ Logged.muiName = 'IconMenu';
         width: '100%'
       }
     }
-
-    const actions = [
-      <FlatButton
-        label="Cancel"
-        primary={true}
-        onClick={this.handleClose}
-      />,
-      <FlatButton
-        label="Submit"
-        primary={true}
-        keyboardFocused={true}
-        onClick={this.handleClose}
-      />,
-    ];
-
     return (
         this.state.redirect ? <Redirect to='/' push/> : <MuiThemeProvider muiTheme={muiTheme} >
       <div className="center">
@@ -304,5 +222,3 @@ Logged.muiName = 'IconMenu';
     );
   }
 }
-
-export default Explore;

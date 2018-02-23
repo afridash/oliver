@@ -22,7 +22,7 @@ import Login from './components/Login'
 import RecentActivities from './components/recentActivities'
 import Notifications from './components/notifications'
 import ExploreView from './components/exploreView'
-import Question from './components/question'
+import Notification from './components/notification'
 import Students from './components/students'
 import Student from './components/student'
 import Theory from './components/theory'
@@ -48,14 +48,14 @@ ReactDOM.render(
          <Route exact path={"/AppHome"} component={AppHome} />
           <Route path={"/Practice/:id"} component={Practice} />
           <Route exact path={"/explore"} component={Explore} />
+          <Route exact path={'/explore/:id'} component={ExploreView} />
           <Route exact path={"/objective/:id"} component={Objective} />
           <Route exact path={"/theories/:id"} component={Theories} />
           <Route exact path={"/bookmarks"} component={Bookmarks} />
           <Route exact path={"/PracticeSummary"} component={PracticeSummary} />
           <Route path={'/recentActivities'} component={RecentActivities} />
-          <Route path={'/notifications'} component={Notifications} />
-          <Route path={'/explore/:id'} component={ExploreView} />
-          <Route path={'/question/:id'} component={Question} />
+          <Route exact path={'/notifications'} component={Notifications} />
+          <Route exact path={'/notifications/:id'} component={Notification} />
           <Route path={'/theory/:id/:question'} component={Theory} />
        </NavBar>
 

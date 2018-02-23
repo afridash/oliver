@@ -38,14 +38,7 @@ const style = {
 const iconStyles = {
   marginRight: 24,
 };
-const HomeIcon = (props) => (
-  <SvgIcon {...props}>
-    <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z" />
-  </SvgIcon>
-);
-function handleClick() {
-  alert('You clicked the Chip.');
-}
+
 
  class AppHome extends Component {
    constructor(props) {
@@ -93,34 +86,6 @@ function handleClick() {
       })
     })
   }
-
-  handleChange = (event, logged) => {
-    this.setState({logged: logged});
-  }
-  handleOnRequestChange = (value) => {
-    this.setState({
-      openMenu: value,
-    });
-  }
-  handleOpenMenu = () => {
-   this.setState({
-     openMenu: true,
-   });
- }
-  handleLogout (event) {
-    firebase.auth().signOut().then(function() {
-    }).catch(function(error) {
-      // An error happened.
-    });
-      this.setState({redirect:true})
-    }
-
-  handleOpen = () => {
-  this.setState({open: true});
- };
-  handleClose = () => {
-    this.setState({open: false});
-  };
   select = (index) => this.setState({selectedIndex: index});
   showPageContent () {
      return (
@@ -207,7 +172,7 @@ function handleClick() {
       <div className='row text-center'>
         <div className='col-sm-6 col-sm-offset-3'>
           <br />  <br />
-          <p>No Courses...Search To Add</p>
+          <p className='text-info lead'>No Courses...Search To Add</p>
         </div>
         </div>
       </MuiThemeProvider>
