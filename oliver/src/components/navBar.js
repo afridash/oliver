@@ -117,7 +117,7 @@ Logged.muiName = 'IconMenu';
           </Link>}
         children={
           <div>
-            <Link to={"/recentActivities"}>
+            <Link to={"/recents"}>
                 <FlatButton label="Activities" style={{color:'white'}}/>
             </Link>
 

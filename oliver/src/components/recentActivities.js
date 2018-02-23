@@ -15,7 +15,7 @@ const tooltip = (
   <Tooltip id="tooltip">Delete</Tooltip>
 );
 
-class RecentActivities extends Component {
+export default class RecentActivities extends Component {
   constructor (props) {
     super (props)
     this.state = {
@@ -26,16 +26,13 @@ class RecentActivities extends Component {
     }
     firebase.auth().onAuthStateChanged(this.handleUser)
     this.activitiesRef = firebase.database().ref().child('activities')
-
   }
-
   handleUser = (user) => {
     if (user){
       this.setState({userId:user.uid, username:user.displayName})
       this.readActivities(user.uid)
     }
   }
-
   readActivities (userId) {
     this.activities = []
       this.activitiesRef.child(userId).once('value', (snapshots)=>{
@@ -48,7 +45,6 @@ class RecentActivities extends Component {
       })
     })
   }
-
   showPageContent (){
     return (
       <div className="col-sm-8 col-sm-offset-2">
@@ -80,30 +76,27 @@ class RecentActivities extends Component {
       </div>
     )
   }
-
   noActivities (){
     return (
-      <div className="col-sm-4 col-sm-offset-4">
-        <p style={{color:'red', fontSize:'20'}}>You Have No Activity!</p>
-      </div>
+      <div className='row text-center'>
+        <div className='col-sm-6 col-sm-offset-3'>
+          <br />  <br />
+          <p className='text-info lead'>No Recent Activities</p>
+        </div>
+        </div>
     )
   }
-
   spinner () {
     return (
-      <div className="row">
-        <div className="col-md-2 col-md-offset-5">
+      <div className="row text-center">
+        <div className="col-md-6 col-md-offset-3">
           <br/>
           <br/>
-          <br/>
-          <br/>
-          <br/>
-          <CircularProgress size={60} thickness={7} />
+          <CircularProgress size={60} thickness={5} />
         </div>
       </div>
     )
   }
-
   handleDelete (key) {
     //Delete entry with userId and key of entry
    this.activitiesRef.child(this.state.userId).child(key).remove()
@@ -112,7 +105,6 @@ class RecentActivities extends Component {
    //update state with remaining items
    this.setState({activities:this.activities})
    }
-
   render(){
     return(
       <div className="center">
@@ -136,5 +128,3 @@ class RecentActivities extends Component {
     );
   }
 }
-
-export default RecentActivities;

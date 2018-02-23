@@ -53,7 +53,7 @@ ReactDOM.render(
           <Route exact path={"/theories/:id"} component={Theories} />
           <Route exact path={"/bookmarks"} component={Bookmarks} />
           <Route exact path={"/PracticeSummary"} component={PracticeSummary} />
-          <Route path={'/recentActivities'} component={RecentActivities} />
+          <Route path={'/recents'} component={RecentActivities} />
           <Route exact path={'/notifications'} component={Notifications} />
           <Route exact path={'/notifications/:id'} component={Notification} />
           <Route path={'/theory/:id/:question'} component={Theory} />

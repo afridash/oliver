@@ -1,4 +1,5 @@
 import React, {Component} from 'react'
+import PropTypes from 'prop-types'
 import * as timestamp from '../auth/timestamp'
 import CircularProgress from 'material-ui/CircularProgress'
 import Paper from 'material-ui/Paper'
@@ -10,7 +11,7 @@ import {Panel, OverlayTrigger, Tooltip} from 'react-bootstrap'
 import Firebase from '../auth/firebase'
 const firebase = require('firebase')
 
-export default class Comments extends Component {
+class Comments extends Component {
   constructor (props) {
     super (props)
     this.state = {
@@ -21,12 +22,18 @@ export default class Comments extends Component {
       followers: [],
       username:'',
       user:'',
+      name:'Richard Igbiriki',
     }
   }
+  handleChange = name => event => {
+    this.setState({
+      [name]: event.target.value,
+    })
+  }
   render () {
+    const { classes } = this.props;
     return (
         <div className="col-sm-8 col-sm-offset-2">
-          <br/>
           <br/>
             <Paper zDepth={3}>
               <Panel>
@@ -76,3 +83,4 @@ export default class Comments extends Component {
 const tooltip = (
   <Tooltip id="tooltip">Delete</Tooltip>
 );
+export default Comments

@@ -39,69 +39,12 @@ import FileFileDownload from 'material-ui/svg-icons/file/file-download';
 import Remove from 'material-ui/svg-icons/content/remove-circle-outline';
 import CircularProgress from 'material-ui/CircularProgress';
 
-import {
-  blue300,
-  indigo900,
-  orange200,
-  deepOrange300,
-  pink400,
-  purple500,
-} from 'material-ui/styles/colors';
 const firebase = require('firebase')
 const styles = {
   radioButton: {
     marginTop: 16,
   },
 };
-
-const iconStyles = {
-  marginRight: 24,
-};
-
-const HomeIcon = (props) => (
-  <SvgIcon {...props}>
-    <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z" />
-  </SvgIcon>
-);
-
-
-const recentsIcon = <FontIcon className="material-icons">restore</FontIcon>;
-const favoritesIcon = <FontIcon className="material-icons">favorite</FontIcon>;
-const nearbyIcon = <IconLocationOn />;
-
-function handleClick() {
-  alert('You clicked the Chip.');
-}
-
-
-
-class Login extends Component {
-  static muiName = 'FlatButton';
-
-  render() {
-    return (
-      <FlatButton {...this.props} label="Login" />
-    );
-  }
-}
-
-const Logged = (props) => (
-  <IconMenu
-    {...props}
-    iconButtonElement={
-      <IconButton><MoreVertIcon /></IconButton>
-    }
-    targetOrigin={{horizontal: 'right', vertical: 'top'}}
-    anchorOrigin={{horizontal: 'right', vertical: 'top'}}
-  >
-    <MenuItem primaryText="Refresh" />
-    <MenuItem primaryText="Help" />
-    <MenuItem primaryText="Sign out" />
-  </IconMenu>
-);
-
-Logged.muiName = 'IconMenu';
-
 /**
  * This example is taking advantage of the composability of the `AppBar`
  * to render different components depending on the application state.
@@ -115,79 +58,78 @@ Logged.muiName = 'IconMenu';
      color:'#2d6ca1',
    },
  })
-class Bookmarks extends Component {
+export default class Bookmarks extends Component {
   constructor(props) {
-  super(props);
-  this.state = {
-    bookmarks:[],
-    data:[],
-    isloading:true,
-    noActivity:false
-  };
-  firebase.auth().onAuthStateChanged(this.handleUser)
-  this.bookmarksRef = firebase.database().ref().child('bookmarks')
-
-}
-
-      handleUser = (user) => {
-        if (user) {
-          this.setState({username:user.displayName, userId:user.uid, photoURL:user.photoURL})
-          this.getBookmarks (user.uid)
-        }
+    super(props);
+    this.state = {
+      bookmarks:[],
+      data:[],
+      isloading:true,
+      noActivity:false
+    };
+    firebase.auth().onAuthStateChanged(this.handleUser)
+    this.bookmarksRef = firebase.database().ref().child('bookmarks')
+  }
+  handleUser = (user) => {
+    if (user) {
+        this.setState({username:user.displayName, userId:user.uid, photoURL:user.photoURL})
+        this.getBookmarks (user.uid)
       }
-      async getBookmarks (userId) {
-        //Get bookmarks from db using userId
-        await this.bookmarksRef.child(userId).orderByChild('type').once('value', (bookmarks)=> {
-          this.data = []
-        //  console.log(bookmarks.val())
-        //If bookmarks are not found
-         if (!bookmarks.exists()) {
-           this.setState({
-           isloading:false,
-           noActivity:true})
-         }
-          //Loop through each bookmark
-          bookmarks.forEach((question)=>{
-            var answer = ''
-            if (question.val().answer.toLowerCase() === 'a') answer = question.val().optionA
-            if (question.val().answer.toLowerCase() === 'b') answer = question.val().optionB
-            if (question.val().answer.toLowerCase() === 'c') answer = question.val().optionC
-            if (question.val().answer.toLowerCase() === 'd') answer = question.val().optionD
+    }
+  async getBookmarks (userId) {
+    //Get bookmarks from db using userId
+    await this.bookmarksRef.child(userId).orderByChild('type').once('value', (bookmarks)=> {
+      this.data = []
+    //  console.log(bookmarks.val())
+    //If bookmarks are not found
+     if (!bookmarks.exists()) {
+       this.setState({
+       isloading:false,
+       noActivity:true})
+     }
+      //Loop through each bookmark
+      bookmarks.forEach((question)=>{
+        var answer = ''
+        if (question.val().answer.toLowerCase() === 'a') answer = question.val().optionA
+        if (question.val().answer.toLowerCase() === 'b') answer = question.val().optionB
+        if (question.val().answer.toLowerCase() === 'c') answer = question.val().optionC
+        if (question.val().answer.toLowerCase() === 'd') answer = question.val().optionD
 
-            this.data.push({key:question.key, answer:answer,question:
-              question.val().question})
-            this.setState({bookmarks:this.data,isloading:false})
-          })
-        })
-      }
-
-      handleDelete (key) {
-        //Delete entry with userId and key of entry
-        this.bookmarksRef.child(this.state.userId).child(key).remove()
-       //Filter activities and return items whose key is not equal to item deleted
-       this.data = this.data.filter ((bookmark)=> bookmark.key !== key)
-       //update state with remaining items
-       this.setState({bookmarks:this.data})
-       }
-
-       spinner () {
-         return (
-           <div className='container'>
-             <div className='col-md-2 col-md-offset-5'>
-               <br />  <br />   <br />  <br />    <br />  <br />
-               <CircularProgress size={60} thickness={7} />
-             </div>
-           </div>
-         )
-       }
-
-       noActivity () {
-         return (
-           <p>No Activity</p>
-         )
-       }
-
-       showPageContent () {
+        this.data.push({key:question.key, answer:answer,question:
+          question.val().question})
+        this.setState({bookmarks:this.data,isloading:false})
+      })
+    })
+  }
+  handleDelete (key) {
+    //Delete entry with userId and key of entry
+    this.bookmarksRef.child(this.state.userId).child(key).remove()
+   //Filter activities and return items whose key is not equal to item deleted
+   this.data = this.data.filter ((bookmark)=> bookmark.key !== key)
+   //update state with remaining items
+   this.setState({bookmarks:this.data})
+   }
+  spinner () {
+     return (
+       <div className='row text-center'>
+         <div className='col-md-6 col-md-offset-3'>
+           <br />  <br />
+           <CircularProgress size={60} thickness={5} />
+         </div>
+       </div>
+     )
+    }
+  noActivity () {
+    return (
+      <div className='row text-center'>
+        <div className='col-sm-6 col-sm-offset-3'>
+          <br />  <br />
+          <p className='text-info lead'>No Bookmarks</p>
+        </div>
+        </div>
+      )
+    }
+  showPageContent () {
          return(
            <div className="container">
              <div className="row">
@@ -222,7 +164,6 @@ class Bookmarks extends Component {
            </div>
          )
        }
-
   render() {
 
     return (
@@ -249,5 +190,3 @@ class Bookmarks extends Component {
     );
   }
 }
-
-export default Bookmarks;
