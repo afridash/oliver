@@ -14,15 +14,21 @@ class Student extends Component {
       userId:'',
       username:'',
       courseId:'',
+      data:[{x:'', y:0}],
+      activities:[{x:'', y:0}],
+      start:0,
+      end:2,
     }
     this.userId = this.props.match.params.id
     this.courseId = this.props.match.params.courseId
     this.statRef = firebase.database().ref().child('student_stats')
     this.studentRef = firebase.database().ref().child('users')
     this.sessionRef = firebase.database().ref().child('sessions')
+    this.activitiesRef = firebase.database().ref().child('course_activities').child(this.courseId)
+    this.data = []
   }
 
-  componentWillMount () {
+  async componentWillMount () {
      this.statRef.child(this.courseId).child(this.userId).once('value', (snapshots)=>{
         snapshots.forEach((snapshot)=>{
          this.setState({[snapshot.key]:snapshot.val()})
@@ -33,21 +39,26 @@ class Student extends Component {
        this.setState({displayName:snapshot.val().firstName + " " + snapshot.val().lastName, last_seen:snapshot.val().last_seen})
      })
 
-     this.sessionRef.child(this.userId).once('value', (snapshots)=>{
+     await this.sessionRef.child(this.userId).once('value', (snapshots)=>{
+       this.data = []
         snapshots.forEach((date)=>{
+          var time = 0
          date.forEach((session)=>{
-           console.log('Time:', session.val().time_difference)
+          time += session.val().time_difference
          })
+         this.data.push({x: moment(date.key).format('ddd MMM Do YYYY'), y:time/60})
+         this.setState({data:this.data})
        })
      })
 
-     this.sessionRef.child(this.userId).orderByKey().limitToLast(2).once('value', (snapshots)=>{
-        snapshots.forEach((date)=>{
-           console.log(moment(date.key).format('ddd MMM Do YYYY'))
+     await this.activitiesRef.child(this.userId).once('value', (snapshots)=>{
+       this.activities = []
+        snapshots.forEach((activity)=>{
+         this.activities.push({x: moment(activity.val().createdAt).format('LT'), y:activity.val().percentage})
+         this.setState({activities:this.activities})
        })
      })
    }
-
   mouseOverHandler = (d, e) => {
      var top = `${e.screenY - 10}px`
      var left =  `${e.screenX + 10}px`

@@ -15,6 +15,9 @@ export class AddQuestions extends Component {
       addQuestions:false,
       checked:false,
       showCourses:false,
+      year:'',
+      code:'',
+      name:'',
     }
     this.collegesRef = firebase.database().ref().child('colleges')
     this.facultiesRef = firebase.database().ref().child('faculties')
@@ -62,8 +65,13 @@ export class AddQuestions extends Component {
   retrieveCourses(key) {
     this.coursesRef.child(key).once('value',(snapshots)=>{
       snapshots.forEach((snapshot)=>{
-        this.courses.push({name:snapshot.val().name, key:snapshot.key})
-        this.setState({courses:this.courses})
+        if (snapshot.hasChild('year')) {
+          this.courses.push({name:snapshot.val().name, key:snapshot.key, year:snapshot.val().year})
+          this.setState({courses:this.courses})
+        }else{
+          this.courses.push({name:snapshot.val().name, key:snapshot.key, year:''})
+          this.setState({courses:this.courses})
+        }
       })
     })
   }
@@ -99,7 +107,21 @@ export class AddQuestions extends Component {
                   type="text"
                   value={this.state.code}
                   name="code"
-                  placeholder="Course Code"
+                  placeholder="Course Title"
+                  onChange={(event)=>this.handleChange(event)}
+                />
+
+                <FormControl.Feedback />
+              </FormGroup>
+            <FormGroup
+              controlId="formBasicText"
+              >
+                <ControlLabel>Enter Course Year</ControlLabel>
+                <FormControl
+                  type="text"
+                  value={this.state.year}
+                  name="year"
+                  placeholder="Course Year"
                   onChange={(event)=>this.handleChange(event)}
                 />
 
@@ -114,16 +136,19 @@ export class AddQuestions extends Component {
     )
   }
   saveCourse () {
-    var data = {
-      name:this.state.name,
-      code:this.state.code
+    if (this.state.name !== '' && this.state.code !== '' && this.state.year !== '') {
+      var data = {
+        name:this.state.name,
+        code:this.state.code,
+        year:this.state.year
+      }
+      var key = this.coursesRef.child(this.state.departmentKey).push(data).key
+      this.courses.push({name:this.state.name, key:key})
+      this.setState({courses:this.courses, name:'', code:'', showModal:false})
+      var ref = this.statsRef.child('courses').once('value', (courses)=>{
+        courses.ref.set(courses.val() + 1)
+      })
     }
-    var key = this.coursesRef.child(this.state.departmentKey).push(data).key
-    this.courses.push({name:this.state.name, key:key})
-    this.setState({courses:this.courses, name:'', code:'', showModal:false})
-    var ref = this.statsRef.child('courses').once('value', (courses)=>{
-      courses.ref.set(courses.val() + 1)
-    })
   }
   selectDetails () {
     return (
@@ -170,7 +195,7 @@ export class AddQuestions extends Component {
         <ControlLabel>Choose Course, if not found, add a new one...then select it</ControlLabel>
         <select className='form-control' onChange={(event)=>{this.handleSelectCourse(event)}} name='selected'>
           <option></option>
-            {this.state.courses.map((course, key)=> <option key={key} value={course.key}>{course.name}</option>)}
+            {this.state.courses.map((course, key)=> <option key={key} value={course.key}>{course.name} {course.year !== '' &&  " ("+course.year + ") "}</option>)}
         </select>
         <Button style={{marginTop:10}} onClick={()=>this.setState({showModal:true})}>Add New</Button>
       </FormGroup>

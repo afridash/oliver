@@ -7,6 +7,7 @@ import {
   Platform,
   FlatList,
   Image,
+  Alert,
   RefreshControl,
   TouchableHighlight,
 } from 'react-native'
@@ -37,32 +38,34 @@ export default class Universities extends Component {
   }
   async createAccount (college) {
     var p=false;
-    await firebase.auth().createUserWithEmailAndPassword(this.props.email, this.props.password).catch(function(error){
-      Alert.alert(error.message)
-      p=true
-    });
-    if(!p){
-      var user = firebase.auth().currentUser
-         user.updateProfile({
-          displayName: this.props.firstName + " "+this.props.lastName,
-          photoURL:this.picture
-        }).then(function() {
-          // Update successful.
-        }, function(error) {
-          //console.log(error)
-        })
-        user.sendEmailVerification().then(function() {
-            //Email sent
-          }).catch(function(error) {
-            // An error happened.
-          })
-     this.saveUserInfo(user.uid,this.props.email, this.props.firstName,this.props.lastName, this.props.username, college)
-      this.saveLocalData(user.uid, college)
-      return Actions.reset('drawer')
-      this.setState({isLoading:false})
-    }else{
-      this.setState({isLoading:false})
+    await firebase.auth().createUserWithEmailAndPassword(this.props.email, this.props.password).then((user)=>{
+      this.setUser(college)
+    }).catch((error) =>{
+        Alert.alert(error.message)
+        return Actions.pop()
+        p=true
+    })
+    if(p) this.setState({isLoading:false})
     }
+  setUser (college) {
+    var user = firebase.auth().currentUser
+       user.updateProfile({
+        displayName: this.props.firstName + " "+this.props.lastName,
+        photoURL:this.picture
+      }).then(function() {
+        // Update successful.
+      }, function(error) {
+        //console.log(error)
+      })
+      user.sendEmailVerification().then(function() {
+          //Email sent
+        }).catch(function(error) {
+          // An error happened.
+        })
+   this.saveUserInfo(user.uid,this.props.email, this.props.firstName,this.props.lastName, this.props.username, college)
+    this.saveLocalData(user.uid, college)
+    return Actions.reset('drawer')
+    this.setState({isLoading:false})
   }
   saveUserInfo(userKey, email, firstName, lastName, username, college){
     this.usersRef.child(userKey).set({
@@ -193,15 +196,16 @@ const customStyles = StyleSheet.create({
   },
   header:{
     marginTop:50,
-    fontSize:30,
+    fontSize:25,
     padding:20,
+    textAlign:'center',
     textDecorationLine:'underline',
     textDecorationColor:'white',
     fontFamily:(Platform.OS === 'ios') ? 'verdana' : 'serif',
     color:'#fafafa',
   },
   title: {
-    flex:0.5,
+    flex:1,
     justifyContent:'center',
     alignItems:'center',
   },

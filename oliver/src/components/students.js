@@ -3,8 +3,10 @@ import {Firebase} from '../auth/firebase'
 import * as TimeStamp from '../auth/timestamp'
 import {Link, Redirect} from 'react-router-dom'
 import './App.css';
+var fileDownload = require('js-file-download')
 const firebase =  require('firebase')
-
+var json2csv = require('json2csv');
+var fields = ['Name', 'Last_Login', 'Tests_Started', 'Tests_Completed', 'Average_Score'];
 class Students extends Component {
   constructor (props) {
     super (props)
@@ -19,6 +21,8 @@ class Students extends Component {
     this.studentsRef = firebase.database().ref().child('user_courses')
     this.registeredRef = firebase.database().ref().child('registered_courses')
     this.statRef = firebase.database().ref().child('student_stats')
+    this.activitiesRef = firebase.database().ref().child('course_activities')
+    this.students = []
   }
 
   handleUser (user) {
@@ -36,7 +40,7 @@ class Students extends Component {
        this.setState({redirect:true})
   }
 
- loadCourses () {
+  loadCourses () {
     this.studentsRef.child(this.state.userId).once('value', (snapshots)=>{
       this.courses = []
       snapshots.forEach((snapshot)=>{
@@ -46,24 +50,43 @@ class Students extends Component {
       })
     })
   }
-
   getStudents (key) {
-    this.students = []
     this.registeredRef.child(key).once('value', (snapshots)=>{
       snapshots.forEach((snapshot)=>{
         this.statRef.child(key).child(snapshot.key).child('total_started').once('value', (started)=>{
             this.statRef.child(key).child(snapshot.key).child('total_completed').once('value', (completed)=>{
               firebase.database().ref().child('users').child(snapshot.key).child('last_seen').once('value', (login)=>{
-                this.students.push({displayName:snapshot.val().displayName, createdAt:snapshot.val().createdAt,
-                key:snapshot.key, course:key,total_started:started.val(), total_completed:completed.val(), last_seen:login.val()})
-                this.setState({students:this.students})
+                this.activitiesRef.child(key).child(snapshot.key).once('value', (activities)=>{
+                  var total = 0
+                  var num = 0
+                   activities.forEach((activity)=>{
+                    total += Number(activity.val().percentage)
+                    num += 1
+                  })
+                  this.students.push({displayName:snapshot.val().displayName, createdAt:snapshot.val().createdAt, average: num === 0 ? 0 : (total/num).toFixed(2),
+                  key:snapshot.key, course:key,total_started:started.val(), total_completed:completed.val(), last_seen:login.val()})
+                  this.setState({students:this.students})
+
+                })
+
               })
             })
         })
       })
     })
   }
-
+  handleDownload = (event) => {
+    var myData = []
+    this.students.map ((student)=>
+    myData.push({Name:student.displayName,
+      Last_Login:TimeStamp.timeSince(student.last_seen),
+      Tests_Started:student.total_started,
+      Tests_Completed:student.total_completed,
+      Average_Score:student.average})
+    )
+    var result = json2csv({ data: myData, fields: fields })
+    fileDownload(result, 'oliver_stats.csv');
+  }
   render() {
     return (
 
@@ -81,6 +104,7 @@ class Students extends Component {
         {this.state.courses.map((course)=>
           <h3 className='text-center'>{course.name} ({course.code})</h3>
         )}
+        <button onClick={this.handleDownload} className='btn btn-primary pull-right' style={{margin:10}}>DOWNLOAD</button>
         <table className="table table-striped table-bordered bootstrap-datatable datatable">
   <thead>
     <tr>
@@ -90,6 +114,7 @@ class Students extends Component {
       <th scope="col"> Last Login</th>
       <th scope="col">Number of Tests started</th>
       <th scope="col">Number of Tests completed</th>
+      <th scope="col">Average Score (%)</th>
     </tr>
   </thead>
   <tbody>
@@ -101,6 +126,7 @@ class Students extends Component {
         <td>{TimeStamp.timeSince(student.last_seen)}</td>
         <td>{student.total_started}</td>
         <td>{student.total_completed}</td>
+        <td>{student.average}</td>
       </tr>
       )}
   </tbody>

@@ -60,7 +60,7 @@ export default class Home extends Component {
   }
   async checkIfVerified () {
     var verified = await AsyncStorage.getItem('verified')
-    if (verified === null || verified === '1') return Actions.getCode()
+    if (verified === null || verified === '1') return Actions.replace('getCode')
     else this.setState({verified:true})
   }
   async componentWillMount () {
