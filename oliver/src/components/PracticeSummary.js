@@ -1,36 +1,20 @@
 import React, {Component} from 'react';
-import AppBar from 'material-ui/AppBar';
-import IconButton from 'material-ui/IconButton';
-import IconMenu from 'material-ui/IconMenu';
-import MenuItem from 'material-ui/MenuItem';
 import FlatButton from 'material-ui/FlatButton';
 import RaisedButton from 'material-ui/RaisedButton';
-import Toggle from 'material-ui/Toggle';
-import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import {cyan500} from 'material-ui/styles/colors';
 import FontIcon from 'material-ui/FontIcon';
-import {BottomNavigation, BottomNavigationItem} from 'material-ui/BottomNavigation';
 import Paper from 'material-ui/Paper';
 import IconLocationOn from 'material-ui/svg-icons/communication/location-on';
-import {blue500, red500, greenA200} from 'material-ui/styles/colors';
+import {blue500, red500,} from 'material-ui/styles/colors';
 import SvgIcon from 'material-ui/SvgIcon';
-import Badge from 'material-ui/Badge';
-import NotificationsIcon from 'material-ui/svg-icons/social/notifications';
-import BookMark from 'material-ui/svg-icons/action/bookmark';
-import Restore from 'material-ui/svg-icons/action/restore';
-import Dialog from 'material-ui/Dialog';
-import {Nav, Navbar, NavDropdown, Tabs, ButtonToolbar, Button, Table, ButtonGroup, Row, Col, Grid, Panel, FormGroup, FormControl} from 'react-bootstrap';
+import { Button} from 'react-bootstrap';
 import {Link} from 'react-router-dom'
 import {Firebase} from '../auth/firebase'
+import * as firebase from 'firebase'
 import {
   blue300,
-  indigo900,
-  orange200,
-  deepOrange300,
-  pink400,
-  purple500,
 } from 'material-ui/styles/colors';
 
 const styles = {
@@ -43,49 +27,6 @@ const iconStyles = {
   marginRight: 24,
 };
 
-const HomeIcon = (props) => (
-  <SvgIcon {...props}>
-    <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z" />
-  </SvgIcon>
-);
-
-
-const recentsIcon = <FontIcon className="material-icons">restore</FontIcon>;
-const favoritesIcon = <FontIcon className="material-icons">favorite</FontIcon>;
-const nearbyIcon = <IconLocationOn />;
-
-function handleClick() {
-  alert('You clicked the Chip.');
-}
-
-
-
-class Login extends Component {
-  static muiName = 'FlatButton';
-
-  render() {
-    return (
-      <FlatButton {...this.props} label="Login" />
-    );
-  }
-}
-
-const Logged = (props) => (
-  <IconMenu
-    {...props}
-    iconButtonElement={
-      <IconButton><MoreVertIcon /></IconButton>
-    }
-    targetOrigin={{horizontal: 'right', vertical: 'top'}}
-    anchorOrigin={{horizontal: 'right', vertical: 'top'}}
-  >
-    <MenuItem primaryText="Refresh" />
-    <MenuItem primaryText="Help" />
-    <MenuItem primaryText="Sign out" />
-  </IconMenu>
-);
-
-Logged.muiName = 'IconMenu';
 
 /**
  * This example is taking advantage of the composability of the `AppBar`
@@ -100,22 +41,75 @@ Logged.muiName = 'IconMenu';
      color:'#2d6ca1',
    },
  })
-class PracticeSummary extends Component {
+export default class PracticeSummary extends Component {
   constructor(props) {
-  super(props);
-  this.state = {
+    super(props);
+    this.state = {
+      questions:this.props.questions,
+      correctAnswers:this.props.correctAnswers,
+      totalQuestions:this.props.questions.length,
+      messages:[{key:1, message:'Want to beat my high score ?!'},
+                {key:2, message:'I just finished practicing! Want to try?'},
+                {key:3, message:'Hey all, check out my score!'},
+                {key:4, message:'Cool! I did great! Try it'} ]
+    };
+    this.exploreRef = firebase.database().ref().child('explore')
+    this.followersRef = firebase.database().ref().child('question_followers')
+    this.statsRef = firebase.database().ref().child('student_stats').child(this.props.courseId)
+    this.usersRef = firebase.database().ref().child('users')
+    firebase.auth().onAuthStateChanged(this.handleUser)
+  }
+  handleUser = (user) => {
+    if (user) {
 
-  };
-}
-
+      this.usersRef.child(user.uid).child('collegeId').once('value', (college)=>{
+        this.setState({
+          isAvailable:true,
+          username:user.displayName,
+          userId:user.uid,
+          profilePicture:user.photoURL,
+          college:college.val()
+        })
+      })
+    }
+  }
+  shareToExplore () {
+    /*
+    * Select a random message,
+    * Get data about the user and course
+    * Save to explore and alert the user
+    * Go back home
+    */
+    var num = this.state.messages.length
+    var item = this.state.messages[Math.floor(Math.random()*num)]
+    var data = {
+        profilePicture:this.state.profilePicture,
+        username:this.state.username,
+        course:this.props.courseTitle,
+        courseCode:this.props.code,
+        courseId:this.props.courseId,
+        createdAt:firebase.database.ServerValue.TIMESTAMP,
+        message: item.message,
+        starCount:0,
+        userId:this.state.userId,
+        percentage: (this.state.correctAnswers/this.state.totalQuestions * 100).toFixed(2)
+    }
+    var item = this.exploreRef.child(this.state.college).push()
+    var key = item.key
+    item.setWithPriority(data, 0 - Date.now())
+    this.followersRef.child(key).child(this.state.userId).set(true)
+    var ref = this.statsRef.child(this.state.userId).child('explore_posts').once('value', (snapshot)=>{
+      if (snapshot.exists()) snapshot.ref.set(snapshot.val() + 1)
+      else snapshot.ref.set(1)
+    })
+    alert('Thank you for sharing to explore! Kudos')
+    this.setState({isAvailable:false})
+  }
   render() {
-
     return (
         <MuiThemeProvider muiTheme={muiTheme} >
       <div>
-
         <br/>
-
         <div className="container">
           <div className="row">
             <div className="col-lg-4">
@@ -124,90 +118,51 @@ class PracticeSummary extends Component {
                   <Paper style={{padding:20,  textAlign:'center',backgroundColor:blue300}} zDepth={2}
                     children={<div>
                     <p style={{fontSize:30,color:'white'}}>Result</p>
-
                   </div>
                 }/>
                 </div>
-              <h3 style={{fontSize:30, padding:40}}> Score: 10/20 (50%)</h3>
+              <h3 style={{fontSize:30, padding:40}}> Score: {this.state.correctAnswers + '/' + this.state.totalQuestions} ({(this.state.correctAnswers/this.state.totalQuestions * 100).toFixed(2)}%)</h3>
               <div className="row">
                   <div className="col-sm-10 col-sm-offset-1">
-                  <RaisedButton label="Another One !" backgroundColor={blue300} labelColor={'white'} fullWidth={true}  style={{margin: 4,
+                  <RaisedButton onClick={()=>this.props.restart()} label="Another One !" backgroundColor={blue300} labelColor={'white'} fullWidth={true}  style={{margin: 4,
                   backgroundColor:'#cfecf7',}} />
                   </div>
-
-                    <div className="col-sm-10 col-sm-offset-1">
+                  <div className="col-sm-10 col-sm-offset-1">
                   <div className="row">
                     <div className="col-sm-6">
                     <Link to='/apphome' style={{padding:8,borderWidth:0, background:blue300, margin:4,width:'100%'}} type="button" className="btn btn-primary"> RETURN HOME </Link>
                   </div>
-
                     <div className="col-sm-6">
-
-                    <button style={{padding:8,borderWidth:0, background:blue300, margin:4,width:'100%'}} type="button" className="btn btn-primary">
-                      SHARE</button>
-
+                      {this.state.isAvailable &&
+                    <button onClick={()=>this.shareToExplore()} style={{padding:8,borderWidth:0, background:blue300, margin:4,width:'100%'}} type="button" className="btn btn-primary">
+                      SHARE
+                    </button>}
                       </div>
-
-              </div>
-
+                    </div>
                   </div>
-
                 </div>
               </div>
             </div>
 
             <div className="col-lg-8">
-              <Paper  zDepth={2}
-                children={<div>
-               <div className="panel panel-default">
-                 <div className="panel-heading">
-                <p style={{ fontSize:20}}> 1.  An electronic tool that allows information to be input, processed, and output </p>
-                 </div>
-                 <div className="panel-body">
-                   <div style={{fontSize:20}} >
-                     <div className='panel panel-default'  style={{paddingTop:10, margin:3, background:this.state.divColor, cursor:'pointer'}} onMouseEnter={this.handleFocus}  onMouseLeave={this.handleFocus2}><p style={{fontSize:20}}>Correct Answer: Operating system</p></div>
-                     <div  className='panel panel-default' style={{borderColor:'red',paddingTop:10, margin:3,background:this.state.divColor,  cursor:'pointer'}} onMouseEnter={this.handleFocus} onMouseLeave={this.handleFocus2}><p style={{fontSize:20}}>Selected Answer: Motherboard</p></div>
-
-
+              {this.state.questions.map((question, key)=>
+                <Paper  zDepth={2}
+                  children={<div>
+                 <div className="panel panel-default">
+                   <div className="panel-heading">
+                  <p style={{ fontSize:20}}> {key+1}.  {question.question} </p>
+                   </div>
+                   <div className="panel-body">
+                     <div style={{fontSize:20}} >
+                       <div className='panel panel-default'  style={{paddingTop:10, margin:3, background:this.state.divColor, cursor:'pointer'}} onMouseEnter={this.handleFocus}  onMouseLeave={this.handleFocus2}><p style={{fontSize:20}}>Correct Answer: {question.textAnswer}</p></div>
+                       <div  className='panel panel-default' style={{borderColor:question.selected === question.answer ? '#004d40' : 'red',paddingTop:10, margin:3,background:this.state.divColor,  cursor:'pointer'}} onMouseEnter={this.handleFocus} onMouseLeave={this.handleFocus2}><p style={{fontSize:20}}>Selected Answer: {question.textSelected}</p></div>
+                     </div>
                    </div>
                  </div>
                </div>
-             </div>
-           }/>
-              <Paper  zDepth={2}
-                children={<div>
-               <div className="panel panel-default">
-                 <div className="panel-heading" style={{background:'#F5F5F5'}}>
-                <p style={{ fontSize:20}}> 2.  An electronic tool that allows information to be input, processed, and output </p>
-                 </div>
-                 <div className="panel-body">
-                   <div style={{fontSize:20}} >
-                     <div className='panel panel-default'  style={{paddingTop:10, margin:3, background:this.state.divColor, cursor:'pointer'}} onMouseEnter={this.handleFocus}  onMouseLeave={this.handleFocus2}><p style={{fontSize:20}}>Correct Answer: Operating system</p></div>
-                     <div  className='panel panel-default' style={{paddingTop:10, margin:3,background:this.state.divColor,  cursor:'pointer'}} onMouseEnter={this.handleFocus} onMouseLeave={this.handleFocus2}><p style={{fontSize:20}}>Selected Answer: Operating system</p></div>
+             }/>
+              )}
 
-
-                   </div>
-                 </div>
-               </div>
-             </div>
-           }/>
-           <Paper  zDepth={2}
-             children={<div>
-            <div className="panel panel-default">
-              <div className="panel-heading">
-             <p style={{ fontSize:20}}>3. An electronic tool that allows information to be input, processed, and output An electronic tool that allows information to be input, processed, and output An electronic tool that allows information to be input, processed, and output </p>
-              </div>
-              <div className="panel-body">
-                <div style={{fontSize:20}} >
-                  <div className='panel panel-default'  style={{paddingTop:10, margin:3, background:this.state.divColor, cursor:'pointer'}} onMouseEnter={this.handleFocus}  onMouseLeave={this.handleFocus2}><p style={{fontSize:20}}>Correct Answer: Operating system</p></div>
-                  <div  className='panel panel-default' style={{borderColor:'red',paddingTop:10, margin:3,background:this.state.divColor,  cursor:'pointer'}} onMouseEnter={this.handleFocus} onMouseLeave={this.handleFocus2}><p style={{fontSize:20}}>Selected Answer: Motherboard</p></div>
-
-
-                </div>
-              </div>
-            </div>
-          </div>
-        }/>
             </div>
           </div>
         </div>
@@ -219,5 +174,3 @@ class PracticeSummary extends Component {
     );
   }
 }
-
-export default PracticeSummary;

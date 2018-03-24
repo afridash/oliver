@@ -41,7 +41,7 @@ export default class Subscribe extends Component {
                         <div className="subscription-error"></div>
                         <form onSubmit={this.submit} id="mc-form" className="subscribe_form">
                             <div className="form-group">
-                                <input onChange={this.handleChange} type="email" autocapitalize="off" autocorrect="off" name="email" className="required email form-control" id="mce-EMAIL" placeholder="Enter Email Address" value={this.state.email} />
+                                <input onChange={this.handleChange} type="email" autoCapitalize="off" autoCorrect="off" name="email" className="required email form-control" id="mce-EMAIL" placeholder="Enter Email Address" value={this.state.email} />
                             </div>
                             <button type="submit" className="btn btn-default subs-btn">Subscribe!</button>
                         </form>

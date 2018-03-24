@@ -121,7 +121,7 @@ Logged.muiName = 'IconMenu';
            <br />  <br />
            <p className='text-info lead'>No Theories...</p>
            <Link to={"/AppHome"}>
-             <RaisedButton label="Return Home" secondary={true} fullWidth={true} style={style.chip}/>
+             <RaisedButton label="Return Home" primary={true} fullWidth={true} style={style.chip}/>
            </Link>
          </div>
          </div>

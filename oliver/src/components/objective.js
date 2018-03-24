@@ -56,7 +56,19 @@ class Login extends Component {
     );
   }
 }
+const style = {
+  chip: {
+    margin: 4,
+    backgroundColor:'#cfecf7',
+  },
+  paper:{
+    textAlign: 'center',
+    margin: 20,
 
+  },
+  height:50,
+  textAlign: 'center',
+};
 const Logged = (props) => (
   <IconMenu
     {...props}
@@ -84,7 +96,7 @@ Logged.muiName = 'IconMenu';
    },
  })
  class Objective extends Component {
-   constructor(props) {
+  constructor(props) {
      super(props);
      this.state = {
        data:[],
@@ -99,7 +111,7 @@ Logged.muiName = 'IconMenu';
        firebase.auth().onAuthStateChanged(this.handleUser)
 
    }
-   handleUser = (user) => {
+  handleUser = (user) => {
      if (user) {
        this.setState({username:user.displayName, userId:user.uid, photoURL:user.photoURL})
        this.usersRef.child(user.uid).child('collegeId').once('value', (college)=>{
@@ -107,10 +119,10 @@ Logged.muiName = 'IconMenu';
        })
      }
    }
-   componentWillMount () {
+  componentWillMount () {
      this.getQuestions()
    }
-   async getQuestions () {
+  async getQuestions () {
      //Get questions from questions db using courseId
      await this.questionsRef.orderByChild('type').equalTo('objective').once('value', (questions)=> {
          this.data = []
@@ -121,51 +133,49 @@ Logged.muiName = 'IconMenu';
        }
 
        questions.forEach((question)=>{
-          if (question.val().answered) {
             var answer = ''
             if (question.val().answer.toLowerCase() === 'a') answer = question.val().optionA
             if (question.val().answer.toLowerCase() === 'b') answer = question.val().optionB
             if (question.val().answer.toLowerCase() === 'c') answer = question.val().optionC
             if (question.val().answer.toLowerCase() === 'd') answer = question.val().optionD
-
-            this.data.push({key:question.key, answer:answer,question:
-              question.val().question})
-            this.setState({questions:this.data,isloading:false})
-          }
-
-       })
+            this.data.push({
+              key:question.key,
+              answer:answer,
+              question:question.val().question,
+              optionA:question.val().optionA,
+              optionB:question.val().optionB,
+              optionC:question.val().optionC,
+              optionD:question.val().optionD,
+            })
+            })
+       this.setState({questions:this.data,isloading:false})
      })
    }
-
- handleLogout (event) {
-    firebase.auth().signOut().then(function() {
-    }).catch(function(error) {
-      // An error happened.
-    });
-      this.setState({redirect:true})
-    }
-
-
-   select = (index) => this.setState({selectedIndex: index});
-
-   spinner () {
+  select = (index) => this.setState({selectedIndex: index});
+  spinner () {
      return (
        <div className='container'>
          <div className='col-md-2 col-md-offset-5'>
            <br />  <br />   <br />  <br />    <br />  <br />
-           <CircularProgress size={60} thickness={7} />
+           <CircularProgress size={60} thickness={5} />
          </div>
        </div>
      )
    }
-
-   noActivity () {
+  noActivity () {
      return (
-       <p>No Activity</p>
+       <div className='row text-center'>
+         <div className='col-sm-6 col-sm-offset-3'>
+           <br />  <br />
+           <p className='text-info lead'>No Objectives...</p>
+           <Link to={"/AppHome"}>
+             <RaisedButton label="Return Home" primary={true} fullWidth={true} style={style.chip}/>
+           </Link>
+         </div>
+         </div>
      )
    }
-
-   showPageContent () {
+  showPageContent () {
      return(
        <div className="container">
 
@@ -179,12 +189,32 @@ Logged.muiName = 'IconMenu';
 
                  <div className="panel-heading">
                 <p style={{ fontSize:20}}> {question.question}</p>
+
                  </div>
                  <div className="panel-body">
-                   <div style={{fontSize:20}} >
-                     <div className='panel panel-default'  style={{paddingTop:10, margin:3, background:this.state.divColor, cursor:'pointer'}} onMouseEnter={this.handleFocus}  onMouseLeave={this.handleFocus2}><p style={{fontSize:20}}>{question.answer}</p></div>
-
-
+                   <div style={{fontSize:16}} >
+                     <div className='col-sm-12'>
+                       <div className='col-sm-3'>
+                         <span>A: {question.optionA}</span>
+                       </div>
+                       <div className='col-sm-3'>
+                          <span>B: {question.optionB}</span>
+                       </div>
+                       <div className='col-sm-3'>
+                         <span>C: {question.optionC}</span>
+                       </div>
+                       <div className='col-sm-3'>
+                          <span>D: {question.optionD}</span>
+                       </div>
+                     </div>
+                     <div className='col-sm-12'>
+                        <div className='panel panel-default'
+                          style={{paddingTop:10, margin:3, background:this.state.divColor, cursor:'pointer'}}
+                           onMouseEnter={this.handleFocus}
+                           onMouseLeave={this.handleFocus2}>
+                           <p style={{fontSize:20}}> &nbsp;&nbsp;Answer: {question.answer}</p>
+                         </div>
+                     </div>
                    </div>
                  </div>
                </div>
@@ -199,14 +229,10 @@ Logged.muiName = 'IconMenu';
      )
    }
   render() {
-
-
     return (
         this.state.redirect ? <Redirect to='/' push/> : <MuiThemeProvider muiTheme={muiTheme} >
       <div>
-
         <br/>
-
         {
           (()=>{
           if (this.state.isloading){

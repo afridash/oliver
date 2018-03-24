@@ -27,18 +27,14 @@ export default class Home extends Component {
   async handleSubmit (event) {
       event.preventDefault()
       var loggedInError = false
-      await firebase.auth().signInWithEmailAndPassword(this.state.email, this.state.password).catch(function(error) {
+      await firebase.auth().signInWithEmailAndPassword(this.state.email, this.state.password).then((user)=>{
+        this.setState({redirect:true})
+      }).catch((error)=> {
       var errorCode = error.code;
       var errorMessage = error.message
-      console.log(errorMessage)
-      alert(errorMessage)
+      this.setState({error:errorMessage})
       loggedInError=true
     })
-      if(!loggedInError){
-        this.setState({redirect:true})
-      }else{
-        this.setState({error:"Password and Email Do Not Match"})
-      }
   }
 
   handlePasswordChange (event){

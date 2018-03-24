@@ -23,25 +23,32 @@ export default class Review extends Component {
       <div className="section_overlay">
           <div className="container wow bounceInLeft" data-wow-duration="1s">
               <div className="row text-center">
-                  <div className="col-md-4">
+                  <div className="col-md-3">
                       <div className="single_fun_facts">
                           <i className="pe-7s-cloud-download"></i>
                           <h2><span  className="counter_num">{this.state.questions}</span> <span>+</span></h2>
                           <p>Questions</p>
                       </div>
                   </div>
-                  <div className="col-md-4">
+                  <div className="col-md-3">
                       <div className="single_fun_facts">
                           <i className="pe-7s-look"></i>
                           <h2><span  className="counter_num">{this.state.courses}</span> <span>+</span></h2>
                           <p>Courses</p>
                       </div>
                   </div>
-                  <div className="col-md-4">
+                  <div className="col-md-3">
                       <div className="single_fun_facts">
                           <i className="pe-7s-comment"></i>
                           <h2><span  className="counter_num">{this.state.colleges}</span> <span>+</span></h2>
                           <p>Universties</p>
+                      </div>
+                  </div>
+                  <div className="col-md-3">
+                      <div className="single_fun_facts">
+                          <i className="pe-7s-comment"></i>
+                          <h2><span  className="counter_num">{this.state.completed}</span> <span>+</span></h2>
+                          <p>Completed Tests</p>
                       </div>
                   </div>
               </div>

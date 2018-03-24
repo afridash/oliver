@@ -95,7 +95,7 @@ export default class Bookmarks extends Component {
         if (question.val().answer.toLowerCase() === 'c') answer = question.val().optionC
         if (question.val().answer.toLowerCase() === 'd') answer = question.val().optionD
 
-        this.data.push({key:question.key, answer:answer,question:
+        this.data.unshift({key:question.key, answer:answer,question:
           question.val().question})
         this.setState({bookmarks:this.data,isloading:false})
       })

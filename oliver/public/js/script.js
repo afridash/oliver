@@ -2,7 +2,7 @@
 $(window).bind("load", function() {
 
     "use strict";
-    
+
     $(".spn_hol").fadeOut(1000);
 });
 
@@ -11,11 +11,11 @@ $(window).bind("load", function() {
 $(document).ready(function() {
 
     "use strict";
-    
+
     $(window).scroll(function() {
 
         "use strict";
-        
+
         if ($(window).scrollTop() > 80) {
             $(".navbar").css({
                 'margin-top': '0px',
@@ -61,11 +61,11 @@ $(document).ready(function() {
 $(document).ready(function() {
 
     "use strict";
-    
+
     $(".navbar-nav li a").click(function() {
 
         "use strict";
-        
+
         $(".navbar-nav li a").parent().removeClass("active");
         $(this).parent().addClass("active");
     });
@@ -78,15 +78,15 @@ $(document).ready(function() {
 $(document).ready(function() {
 
     "use strict";
-    
+
     $(window).scroll(function() {
 
         "use strict";
-        
+
         $(".page").each(function() {
 
             "use strict";
-            
+
             var bb = $(this).attr("id");
             var hei = $(this).outerHeight();
             var grttop = $(this).offset().top - 70;
@@ -105,7 +105,7 @@ $(document).ready(function() {
 
 
 $(function() {
-	
+
 	"use strict";
 
   $('a[href*=#]:not([href=#])').click(function() {
@@ -128,11 +128,11 @@ $(function() {
 $(document).ready(function() {
 
     "use strict";
-    
+
     setInterval(function() {
 
         "use strict";
-        
+
         var widnowHeight = $(window).height();
         var containerHeight = $(".home-container").height();
         var padTop = widnowHeight - containerHeight;
@@ -145,54 +145,6 @@ $(document).ready(function() {
 
 
 
-//PARALLAX
-$(document).ready(function() {
-
-    "use strict";
-    
-    $(window).bind('load', function() {
-        "use strict";
-        parallaxInit();
-    });
-
-    function parallaxInit() {
-        "use strict";
-        $('.home-parallax').parallax("30%", 0.1);
-        $('.subscribe-parallax').parallax("30%", 0.1);
-        $('.testimonial').parallax("10%", 1);
-        /*add as necessary*/
-    }
-});
-
-
-
-//OWL CAROSEL
-$(document).ready(function() {
-
-    "use strict";
-    
-    $("#owl-demo").owlCarousel({
-        autoPlay: 3000,
-        items: 4, //10 items above 1000px browser width
-        itemsDesktop: [1370, 3], //5 items between 1000px and 901px
-        itemsDesktopSmall: [900, 2], // betweem 900px and 601px
-        itemsTablet: [600, 1], //2 items between 600 and 0
-    });
-});
-
-
-    
- //PRETTYPHOTO
-
-$(document).ready(function() {
-
-    "use strict";
-
-    $("a[rel^='prettyPhoto']").prettyPhoto({
-        show_title: false,
-        /* true/false */
-    });
-});
 
 
 
@@ -200,32 +152,20 @@ $(document).ready(function() {
 $(document).ready(function() {
 
     "use strict";
- 
+
     new WOW().init();
 });
-
-
-
-//RESPONSIVE VIDEO
-$(document).ready(function() {
-
-    "use strict";
-    
-    // Basic FitVids Test
-    $(".video").fitVids();
-});
-
 
 
 //CONTACT FORM VALIDATION
 $(document).ready(function() {
 
     "use strict";
-    
+
     $(".form_submit").click(function() {
 
         "use strict";
-        
+
         var name = $("#name").val();
         var emaild = $("#email").val();
         var subject = $("#subject").val();
@@ -286,13 +226,13 @@ $(document).ready(function() {
 });
 
 
- 
-/// SMOOTH SCROLL           
+
+/// SMOOTH SCROLL
 
 $(document).ready(function() {
 
     "use strict";
-    
+
     var scrollAnimationTime = 1200,
         scrollAnimation = 'easeInOutExpo';
     $('a.scrollto').bind('click.smoothscroll', function(event) {
