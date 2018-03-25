@@ -9,6 +9,7 @@ import IconButton from 'material-ui/IconButton'
 import Delete from 'material-ui/svg-icons/action/delete'
 import {Card, CardHeader, CardTitle, CardText} from 'material-ui/Card'
 import {Panel, OverlayTrigger, Tooltip} from 'react-bootstrap'
+import Remove from 'material-ui/svg-icons/content/delete-sweep';
 const firebase = require('firebase')
 
 class Notifications extends Component {
@@ -56,10 +57,10 @@ class Notifications extends Component {
             <Panel>
               <div className="card">
                 <div className="card-header">
-                  <span className="pull-right">
-                    <OverlayTrigger placement="bottom" overlay={tooltip}>
-                      <i className="fa fa-trash-o fa-lg" style={{cursor:'pointer'}} onClick={()=> this.handleDelete(notification.key)}></i>
-                    </OverlayTrigger>
+                  <span style={{marginTop:-20}} className="pull-right text-center">
+                    <IconButton tooltip="Remove" onClick={()=> this.handleDelete(notification.key)}>
+                      <Remove />
+                    </IconButton>
                   </span>
                 </div>
                 <br/>
@@ -175,6 +176,7 @@ class Notifications extends Component {
     return(
       <div className="center">
         <div className="row">
+          <div style={{marginTop:60}}></div>
           {
             (()=>{
               if (this.state.loading){

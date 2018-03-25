@@ -81,7 +81,7 @@ const iconStyles = {
         this.setState({isLoading:false, noCourses:true})
       }
       snapshot.forEach((course)=>{
-        this.data.push({key:course.key, name:course.val().name, code:course.val().code})
+        this.data.push({key:course.key, name:course.val().name, code:course.val().code, highest:course.val().highest})
         this.setState({data:this.data, refreshing:false, noCourses:false, isLoading:false})
       })
     })
@@ -90,6 +90,7 @@ const iconStyles = {
   showPageContent () {
      return (
        <div className="row">
+         <div style={{marginTop:60}}></div>
          {this.state.data.map((course)=>
            <div className="col-lg-4" >
              <Paper style={style.paper} zDepth={2} rounded={true}
@@ -100,7 +101,8 @@ const iconStyles = {
                        <div className="panel-heading" style={{background:blue300,color:'white'}}> {course.code} </div>
                        <div className="panel-body">
                          <h3 style={{fontSize:15}}>HIGH SCORE</h3>
-                         <h3 style={{fontSize:15}}> 50% </h3> </div>
+                         {course.highest ? <h3 style={{fontSize:15}}> {course.highest}% </h3> : <h3 style={{fontSize:15}}> Not Started </h3>}
+                       </div>
 
                      </div>
                    </div>
@@ -149,6 +151,7 @@ const iconStyles = {
     return (
       <MuiThemeProvider muiTheme={muiTheme} >
       <div className='row text-center'>
+        <div style={{marginTop:60}}></div>
         <div className='col-sm-6 col-sm-offset-3'>
           <br />  <br />
           <CircularProgress size={60} thickness={5} />
@@ -170,6 +173,7 @@ const iconStyles = {
     return (
       <MuiThemeProvider muiTheme={muiTheme} >
       <div className='row text-center'>
+        <div style={{marginTop:60}}></div>
         <div className='col-sm-6 col-sm-offset-3'>
           <br />  <br />
           <p className='text-info lead'>No Courses...Search To Add</p>

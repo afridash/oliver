@@ -155,6 +155,7 @@ Logged.muiName = 'IconMenu';
   spinner () {
      return (
        <div className='container'>
+         <div style={{marginTop:60}}></div>
          <div className='col-md-2 col-md-offset-5'>
            <br />  <br />   <br />  <br />    <br />  <br />
            <CircularProgress size={60} thickness={5} />
@@ -165,6 +166,7 @@ Logged.muiName = 'IconMenu';
   noActivity () {
      return (
        <div className='row text-center'>
+         <div style={{marginTop:60}}></div>
          <div className='col-sm-6 col-sm-offset-3'>
            <br />  <br />
            <p className='text-info lead'>No Objectives...</p>
@@ -178,10 +180,8 @@ Logged.muiName = 'IconMenu';
   showPageContent () {
      return(
        <div className="container">
-
           <div className="row">
-
-            <div >
+            <div style={{marginTop:60}} >
                 {this.state.questions.map((question)=>
               <Paper  zDepth={2}
                 children={<div>
@@ -221,16 +221,14 @@ Logged.muiName = 'IconMenu';
              </div>
            }/>
              )}
-
             </div>
           </div>
-
         </div>
      )
    }
   render() {
     return (
-        this.state.redirect ? <Redirect to='/' push/> : <MuiThemeProvider muiTheme={muiTheme} >
+     <MuiThemeProvider muiTheme={muiTheme} >
       <div>
         <br/>
         {

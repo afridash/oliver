@@ -9,6 +9,7 @@ import Divider from 'material-ui/Divider'
 import Delete from 'material-ui/svg-icons/action/delete'
 import {Card, CardHeader, CardTitle, CardText} from 'material-ui/Card'
 import {Panel, OverlayTrigger, Tooltip} from 'react-bootstrap'
+import Remove from 'material-ui/svg-icons/content/delete-sweep';
 const firebase = require('firebase')
 
 const tooltip = (
@@ -48,15 +49,16 @@ export default class RecentActivities extends Component {
   showPageContent (){
     return (
       <div className="col-sm-8 col-sm-offset-2">
+        <div style={{marginTop:60}}></div>
         {this.state.activities.map((activity) =>
           <Paper zDepth={3}>
             <Panel>
               <div className="card">
                 <div className="card-header">
-                  <h4><strong>{activity.title}<span className="pull-right">{activity.code}&nbsp;&nbsp;
-                    <OverlayTrigger placement="bottom" overlay={tooltip}>
-                      <i className="fa fa-trash-o fa-lg" style={{cursor:'pointer'}} onClick={()=> this.handleDelete(activity.key)}></i>
-                    </OverlayTrigger>
+                  <h4><strong>{activity.title}<span style={{marginTop:-20}} className="pull-right text-center">{activity.code}&nbsp;&nbsp;
+                    <IconButton tooltip="Remove" onClick={()=> this.handleDelete(activity.key)}>
+                      <Remove />
+                    </IconButton>
                   </span></strong></h4>
                 </div>
                 <Divider/>
@@ -79,6 +81,7 @@ export default class RecentActivities extends Component {
   noActivities (){
     return (
       <div className='row text-center'>
+        <div style={{marginTop:60}}></div>
         <div className='col-sm-6 col-sm-offset-3'>
           <br />  <br />
           <p className='text-info lead'>No Recent Activities</p>
@@ -89,6 +92,7 @@ export default class RecentActivities extends Component {
   spinner () {
     return (
       <div className="row text-center">
+        <div style={{marginTop:60}}></div>
         <div className="col-md-6 col-md-offset-3">
           <br/>
           <br/>

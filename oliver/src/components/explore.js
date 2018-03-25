@@ -141,8 +141,7 @@ const iconStyles = {
      return (
      <div className="row">
        {this.state.explores.map((explore)=>
-         <div className="col-md-8 col-md-offset-2" >
-
+         <div className="col-md-8 col-md-offset-2 col-sm-8 col-sm-offset-2" >
            <Paper style={style.paper} zDepth={2} rounded={true}
              children={<div>
                <div className="row">
@@ -203,6 +202,7 @@ const iconStyles = {
       <div className="center">
         <div className="row">
           <br/>
+          <div style={{marginTop:60}}></div>
           {
             (()=>{
             if (this.state.isloading){

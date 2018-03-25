@@ -36,7 +36,7 @@ import Menu from 'material-ui/Menu';
 import Divider from 'material-ui/Divider';
 import {Nav, Navbar, NavDropdown, Tabs, ButtonToolbar, Button, Table, ButtonGroup, Row, Col, Grid, Panel, FormGroup, FormControl} from 'react-bootstrap';
 import FileFileDownload from 'material-ui/svg-icons/file/file-download';
-import Remove from 'material-ui/svg-icons/content/remove-circle-outline';
+import Remove from 'material-ui/svg-icons/content/delete-sweep';
 import CircularProgress from 'material-ui/CircularProgress';
 
 const firebase = require('firebase')
@@ -133,7 +133,6 @@ export default class Bookmarks extends Component {
          return(
            <div className="container">
              <div className="row">
-
                <div className="col-sm-8 col-sm-offset-2" >
                  {this.state.bookmarks.map((bookmark)=>
                  <Paper  zDepth={2}
@@ -171,6 +170,7 @@ export default class Bookmarks extends Component {
       <div className="center">
         <div classNmae="row">
           <br/>
+          <div style={{marginTop:60}}></div>
           {
             (()=>{
             if (this.state.isloading){

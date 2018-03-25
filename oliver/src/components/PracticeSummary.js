@@ -111,6 +111,7 @@ export default class PracticeSummary extends Component {
       <div>
         <br/>
         <div className="container">
+          <div style={{marginTop:60}}></div>
           <div className="row">
             <div className="col-lg-4">
               <div className="panel panel-default">

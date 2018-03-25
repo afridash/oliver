@@ -107,6 +107,7 @@ Logged.muiName = 'IconMenu';
            this.state.redirect ? <Redirect to='/' push/> : <MuiThemeProvider muiTheme={muiTheme} >
          <div>
       <AppBar
+        style={{position:'fixed'}}
         iconElementLeft={
           <Link to='/' >
           <Avatar
@@ -189,7 +190,7 @@ Logged.muiName = 'IconMenu';
         title="Oliver"
 
       />
-       {this.props.children}
+        {this.props.children}
     </div>
      </MuiThemeProvider>
 

@@ -35,6 +35,7 @@ class Comments extends Component {
     return (
         <div className="col-sm-8 col-sm-offset-2">
           <br/>
+          <div style={{marginTop:60}}></div>
             <Paper zDepth={3}>
               <Panel>
                 <div className="card">

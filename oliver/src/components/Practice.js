@@ -37,7 +37,6 @@ const style = {
 const iconStyles = {
   marginRight: 24,
 };
-
  const muiTheme = getMuiTheme({
    palette: {
      textColor: '#424242',
@@ -290,14 +289,25 @@ class Practice extends Component {
         }else{
           snapshot.ref.update({highest:score})
         }
+        if (snapshot.hasChild('points')) {
+          snapshot.ref.update({points: snapshot.val().points + score/100 * 10})
+        }else{
+          snapshot.ref.update({points:score/100 * 10})
+        }
         snapshot.ref.update({last:score})
       }else {
         snapshot.ref.update({
           completed:1,
           highest:score,
-          last:score
+          last:score,
+          points:score/100 * 10
         })
       }
+    })
+    this.courseRef.child(this.state.userId).child(this.courseId).child('highest').once('value', (highest)=> {
+      if (highest.exists()) {
+        if (highest.val() < score ) highest.ref.set(score)
+      }else highest.ref.set(score)
     })
   }
   async _updateStats () {
@@ -324,6 +334,7 @@ class Practice extends Component {
   spinner () {
     return (
       <div className='row text-center'>
+        <div style={{marginTop:60}}></div>
         <div className='col-md-6 col-md-offset-3'>
           <br />  <br />
           <CircularProgress size={60} thickness={5} />
@@ -334,6 +345,7 @@ class Practice extends Component {
   noActivity () {
     return (
       <div className='row text-center'>
+        <div style={{marginTop:60}}></div>
         <div className='col-sm-6 col-sm-offset-3'>
           <br />  <br />
           <p className='text-info lead'>No Answered Objectives...</p>
@@ -349,7 +361,8 @@ class Practice extends Component {
     return (
       <div className="container">
         <div className="row">
-          <div className="col-lg-4 ">
+          <div style={{marginTop:80}}></div>
+          <div className="col-lg-4 col-sm-4 ">
             <div className="panel panel-info">
               <div>
                 <Paper style={{padding:20,  textAlign:'center',backgroundColor:blue300}} zDepth={2}
@@ -380,7 +393,7 @@ class Practice extends Component {
               </div>
             </div>
           </div>
-        <div className="col-lg-8 ">
+        <div className="col-lg-8 col-sm-8">
             <div className="panel panel-info">
               <div>
                 <Paper style={{padding:20,  textAlign:'center',backgroundColor:blue300}} zDepth={2}
