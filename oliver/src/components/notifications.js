@@ -3,6 +3,7 @@ import {Firebase} from '../auth/firebase'
 import * as timestamp from '../auth/timestamp'
 import {Link, Redirect} from 'react-router-dom'
 import CircularProgress from 'material-ui/CircularProgress'
+import RaisedButton from 'material-ui/RaisedButton';
 import Paper from 'material-ui/Paper'
 import Avatar from 'material-ui/Avatar'
 import IconButton from 'material-ui/IconButton'
@@ -21,9 +22,14 @@ class Notifications extends Component {
       notifications: [],
       loading: true,
       noNotifications: false,
+      next:false,
+      current:0,
+      counter:0,
     }
     firebase.auth().onAuthStateChanged(this.handleUser)
     this.notificationsRef = firebase.database().ref().child('notifications')
+    this.increment = 14
+    this.data = []
   }
 
   handleUser = (user) => {
@@ -42,12 +48,26 @@ class Notifications extends Component {
            type:snapshot.val().type, postId:snapshot.val().postId,profilePicture:snapshot.val().profilePicture,
            userId:snapshot.val().userId, createdAt:snapshot.val().createdAt, post:snapshot.val().post,
            username:snapshot.val().code, courseId:snapshot.val().course})
-           this.setState({notifications:this.notifications})
       })
     })
-    this.setState({loading:false})
+    await  this.notifications.length > this.increment ? this.setState({next:true}) : this.setState({next:false})
+    this.showNextSet()
   }
-
+  async getNextSet () {
+     for (var i=this.state.current; i<=this.state.counter; i++){
+       this.data.push(this.notifications[i])
+       this.setState({notifications:this.data, loading:false})
+     }
+     await this.setState({counter:this.state.counter + 1})
+   }
+  async showNextSet () {
+     if (this.state.counter + this.increment > this.notifications.length-1){
+       await this.setState({current:this.state.counter, counter:this.notifications.length-1, next:false,})
+     }else {
+         await this.setState({current:this.state.counter, counter:this.state.counter+this.increment})
+     }
+     await this.getNextSet()
+   }
   showExploreVote (notification, index, message) {
     return (
       <div className="col-sm-8 col-sm-offset-2">
@@ -191,7 +211,9 @@ class Notifications extends Component {
             })()
           }
         </div>
-
+        <div className='col-sm-12 text-center'>
+          {this.state.next && <RaisedButton className='text-center' label="Show More" primary={true} onClick={()=>{this.showNextSet()}}/>}
+        </div>
       </div>
       );
     }

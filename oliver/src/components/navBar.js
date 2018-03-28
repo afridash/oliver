@@ -72,8 +72,7 @@ Logged.muiName = 'IconMenu';
      firebase.auth().onAuthStateChanged(this.handleUser)
      this.badgesRef = firebase.database().ref().child('badges')
    }
-
-  handleUser = (user) => {
+   handleUser = (user) => {
      if (user) {
        this.setState({username:user.displayName, userId:user.uid, photoURL:user.photoURL})
        this.addListener(user.uid)
@@ -81,7 +80,6 @@ Logged.muiName = 'IconMenu';
        this.setState({redirect:true})
      }
    }
-
    addListener (userId) {
      this.badgesRef.child(userId).on('child_added', (badges)=>{
        this.setState({badges:badges.val()})
@@ -94,107 +92,102 @@ Logged.muiName = 'IconMenu';
      this.badgesRef.child(this.state.userId).child('notificationsBadges').remove()
      this.setState({badges:false})
    }
-
-  handleLogout (event) {
+   handleLogout (event) {
       firebase.auth().signOut().then(function() {
       }).catch(function(error) {
         // An error happened.
       });
         this.setState({redirect:true})
     }
-  render() {
-       return (
-           this.state.redirect ? <Redirect to='/' push/> : <MuiThemeProvider muiTheme={muiTheme} >
-         <div>
-      <AppBar
-        style={{position:'fixed'}}
-        iconElementLeft={
-          <Link to='/' >
-          <Avatar
-          src={require("../images/oliverLogo.png")}
-          size={45}
-          style={{backgroundColor:"#2d6ca1"}}
-        />
-          </Link>}
-        children={
-          <div>
-            <Link to={"/recents"}>
-                <FlatButton label="Activities" style={{color:'white'}}/>
-            </Link>
-
-            <Link to={"/explore"}>
-                <FlatButton label="Explore" style={{color:'white'}}/>
-            </Link>
-            <Link to={"/bookmarks"}>
-                <FlatButton label="Bookmarks" style={{color:'white'}}/>
-            </Link>
-            <Link onClick={()=>this.loadNotifications()} to={"/notifications"}>
-            <Badge
-               badgeContent={this.state.badges}
-               badgeStyle={{color:'white', backgroundColor: this.state.badges ? 'red' : 'transparent', top:10, left:25, }}
-               style={{cursor:'pointer'}}
-             >
-               <NotificationsIcon  style={{color:'white'}} />
-            </Badge>
-            </Link>
-
-             <IconMenu
-
-              iconButtonElement={
-                <Avatar
-                src={this.state.photoURL}
-                size={35}
-                style={{marginBottom:10,cursor:'pointer'}}
-                label='Jane Doe'
-              />}
-              anchorOrigin={{horizontal: 'left', vertical: 'bottom'}}
-              targetOrigin={{horizontal: 'left', vertical: 'top'}}
-              open={this.state.openMenu}
-              onRequestChange={this.handleOnRequestChange}
-             >
-              <Divider />
-               <MenuItem primaryText={this.state.username} leftIcon={
-                 <Avatar
-                  src={this.state.photoURL}
-                 //size={50}
-               />} />
-               <Divider />
-              <MenuItem value="1" primaryText="Share" />
-              <MenuItem value="2" primaryText="Help" />
-              <MenuItem value="3" primaryText="Sign out" onClick={(event) => this.handleLogout(event)}/>
-
-             </IconMenu>
-
-             <IconMenu
-             iconButtonElement={<IconButton><MoreVertIcon /></IconButton>}
-             anchorOrigin={{horizontal: 'right', vertical: 'bottom'}}
-             targetOrigin={{horizontal: 'right', vertical: 'top'}}
-             iconStyle={{color:'white'}}
-             >
-             <MenuItem value="1" primaryText="Afridash Oliver" href='https://oliver.afridash.com' target='_blank'/>
-             <MenuItem value="2" primaryText="About" href='http://www.afridash.com' target='_blank'/>
-             <MenuItem value="3" primaryText="Contact" />
-             <MenuItem value="4" primaryText="Privacy" href={'https://oliver.afridash.com/policy'} target='_blank'/>
-             <MenuItem value="4" primaryText="Copyright" />
-             </IconMenu>
-
-          <div className='hidden-sm hidden-xs'>
-            <SearchBar
-              onChange={() => console.log('onChange')}
-              onRequestSearch={() => console.log('onRequestSearch')}
-              style={{position:'absolute', top:10, left:0, marginLeft:'35%'}}
-              placeholder='Search for a course'
-          />
-          </div>
-          </div>}
-        title="Oliver"
-
-      />
-        {this.props.children}
-    </div>
-     </MuiThemeProvider>
-
-    );
-  }
-
-      }
+   render() {
+     return (
+      this.state.redirect ? <Redirect to='/' push/> :
+         <MuiThemeProvider muiTheme={muiTheme} >
+           <div>
+             <AppBar
+               style={{position:'fixed'}}
+               iconElementLeft={
+                 <div className='col-sm-12' >
+                   <Link className='col-sm-4' to='/' >
+                   <Avatar
+                     src={require("../images/oliverLogo.png")}
+                     size={45}
+                     style={{backgroundColor:"#2d6ca1", marginTop:'7%'}}
+                   />
+                 </Link>
+                 <div className='hidden-xs col-sm-8'>
+                   <SearchBar
+                     onChange={() => console.log('onChange')}
+                     onRequestSearch={() => console.log('onRequestSearch')}
+                     style={{marginTop:'5%'}}
+                     placeholder='Search users'
+                   />
+                 </div>
+                 </div>
+                 }
+               iconElementRight={
+                 <div className='col-sm-12'>
+                   <Link to={"/courses"}>
+                    <FlatButton label="Courses" style={{color:'white'}}/>
+                  </Link>
+                  <Link to={"/recents"}>
+                    <FlatButton label="Activities" style={{color:'white'}}/>
+                  </Link>
+                  <Link to={"/explore"}>
+                    <FlatButton label="Explore" style={{color:'white'}}/>
+                  </Link>
+                  <Link to={"/bookmarks"}>
+                    <FlatButton label="Bookmarks" style={{color:'white'}}/>
+                  </Link>
+                  <Link onClick={()=>this.loadNotifications()} to={"/notifications"}>
+                    <Badge
+                      badgeContent={this.state.badges}
+                      badgeStyle={{color:'white', backgroundColor: this.state.badges ? 'red' : 'transparent', top:10, left:25, }}
+                      style={{cursor:'pointer'}}
+                      >
+                        <NotificationsIcon  style={{color:'white'}} />
+                      </Badge>
+                  </Link>
+                  <IconMenu
+                    iconButtonElement={
+                      <Avatar
+                        src={this.state.photoURL}
+                        size={35}
+                        style={{marginBottom:10,cursor:'pointer'}}
+                        label='Jane Doe'
+                      />}
+                      anchorOrigin={{horizontal: 'left', vertical: 'bottom'}}
+                      targetOrigin={{horizontal: 'left', vertical: 'top'}}
+                      open={this.state.openMenu}
+                      onRequestChange={this.handleOnRequestChange}
+                      >
+                        <Divider />
+                        <MenuItem primaryText={this.state.username} leftIcon={
+                          <Avatar
+                            src={this.state.photoURL}
+                          />} />
+                          <Divider />
+                          <MenuItem value="1" primaryText="Share" />
+                          <MenuItem value="2" primaryText="Help" />
+                          <MenuItem value="3" primaryText="Sign out" onClick={(event) => this.handleLogout(event)}/>
+                        </IconMenu>
+                        <IconMenu
+                          iconButtonElement={<IconButton><MoreVertIcon /></IconButton>}
+                          anchorOrigin={{horizontal: 'right', vertical: 'bottom'}}
+                          targetOrigin={{horizontal: 'right', vertical: 'top'}}
+                          iconStyle={{color:'white'}}
+                          >
+                            <MenuItem value="1" primaryText="Afridash Oliver" href='https://oliver.afridash.com' target='_blank'/>
+                            <MenuItem value="2" primaryText="About" href='http://www.afridash.com' target='_blank'/>
+                            <MenuItem value="3" primaryText="Contact" />
+                            <MenuItem value="4" primaryText="Privacy" href={'https://oliver.afridash.com/policy'} target='_blank'/>
+                            <MenuItem value="4" primaryText="Copyright" />
+                          </IconMenu>
+                        </div>}
+                      />
+                      {this.props.children}
+                    </div>
+                  </MuiThemeProvider>
+                );
+              }
+        }

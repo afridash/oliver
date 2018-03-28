@@ -102,21 +102,23 @@ Logged.muiName = 'IconMenu';
        data:[],
        questions:[],
        isloading:true,
-       noActivity:false
-     };
+       noActivity:false,
+       prev:false,
+       next:false,
+       current:0,
+       counter:0,
+     }
      this.courseId = this.props.match.params.id
-       this.usersRef = firebase.database().ref().child('users')
-       this.courseRef = firebase.database().ref().child('user_courses')
-       this.questionsRef = firebase.database().ref().child('questions').child(this.courseId)
-       firebase.auth().onAuthStateChanged(this.handleUser)
-
+     this.usersRef = firebase.database().ref().child('users')
+     this.courseRef = firebase.database().ref().child('user_courses')
+     this.questionsRef = firebase.database().ref().child('questions').child(this.courseId)
+     firebase.auth().onAuthStateChanged(this.handleUser)
+     this.increment = 14
+     this.data = []
    }
   handleUser = (user) => {
      if (user) {
        this.setState({username:user.displayName, userId:user.uid, photoURL:user.photoURL})
-       this.usersRef.child(user.uid).child('collegeId').once('value', (college)=>{
-         this.getQuestions (college.val())
-       })
      }
    }
   componentWillMount () {
@@ -125,20 +127,21 @@ Logged.muiName = 'IconMenu';
   async getQuestions () {
      //Get questions from questions db using courseId
      await this.questionsRef.orderByChild('type').equalTo('objective').once('value', (questions)=> {
-         this.data = []
+         this.questions = []
       // console.log(questions.val())
        //If questions are not found under courseId, course does not exist
        if (!questions.exists()) {
          this.setState({isloading:false, noActivity:true})
        }
-
+       var id = 1
        questions.forEach((question)=>{
             var answer = ''
             if (question.val().answer.toLowerCase() === 'a') answer = question.val().optionA
             if (question.val().answer.toLowerCase() === 'b') answer = question.val().optionB
             if (question.val().answer.toLowerCase() === 'c') answer = question.val().optionC
             if (question.val().answer.toLowerCase() === 'd') answer = question.val().optionD
-            this.data.push({
+            this.questions.push({
+              id:id++,
               key:question.key,
               answer:answer,
               question:question.val().question,
@@ -148,8 +151,24 @@ Logged.muiName = 'IconMenu';
               optionD:question.val().optionD,
             })
             })
-       this.setState({questions:this.data,isloading:false})
      })
+     await  this.questions.length > this.increment ? this.setState({next:true}) : this.setState({next:false})
+     this.showNextSet()
+   }
+  async getNextSet () {
+     for (var i=this.state.current; i<=this.state.counter; i++){
+       this.data.push(this.questions[i])
+       this.setState({questions:this.data, isloading:false})
+     }
+     await this.setState({counter:this.state.counter + 1})
+   }
+  async showNextSet () {
+     if (this.state.counter + this.increment > this.questions.length-1){
+       await this.setState({current:this.state.counter, counter:this.questions.length-1, next:false,})
+     }else {
+         await this.setState({current:this.state.counter, counter:this.state.counter+this.increment})
+     }
+     await this.getNextSet()
    }
   select = (index) => this.setState({selectedIndex: index});
   spinner () {
@@ -182,14 +201,15 @@ Logged.muiName = 'IconMenu';
        <div className="container">
           <div className="row">
             <div style={{marginTop:60}} >
-                {this.state.questions.map((question)=>
+              <div className='text-center text-info'>
+                <p className='lead'>Showing {this.state.current + 1} to {this.state.counter } of {this.questions.length}</p>
+              </div>
+                {this.state.questions.map((question, key)=>
               <Paper  zDepth={2}
-                children={<div>
+                children={<div className='col-sm-10 col-sm-offset-1'>
                <div className="panel panel-default">
-
                  <div className="panel-heading">
-                <p style={{ fontSize:20}}> {question.question}</p>
-
+                   <p style={{ fontSize:20}}>{question.id}. &nbsp;&nbsp; {question.question}</p>
                  </div>
                  <div className="panel-body">
                    <div style={{fontSize:16}} >
@@ -221,6 +241,9 @@ Logged.muiName = 'IconMenu';
              </div>
            }/>
              )}
+             <div className='col-sm-12 text-center'>
+               {this.state.next && <RaisedButton className='text-center' label="Show More" primary={true} style={style.chip} onClick={()=>{this.showNextSet()}}/>}
+             </div>
             </div>
           </div>
         </div>

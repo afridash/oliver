@@ -15,6 +15,7 @@ export default class Home extends Component {
       error: '',
       redirect:false,
     }
+    this.usersRef = firebase.database().ref().child('users')
     firebase.auth().onAuthStateChanged(this.handleUser.bind(this))
   }
 
@@ -28,6 +29,9 @@ export default class Home extends Component {
       event.preventDefault()
       var loggedInError = false
       await firebase.auth().signInWithEmailAndPassword(this.state.email, this.state.password).then((user)=>{
+        this.usersRef.child(user.uid).child('collegeId').once('value', (college)=>{
+          localStorage.setItem('userId', college.val())
+        })
         this.setState({redirect:true})
       }).catch((error)=> {
       var errorCode = error.code;

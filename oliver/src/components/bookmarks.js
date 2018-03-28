@@ -65,10 +65,15 @@ export default class Bookmarks extends Component {
       bookmarks:[],
       data:[],
       isloading:true,
-      noActivity:false
+      noActivity:false,
+      next:false,
+      current:0,
+      counter:0,
     };
     firebase.auth().onAuthStateChanged(this.handleUser)
     this.bookmarksRef = firebase.database().ref().child('bookmarks')
+    this.increment = 14
+    this.data = []
   }
   handleUser = (user) => {
     if (user) {
@@ -79,7 +84,7 @@ export default class Bookmarks extends Component {
   async getBookmarks (userId) {
     //Get bookmarks from db using userId
     await this.bookmarksRef.child(userId).orderByChild('type').once('value', (bookmarks)=> {
-      this.data = []
+      this.bookmarks = []
     //  console.log(bookmarks.val())
     //If bookmarks are not found
      if (!bookmarks.exists()) {
@@ -95,12 +100,28 @@ export default class Bookmarks extends Component {
         if (question.val().answer.toLowerCase() === 'c') answer = question.val().optionC
         if (question.val().answer.toLowerCase() === 'd') answer = question.val().optionD
 
-        this.data.unshift({key:question.key, answer:answer,question:
+        this.bookmarks.unshift({key:question.key, answer:answer,question:
           question.val().question})
-        this.setState({bookmarks:this.data,isloading:false})
       })
     })
+    await  this.bookmarks.length > this.increment ? this.setState({next:true}) : this.setState({next:false})
+    this.showNextSet()
   }
+  async getNextSet () {
+     for (var i=this.state.current; i<=this.state.counter; i++){
+       this.data.push(this.bookmarks[i])
+       this.setState({bookmarks:this.data, isloading:false})
+     }
+     await this.setState({counter:this.state.counter + 1})
+   }
+  async showNextSet () {
+     if (this.state.counter + this.increment > this.bookmarks.length-1){
+       await this.setState({current:this.state.counter, counter:this.bookmarks.length-1, next:false,})
+     }else {
+         await this.setState({current:this.state.counter, counter:this.state.counter+this.increment})
+     }
+     await this.getNextSet()
+   }
   handleDelete (key) {
     //Delete entry with userId and key of entry
     this.bookmarksRef.child(this.state.userId).child(key).remove()
@@ -130,39 +151,41 @@ export default class Bookmarks extends Component {
       )
     }
   showPageContent () {
-         return(
-           <div className="container">
-             <div className="row">
-               <div className="col-sm-8 col-sm-offset-2" >
-                 {this.state.bookmarks.map((bookmark)=>
-                 <Paper  zDepth={2}
-                   children={<div>
-                  <div className="panel panel-default">
-                    <div className="panel-heading">
-                   <p style={{ fontSize:20}}>{bookmark.question }
-                     <span className="pull-right">
-                       <IconButton tooltip="Remove" onClick={()=> this.handleDelete(bookmark.key)}>
-                         <Remove />
-                       </IconButton>
-                     </span></p>
-                    </div>
-                    <div className="panel-body">
-                      <div style={{fontSize:20}} >
-                        <div className='panel panel-default'  style={{paddingTop:10, margin:3, background:this.state.divColor, cursor:'pointer'}}>
-                         <p style={{fontSize:20}}>Correct Answer: {bookmark.answer}</p></div>
-                      </div>
-
-                    </div>
-                  </div>
+   return(
+     <div className="container">
+       <div className="row">
+         <div className="col-sm-8 col-sm-offset-2" >
+           {this.state.bookmarks.map((bookmark)=>
+           <Paper  zDepth={2}
+             children={<div>
+            <div className="panel panel-default">
+              <div className="panel-heading">
+             <p style={{ fontSize:20}}>{bookmark.question }
+               <span className="pull-right">
+                 <IconButton tooltip="Remove" onClick={()=> this.handleDelete(bookmark.key)}>
+                   <Remove />
+                 </IconButton>
+               </span></p>
+              </div>
+              <div className="panel-body">
+                <div style={{fontSize:20}} >
+                  <div className='panel panel-default'  style={{paddingTop:10, margin:3, background:this.state.divColor}}>
+                   <p style={{fontSize:20}}>Correct Answer: {bookmark.answer}</p></div>
                 </div>
-              }/>
-            )}
 
-               </div>
-             </div>
-           </div>
-         )
-       }
+              </div>
+            </div>
+          </div>
+        }/>
+      )}
+      <div className='col-sm-12 text-center'>
+        {this.state.next && <RaisedButton className='text-center' label="Show More" primary={true} onClick={()=>{this.showNextSet()}}/>}
+      </div>
+         </div>
+       </div>
+     </div>
+   )
+  }
   render() {
 
     return (

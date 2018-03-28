@@ -1,12 +1,16 @@
-import React, {Component} from 'react';
-import SvgIcon from 'material-ui/SvgIcon';
-import Paper from 'material-ui/Paper';
-import RaisedButton from 'material-ui/RaisedButton';
-import FlatButton from 'material-ui/FlatButton';
-import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-import getMuiTheme from 'material-ui/styles/getMuiTheme';
+import React, {Component} from 'react'
+import SvgIcon from 'material-ui/SvgIcon'
+import Paper from 'material-ui/Paper'
+import RaisedButton from 'material-ui/RaisedButton'
+import FlatButton from 'material-ui/FlatButton'
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
+import getMuiTheme from 'material-ui/styles/getMuiTheme'
+import Popover, {PopoverAnimationVertical} from 'material-ui/Popover'
+import Menu from 'material-ui/Menu'
+import MenuItem from 'material-ui/MenuItem'
 import {Redirect, Link} from 'react-router-dom'
-import CircularProgress from 'material-ui/CircularProgress';
+import CircularProgress from 'material-ui/CircularProgress'
+import { ToastContainer, toast } from 'react-toastify'
 import {
   blue300,
   indigo900,
@@ -56,8 +60,10 @@ const iconStyles = {
        isloading:true,
        noActivity:false
      };
+     this.toastId = null
      firebase.auth().onAuthStateChanged(this.handleUser.bind(this))
      this.ref = firebase.database().ref().child('user_courses')
+     this.registeredRef = firebase.database().ref().child('registered_courses')
      this.badgesRef = firebase.database().ref().child('badges')
    }
    handleUser(user){
@@ -72,6 +78,19 @@ const iconStyles = {
          this.setState({redirect:true})
        }
      }
+   handleClick (event, course) {
+    // This prevents ghost click.
+    this.setState({
+      open: true,
+      anchorEl: event.currentTarget,
+      courseId:course.key,
+    })
+    }
+   handleRequestClose = () => {
+    this.setState({
+      open: false,
+    })
+   }
    async readAddCourses() {
       /* 1. Set courses to empty before reloading online data to avoid duplicate entries
         2. Retrieve users courses from firebase and store them locally using AsyncStorage */
@@ -85,12 +104,31 @@ const iconStyles = {
         this.setState({data:this.data, refreshing:false, noCourses:false, isLoading:false})
       })
     })
-  }
-  select = (index) => this.setState({selectedIndex: index});
+    }
+   select = (index) => this.setState({selectedIndex: index});
+   handleDelete () {
+     this.notify()
+     this.ref.child(this.state.userId).child(this.state.courseId).remove().then(()=>{
+       this.registeredRef.child(this.state.courseId).child(this.state.userId).remove().then(()=> {
+         this.hideCourse(this.state.courseId)
+         this.handleRequestClose()
+       })
+     })
+
+   }
+   notify = () => this.toastId = toast.warn("Deleting course", { autoClose: false });
+   update = () => toast.update(this.toastId, {render:"Course has been deleted!", type: toast.TYPE.INFO, autoClose: 2000 });
+   hideCourse(courseId) {
+     this.data = this.state.data.filter((course)=> course.key !== courseId)
+     if (this.data.length > 0) this.setState({data:this.data})
+     else this.setState({noCourses:true})
+     this.update()
+   }
   showPageContent () {
      return (
        <div className="row">
-         <div style={{marginTop:60}}></div>
+         <div style={{marginTop:80}}></div>
+         <ToastContainer />
          {this.state.data.map((course)=>
            <div className="col-lg-4" >
              <Paper style={style.paper} zDepth={2} rounded={true}
@@ -103,17 +141,14 @@ const iconStyles = {
                          <h3 style={{fontSize:15}}>HIGH SCORE</h3>
                          {course.highest ? <h3 style={{fontSize:15}}> {course.highest}% </h3> : <h3 style={{fontSize:15}}> Not Started </h3>}
                        </div>
-
                      </div>
                    </div>
                    <div className="col-sm-8">
                      <div>
                        <Paper style={style} zDepth={2}
                          children={<div>
-                         <p>{course.name}</p>
-
+                         <p>{course.name} <span onClick={(e)=>this.handleClick(e, course)} style={{fontSize:16, padding:5}} className='pull-right fa fa-angle-down fa-4x'></span></p>
                        </div>}/>
-
                      </div>
                        <div className="row">
                          <div className="col-sm-10 col-sm-offset-1">
@@ -127,7 +162,18 @@ const iconStyles = {
                            <Link to={"/practice/"+course.key}>
                              <RaisedButton label="Exam" fullWidth={true} style={style.chip}/>
                            </Link>
-
+                           <Popover
+                              open={this.state.open}
+                              anchorEl={this.state.anchorEl}
+                              anchorOrigin={{horizontal: 'left', vertical: 'bottom'}}
+                              targetOrigin={{horizontal: 'left', vertical: 'top'}}
+                              onRequestClose={this.handleRequestClose}
+                              animation={PopoverAnimationVertical}
+                            >
+                              <Menu>
+                                <MenuItem primaryText="Delete" onClick={()=>this.handleDelete()} />
+                              </Menu>
+                            </Popover>
                          </div>
                        </div>
                    </div>
@@ -176,7 +222,10 @@ const iconStyles = {
         <div style={{marginTop:60}}></div>
         <div className='col-sm-6 col-sm-offset-3'>
           <br />  <br />
-          <p className='text-info lead'>No Courses...Search To Add</p>
+          <p className='text-info lead'>No Courses...</p>
+          <Link to={"/courses"}>
+            <RaisedButton label="Find Courses" primary={true} style={style.chip}/>
+          </Link>
         </div>
         </div>
       </MuiThemeProvider>

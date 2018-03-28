@@ -26,6 +26,7 @@ import Notification from './components/notification'
 import Students from './components/students'
 import Student from './components/student'
 import Theory from './components/theory'
+import Search from './components/courses'
 import App from './App';
 import registerServiceWorker from './registerServiceWorker';
 
@@ -55,6 +56,7 @@ ReactDOM.render(
           <Route exact path={"/PracticeSummary"} component={PracticeSummary} />
           <Route path={'/recents'} component={RecentActivities} />
           <Route exact path={'/notifications'} component={Notifications} />
+          <Route exact path={'/courses'} component={Search} />
           <Route exact path={'/notifications/:id'} component={Notification} />
           <Route path={'/theory/:id/:question'} component={Theory} />
        </NavBar>

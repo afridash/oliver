@@ -80,13 +80,35 @@ const iconStyles = {
        data:[],
        explores:[],
        isloading:true,
-       noActivity:false
+       noActivity:false,
+       next:false,
+       current:0,
+       counter:0,
      };
        firebase.auth().onAuthStateChanged(this.handleUser)
        this.usersRef = firebase.database().ref().child('users')
        this.exploreRef = firebase.database().ref().child('explore')
-
+       this.handleScroll = this.handleScroll.bind(this);
+       this.increment = 14
+       this.data = []
+       this.explores = []
    }
+  componentDidMount () {
+    window.addEventListener("scroll", this.handleScroll);
+  }
+  componentWillUnmount  () {
+    window.removeEventListener("scroll", this.handleScroll);
+  }
+  handleScroll() {
+   const windowHeight = "innerHeight" in window ? window.innerHeight : document.documentElement.offsetHeight;
+   const body = document.body;
+   const html = document.documentElement;
+   const docHeight = Math.max(body.scrollHeight, body.offsetHeight, html.clientHeight,  html.scrollHeight, html.offsetHeight);
+   const windowBottom = windowHeight + window.pageYOffset;
+   if (windowBottom >= docHeight) {
+     this.showNextSet()
+   }
+ }
   handleUser = (user) => {
      if (user) {
        this.setState({username:user.displayName, userId:user.uid, photoURL:user.photoURL})
@@ -96,24 +118,38 @@ const iconStyles = {
      }
    }
   async getExplore (collegeId) {
-     await this.exploreRef.child(collegeId).once('value', (explores)=> {
-       this.data = []
+     await this.exploreRef.child(collegeId).limitToFirst(200).once('value', (explores)=> {
+
        if (!explores.exists()) this.setState({
          isloading:false,
          noActivity:true
        })
        //Loop through each question
        explores.forEach ((explore) => {
-           this.data.push({key:explore.key, course:explore.val().course, courseCode:explore.val().courseCode, createdAt:explore.val().createdAt,
+           this.explores.push({key:explore.key, course:explore.val().course, courseCode:explore.val().courseCode, createdAt:explore.val().createdAt,
              message:explore.val().message,profilePicture:explore.val().profilePicture, percentage:explore.val().percentage, uid:explore.val().userId,
              username:explore.val().username, starCount:explore.val().starCount, courseId:explore.val().courseId})
-             this.setState({explores:this.data,isloading:false})
-
        })
      })
-
+     await  this.explores.length > this.increment ? this.setState({next:true}) : this.setState({next:false})
+     this.showNextSet()
    }
   select = (index) => this.setState({selectedIndex: index});
+  async getNextSet () {
+     for (var i=this.state.current; i<=this.state.counter; i++){
+       this.data.push(this.explores[i])
+       this.setState({explores:this.data, isloading:false})
+     }
+     await this.setState({counter:this.state.counter + 1})
+   }
+  async showNextSet () {
+    if (this.state.counter + this.increment > this.explores.length-1){
+      await this.setState({current:this.state.counter, counter:this.explores.length-1, next:false,})
+    }else {
+        await this.setState({current:this.state.counter, counter:this.state.counter+this.increment})
+    }
+    await this.getNextSet()
+  }
   spinner () {
      return (
        <div className='container'>
@@ -198,7 +234,7 @@ const iconStyles = {
       }
     }
     return (
-        this.state.redirect ? <Redirect to='/' push/> : <MuiThemeProvider muiTheme={muiTheme} >
+      <MuiThemeProvider muiTheme={muiTheme} >
       <div className="center">
         <div className="row">
           <br/>

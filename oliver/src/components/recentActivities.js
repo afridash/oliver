@@ -5,6 +5,7 @@ import {Link, Redirect} from 'react-router-dom'
 import CircularProgress from 'material-ui/CircularProgress'
 import Paper from 'material-ui/Paper'
 import IconButton from 'material-ui/IconButton'
+import RaisedButton from 'material-ui/RaisedButton';
 import Divider from 'material-ui/Divider'
 import Delete from 'material-ui/svg-icons/action/delete'
 import {Card, CardHeader, CardTitle, CardText} from 'material-ui/Card'
@@ -15,6 +16,19 @@ const firebase = require('firebase')
 const tooltip = (
   <Tooltip id="tooltip">Delete</Tooltip>
 );
+const style = {
+  chip: {
+    margin: 4,
+    backgroundColor:'#cfecf7',
+  },
+  paper:{
+    textAlign: 'center',
+    margin: 20,
+
+  },
+  height:50,
+  textAlign: 'center',
+};
 
 export default class RecentActivities extends Component {
   constructor (props) {
@@ -24,9 +38,14 @@ export default class RecentActivities extends Component {
       userId:'',
       loading: true,
       noActivities: false,
+      next:false,
+      current:0,
+      counter:0,
     }
     firebase.auth().onAuthStateChanged(this.handleUser)
     this.activitiesRef = firebase.database().ref().child('activities')
+    this.increment = 14
+    this.data = []
   }
   handleUser = (user) => {
     if (user){
@@ -34,18 +53,41 @@ export default class RecentActivities extends Component {
       this.readActivities(user.uid)
     }
   }
-  readActivities (userId) {
+  async readActivities (userId) {
     this.activities = []
-      this.activitiesRef.child(userId).once('value', (snapshots)=>{
+      await this.activitiesRef.child(userId).once('value', (snapshots)=>{
         if(!snapshots.exists())this.setState({noActivities:true, loading:false})
         snapshots.forEach((snapshot)=>{
-          this.activities.push({key:snapshot.key, code:snapshot.val().code, title:snapshot.val().title, total:snapshot.val().total,
-              score:snapshot.val().score, createdAt:snapshot.val().createdAt, Percentage:snapshot.val().percentage})
-      this.setState({activities:this.activities, loading:false})
-
+          this.activities.push({
+            key:snapshot.key,
+            code:snapshot.val().code,
+            title:snapshot.val().title,
+            total:snapshot.val().total,
+            score:snapshot.val().score,
+            createdAt:snapshot.val().createdAt,
+            Percentage:snapshot.val().percentage
+          })
       })
     })
+    await  this.activities.length > this.increment ? this.setState({next:true}) : this.setState({next:false})
+    this.showNextSet()
   }
+  async getNextSet () {
+     for (var i=this.state.current; i<=this.state.counter; i++){
+       this.data.push(this.activities[i])
+       this.setState({activities:this.data, loading:false})
+     }
+     await this.setState({counter:this.state.counter + 1})
+   }
+  async showNextSet () {
+     if (this.state.counter + this.increment > this.activities.length-1){
+       await this.setState({current:this.state.counter, counter:this.activities.length-1, next:false,})
+     }else {
+         await this.setState({current:this.state.counter, counter:this.state.counter+this.increment})
+     }
+
+     await this.getNextSet()
+   }
   showPageContent (){
     return (
       <div className="col-sm-8 col-sm-offset-2">
@@ -74,7 +116,9 @@ export default class RecentActivities extends Component {
             </Panel>
           </Paper>
         )}
-
+        <div className='col-sm-12 text-center'>
+          {this.state.next && <RaisedButton className='text-center' label="Show More" primary={true} style={style.chip} onClick={()=>{this.showNextSet()}}/>}
+        </div>
       </div>
     )
   }
