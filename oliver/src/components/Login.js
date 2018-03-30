@@ -1,6 +1,9 @@
 import React, {Component} from 'react'
 import { Button, FormGroup, FormControl, ControlLabel } from "react-bootstrap"
 import { Link,Redirect, } from 'react-router-dom'
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
+import RaisedButton from 'material-ui/RaisedButton'
+import TextField from 'material-ui/TextField'
 import {Firebase} from '../auth/firebase'
 const firebase =  require('firebase')
 
@@ -25,21 +28,14 @@ class Login extends Component {
 
   async handleSubmit (event) {
     event.preventDefault()
-    var loggedInError = false
-    await firebase.auth().signInWithEmailAndPassword(this.state.email, this.state.password).catch(function(error) {
+    await firebase.auth().signInWithEmailAndPassword(this.state.email, this.state.password).then((user)=> {
+        this.setState({redirect:true})
+    }).catch(function(error) {
     var errorCode = error.code;
     var errorMessage = error.message;
-    console.log(errorMessage)
-    alert(errorMessage)
-    loggedInError=true
+    this.setState({error:errorMessage})
   })
-    if(!loggedInError){
-      this.setState({redirect:true})
-    }else{
-      this.setState({error:"Password and Email Do Not Match"})
-    }
   }
-
   handlePasswordChange (event){
     this.setState({password: event.target.value})
   }
@@ -50,48 +46,39 @@ class Login extends Component {
 
   render () {
   return (
-    this.state.redirect ? <Redirect to='/students' push/> : <div className='center'>
+    this.state.redirect ? <Redirect to='/AppHome' push/> : <div className='center'>
+          <MuiThemeProvider>
             <div>
               <br/>
               <br/>
               <br/>
               <br/>
               <br/>
-
               <div className="row" >
-                <form>
-                  <div className="col-md-4 col-md-offset-4" style={styles.box}>
-                    <h3 className='text-center'>Login</h3>
-                        <br/>
-                <FormGroup bsSize="large">
-                  <ControlLabel>Email Address</ControlLabel>
-                  <FormControl
-                    className='form-control'
-                    placeholder="Please Enter Your Email"
-                    onChange = {this.handleEmailChange.bind(this)}
-                  />
-                </FormGroup>
-
-                <br/>
-              <FormGroup bsSize="large">
-                <ControlLabel>Password</ControlLabel>
-                <FormControl
-                  className='form-control'
-                  type="password"
-                  placeholder="Please Enter Your Password"
-                  onChange = {this.handlePasswordChange.bind(this)}
-                />
-              </FormGroup>
-
-                <p style={{color:'red'}}>{this.state.error}</p>
-                <FormGroup>
-                  <Button type="submit" bsStyle="primary" bsSize="large" style={styles.button} onClick={(event) =>
-                  this.handleSubmit(event)} >Login</Button>
-                </FormGroup>
-                  </div>
-                </form>
+                <div className="col-md-4 col-md-offset-4" style={styles.box}>
+                  <h3 className='text-center'>Login</h3>
+                  <form>
+              <TextField
+                hintText="Enter Your Email"
+                floatingLabelText="Email"
+                onChange = {this.handleEmailChange.bind(this)}
+              />
+              <br/>
+              <TextField
+                type="password"
+                hintText="Enter Your Password"
+                floatingLabelText="Password"
+                onChange = {this.handlePasswordChange.bind(this)}
+              />
+              <br/>
+              <p style={{color:'red'}}>{this.state.error}</p>
+              <RaisedButton type="submit" label="Submit" primary={true} style={styles.button} onClick={(event) =>
+              this.handleSubmit(event)}/>
+              </form>
+                </div>
             </div>
             </div>
+          </MuiThemeProvider>
         </div>
 
   );

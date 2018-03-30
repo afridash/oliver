@@ -99,6 +99,20 @@ Logged.muiName = 'IconMenu';
       });
         this.setState({redirect:true})
     }
+   setSearchText (text) {
+    if (this.props.searchPage) {
+      this.props.onTextChange(text)
+    }else{
+      this.setState({searchString:text})
+    }
+   }
+   showSearch () {
+     if (!this.props.searchPage) {
+       this.setState({showSearchPage:true})
+     }else{
+       this.props.onSearch()
+     }
+   }
    render() {
      return (
       this.state.redirect ? <Redirect to='/' push/> :
@@ -108,7 +122,7 @@ Logged.muiName = 'IconMenu';
                style={{position:'fixed'}}
                iconElementLeft={
                  <div className='col-sm-12' >
-                   <Link className='col-sm-4' to='/' >
+                   <Link className='col-sm-4' to='/AppHome' >
                    <Avatar
                      src={require("../images/oliverLogo.png")}
                      size={45}
@@ -117,11 +131,12 @@ Logged.muiName = 'IconMenu';
                  </Link>
                  <div className='hidden-xs col-sm-8'>
                    <SearchBar
-                     onChange={() => console.log('onChange')}
-                     onRequestSearch={() => console.log('onRequestSearch')}
+                     onChange={(text) => this.setSearchText(text)}
+                     onRequestSearch={() => this.showSearch()}
                      style={{marginTop:'5%'}}
                      placeholder='Search users'
                    />
+                   {this.state.showSearchPage && <Redirect to={'/search/'+this.state.searchString} push />}
                  </div>
                  </div>
                  }
@@ -130,15 +145,13 @@ Logged.muiName = 'IconMenu';
                    <Link to={"/courses"}>
                     <FlatButton label="Courses" style={{color:'white'}}/>
                   </Link>
-                  <Link to={"/recents"}>
-                    <FlatButton label="Activities" style={{color:'white'}}/>
+                  <Link to={"/explore"}>
+                    <FlatButton label="social" style={{color:'white'}}/>
                   </Link>
                   <Link to={"/explore"}>
                     <FlatButton label="Explore" style={{color:'white'}}/>
                   </Link>
-                  <Link to={"/bookmarks"}>
-                    <FlatButton label="Bookmarks" style={{color:'white'}}/>
-                  </Link>
+
                   <Link onClick={()=>this.loadNotifications()} to={"/notifications"}>
                     <Badge
                       badgeContent={this.state.badges}
@@ -165,10 +178,15 @@ Logged.muiName = 'IconMenu';
                         <MenuItem primaryText={this.state.username} leftIcon={
                           <Avatar
                             src={this.state.photoURL}
+                            size={35}
                           />} />
                           <Divider />
-                          <MenuItem value="1" primaryText="Share" />
-                          <MenuItem value="2" primaryText="Help" />
+                            <Link style={{textDecoration:'none', color:'black'}} to={"/bookmarks"}>
+                            <MenuItem value="1" primaryText='Bookmarks' />
+                            </Link>
+                            <Link style={{textDecoration:'none', color:'black', padding:10}} to={"/recents"}>
+                            <MenuItem value="2" primaryText='Recent Activities' />
+                            </Link>
                           <MenuItem value="3" primaryText="Sign out" onClick={(event) => this.handleLogout(event)}/>
                         </IconMenu>
                         <IconMenu
@@ -177,11 +195,9 @@ Logged.muiName = 'IconMenu';
                           targetOrigin={{horizontal: 'right', vertical: 'top'}}
                           iconStyle={{color:'white'}}
                           >
-                            <MenuItem value="1" primaryText="Afridash Oliver" href='https://oliver.afridash.com' target='_blank'/>
-                            <MenuItem value="2" primaryText="About" href='http://www.afridash.com' target='_blank'/>
-                            <MenuItem value="3" primaryText="Contact" />
-                            <MenuItem value="4" primaryText="Privacy" href={'https://oliver.afridash.com/policy'} target='_blank'/>
-                            <MenuItem value="4" primaryText="Copyright" />
+                            <Link to='/' style={{textDecoration:'none'}}><MenuItem value="2" primaryText="About"  /></Link>
+                            <Link to='/policy' style={{textDecoration:'none'}}><MenuItem value="4" primaryText="Privacy" /></Link>
+                            <MenuItem value="4" primaryText="Copyright @ Afridash Ltd" />
                           </IconMenu>
                         </div>}
                       />

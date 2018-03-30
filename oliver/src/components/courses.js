@@ -51,7 +51,7 @@ export default class Search extends Component {
   handleUser = async (user) => {
     if (user) {
       this.setState({name:user.displayName, userId:user.uid})
-      var collegeId = await localStorage.getItem('userId')
+      var collegeId = await localStorage.getItem('collegeId')
       await this.setState({collegeId})
       this.retrieveCoursesOnline()
     }

@@ -71,8 +71,6 @@ class Notifications extends Component {
   showExploreVote (notification, index, message) {
     return (
       <div className="col-sm-8 col-sm-offset-2">
-        <br/>
-        <br/>
           <Paper zDepth={3}>
             <Panel>
               <div className="card">
@@ -111,8 +109,6 @@ class Notifications extends Component {
   showTheoryVote (notification, index, message) {
     return (
       <div className="col-sm-8 col-sm-offset-2">
-        <br/>
-        <br/>
           <Paper zDepth={3}>
             <Panel>
               <div className="card">
@@ -168,9 +164,12 @@ class Notifications extends Component {
   }
   noNotifications () {
     return (
-      <div className="col-sm-4 col-sm-offset-4">
-        <p style={{color:'red', fontSize:'20'}}>You Have No Notification!</p>
-      </div>
+      <div className='row text-center'>
+        <div className='col-sm-6 col-sm-offset-3'>
+          <br />  <br />
+          <p className='text-info lead'>No Notifications</p>
+        </div>
+        </div>
     )
   }
   spinner () {
@@ -196,13 +195,13 @@ class Notifications extends Component {
     return(
       <div className="center">
         <div className="row">
-          <div style={{marginTop:60}}></div>
+          <div style={{marginTop:100}}></div>
           {
             (()=>{
               if (this.state.loading){
                 return this.spinner()
               }
-              else if (this.state.noActivities) {
+              else if (this.state.noNotifications) {
                 return this.noNotifications()
               }
               else {

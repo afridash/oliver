@@ -43,7 +43,6 @@ const iconStyles = {
   marginRight: 24,
 };
 
-
  class AppHome extends Component {
    constructor(props) {
      super(props);
