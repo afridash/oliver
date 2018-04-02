@@ -5,6 +5,7 @@ import IconMenu from 'material-ui/IconMenu';
 import MenuItem from 'material-ui/MenuItem';
 import FlatButton from 'material-ui/FlatButton';
 import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
+import Menu from 'material-ui/svg-icons/navigation/menu';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import FontIcon from 'material-ui/FontIcon';
@@ -142,64 +143,123 @@ Logged.muiName = 'IconMenu';
                  }
                iconElementRight={
                  <div className='col-sm-12'>
-                   <Link to={"/courses"}>
-                    <FlatButton label="Courses" style={{color:'white'}}/>
-                  </Link>
-                  <Link to={"/explore"}>
-                    <FlatButton label="social" style={{color:'white'}}/>
-                  </Link>
-                  <Link to={"/explore"}>
-                    <FlatButton label="Explore" style={{color:'white'}}/>
-                  </Link>
+                   <div className="hidden-lg hidden-md ">
+                     <IconMenu
+                       iconButtonElement={
+                         <Avatar
+                           src={this.state.photoURL}
+                           size={35}
+                           style={{marginBottom:10,cursor:'pointer'}}
+                           label='Jane Doe'
+                         />}
+                         anchorOrigin={{horizontal: 'left', vertical: 'bottom'}}
+                         targetOrigin={{horizontal: 'left', vertical: 'top'}}
+                         open={this.state.openMenu}
+                         onRequestChange={this.handleOnRequestChange}
+                         >
+                           <Divider />
+                           <MenuItem primaryText={this.state.username} leftIcon={
+                             <Avatar
+                               src={this.state.photoURL}
+                               size={35}
+                             />} />
+                             <Divider />
+                               <Link style={{textDecoration:'none', color:'black'}} to={"/bookmarks"}>
+                               <MenuItem value="1" primaryText='Bookmarks' />
+                               </Link>
+                               <Link style={{textDecoration:'none', color:'black', padding:10}} to={"/recents"}>
+                               <MenuItem value="2" primaryText='Recent Activities' />
+                               </Link>
+                             <MenuItem value="3" primaryText="Sign out" onClick={(event) => this.handleLogout(event)}/>
+                           </IconMenu>
+                           <IconMenu
+                             iconButtonElement={<IconButton><MoreVertIcon /></IconButton>}
+                             anchorOrigin={{horizontal: 'right', vertical: 'bottom'}}
+                             targetOrigin={{horizontal: 'right', vertical: 'top'}}
+                             iconStyle={{color:'white'}}
+                             >
+                               <Link to='/' style={{textDecoration:'none'}}><MenuItem value="2" primaryText="About"  /></Link>
+                               <Link to='/policy' style={{textDecoration:'none'}}><MenuItem value="4" primaryText="Privacy" /></Link>
+                               <MenuItem value="4" primaryText="Copyright @ Afridash Ltd" />
+                             </IconMenu>
+                             <IconMenu
+                               iconButtonElement={<IconButton><Menu /></IconButton>}
+                               anchorOrigin={{horizontal: 'right', vertical: 'bottom'}}
+                               targetOrigin={{horizontal: 'right', vertical: 'top'}}
+                               iconStyle={{color:'white'}}
+                               >
+                                   <SearchBar
+                                     onChange={(text) => this.setSearchText(text)}
+                                     onRequestSearch={() => this.showSearch()}
+                                     style={{marginTop:'5%'}}
+                                     placeholder='Search users'
+                                   />
+                                   {this.state.showSearchPage && <Redirect to={'/search/'+this.state.searchString} push />}
+                                 <Link to='/courses' style={{textDecoration:'none'}}><MenuItem value="2" primaryText="Courses"  /></Link>
+                                 <Link to='/explore' style={{textDecoration:'none'}}><MenuItem value="4" primaryText="Explore" /></Link>
+                                 <Link to='/social' style={{textDecoration:'none'}}><MenuItem value="4" primaryText="Social" /></Link>
+                               </IconMenu>
+                   </div>
+                   <div className='hidden-sm hidden-xs'>
+                     <Link to={"/courses"}>
+                      <FlatButton label="Courses" style={{color:'white'}}/>
+                    </Link>
+                    <Link to={"/explore"}>
+                      <FlatButton label="social" style={{color:'white'}}/>
+                    </Link>
+                    <Link to={"/explore"}>
+                      <FlatButton label="Explore" style={{color:'white'}}/>
+                    </Link>
 
-                  <Link onClick={()=>this.loadNotifications()} to={"/notifications"}>
-                    <Badge
-                      badgeContent={this.state.badges}
-                      badgeStyle={{color:'white', backgroundColor: this.state.badges ? 'red' : 'transparent', top:10, left:25, }}
-                      style={{cursor:'pointer'}}
-                      >
-                        <NotificationsIcon  style={{color:'white'}} />
-                      </Badge>
-                  </Link>
-                  <IconMenu
-                    iconButtonElement={
-                      <Avatar
-                        src={this.state.photoURL}
-                        size={35}
-                        style={{marginBottom:10,cursor:'pointer'}}
-                        label='Jane Doe'
-                      />}
-                      anchorOrigin={{horizontal: 'left', vertical: 'bottom'}}
-                      targetOrigin={{horizontal: 'left', vertical: 'top'}}
-                      open={this.state.openMenu}
-                      onRequestChange={this.handleOnRequestChange}
-                      >
-                        <Divider />
-                        <MenuItem primaryText={this.state.username} leftIcon={
-                          <Avatar
-                            src={this.state.photoURL}
-                            size={35}
-                          />} />
+                    <Link onClick={()=>this.loadNotifications()} to={"/notifications"}>
+                      <Badge
+                        badgeContent={this.state.badges}
+                        badgeStyle={{color:'white', backgroundColor: this.state.badges ? 'red' : 'transparent', top:10, left:25, }}
+                        style={{cursor:'pointer'}}
+                        >
+                          <NotificationsIcon  style={{color:'white'}} />
+                        </Badge>
+                    </Link>
+                    <IconMenu
+                      iconButtonElement={
+                        <Avatar
+                          src={this.state.photoURL}
+                          size={35}
+                          style={{marginBottom:10,cursor:'pointer'}}
+                          label='Jane Doe'
+                        />}
+                        anchorOrigin={{horizontal: 'left', vertical: 'bottom'}}
+                        targetOrigin={{horizontal: 'left', vertical: 'top'}}
+                        open={this.state.openMenu}
+                        onRequestChange={this.handleOnRequestChange}
+                        >
                           <Divider />
-                            <Link style={{textDecoration:'none', color:'black'}} to={"/bookmarks"}>
-                            <MenuItem value="1" primaryText='Bookmarks' />
-                            </Link>
-                            <Link style={{textDecoration:'none', color:'black', padding:10}} to={"/recents"}>
-                            <MenuItem value="2" primaryText='Recent Activities' />
-                            </Link>
-                          <MenuItem value="3" primaryText="Sign out" onClick={(event) => this.handleLogout(event)}/>
-                        </IconMenu>
-                        <IconMenu
-                          iconButtonElement={<IconButton><MoreVertIcon /></IconButton>}
-                          anchorOrigin={{horizontal: 'right', vertical: 'bottom'}}
-                          targetOrigin={{horizontal: 'right', vertical: 'top'}}
-                          iconStyle={{color:'white'}}
-                          >
-                            <Link to='/' style={{textDecoration:'none'}}><MenuItem value="2" primaryText="About"  /></Link>
-                            <Link to='/policy' style={{textDecoration:'none'}}><MenuItem value="4" primaryText="Privacy" /></Link>
-                            <MenuItem value="4" primaryText="Copyright @ Afridash Ltd" />
+                          <MenuItem primaryText={this.state.username} leftIcon={
+                            <Avatar
+                              src={this.state.photoURL}
+                              size={35}
+                            />} />
+                            <Divider />
+                              <Link style={{textDecoration:'none', color:'black'}} to={"/bookmarks"}>
+                              <MenuItem value="1" primaryText='Bookmarks' />
+                              </Link>
+                              <Link style={{textDecoration:'none', color:'black', padding:10}} to={"/recents"}>
+                              <MenuItem value="2" primaryText='Recent Activities' />
+                              </Link>
+                            <MenuItem value="3" primaryText="Sign out" onClick={(event) => this.handleLogout(event)}/>
                           </IconMenu>
-                        </div>}
+                          <IconMenu
+                            iconButtonElement={<IconButton><MoreVertIcon /></IconButton>}
+                            anchorOrigin={{horizontal: 'right', vertical: 'bottom'}}
+                            targetOrigin={{horizontal: 'right', vertical: 'top'}}
+                            iconStyle={{color:'white'}}
+                            >
+                              <Link to='/' style={{textDecoration:'none'}}><MenuItem value="2" primaryText="About"  /></Link>
+                              <Link to='/policy' style={{textDecoration:'none'}}><MenuItem value="4" primaryText="Privacy" /></Link>
+                              <MenuItem value="4" primaryText="Copyright @ Afridash Ltd" />
+                            </IconMenu>
+                   </div>
+                  </div>}
                       />
                       {this.props.children}
                     </div>

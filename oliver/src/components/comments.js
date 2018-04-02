@@ -6,7 +6,11 @@ import Paper from 'material-ui/Paper'
 import Avatar from 'material-ui/Avatar'
 import IconButton from 'material-ui/IconButton'
 import Delete from 'material-ui/svg-icons/action/delete'
+import Arrow from 'material-ui/svg-icons/navigation/expand-more'
 import {Card, CardHeader, CardTitle, CardText} from 'material-ui/Card'
+import Popover, {PopoverAnimationVertical} from 'material-ui/Popover'
+import Menu from 'material-ui/Menu'
+import MenuItem from 'material-ui/MenuItem'
 import {Panel, OverlayTrigger, Tooltip} from 'react-bootstrap'
 import Firebase from '../auth/firebase'
 const firebase = require('firebase')
@@ -30,6 +34,17 @@ class Comments extends Component {
       [name]: event.target.value,
     })
   }
+  handleClick = (event) => {
+    this.setState({
+      open: true,
+      anchorEl: event.currentTarget,
+    })
+  }
+  handleRequestClose = () => {
+   this.setState({
+     open: false,
+   })
+  }
   render () {
     const { classes } = this.props;
     return (
@@ -46,6 +61,20 @@ class Comments extends Component {
                     <div className="row">
                       <div className="col-sm-10 col-sm-offset-1">
                           <div>
+                              <span className='pull-right'><IconButton><Arrow onClick={this.handleClick} /></IconButton></span>
+                              <Popover
+                                 open={this.state.open}
+                                 anchorEl={this.state.anchorEl}
+                                 anchorOrigin={{horizontal: 'left', vertical: 'bottom'}}
+                                 targetOrigin={{horizontal: 'left', vertical: 'top'}}
+                                 onRequestClose={this.handleRequestClose}
+                                 animation={PopoverAnimationVertical}
+                               >
+                                 <Menu>
+                                   <MenuItem primaryText="Delete" onClick={()=>this.handleDelete()} />
+                                   <MenuItem primaryText="Follow" onClick={()=>this.handleDelete()} />
+                                 </Menu>
+                               </Popover>
                             {this.props.user ?
                               <div>
                                 <Avatar
@@ -58,7 +87,6 @@ class Comments extends Component {
                           }
                             {this.props.item['post']}
                           </div>
-                          <br/>
                           <br/>
                           {!this.props.noCreatedAt && <span className="pull-right">{timestamp.timeSince(this.props.item['createdAt'])}</span>}
                       </div>

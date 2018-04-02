@@ -33,6 +33,7 @@ export default class Search extends Component {
       userId:'',
       user:'',
       searchText:this.props.match.params.id,
+      loading:true,
     }
     this.users = []
     this.tempUsers = []
@@ -54,20 +55,23 @@ export default class Search extends Component {
   async findUsers () {
     if (this.state.searchText) {
       await this.usersRef.orderByChild('displayName').startAt(this.state.searchText).endAt(this.state.searchText+'\uf8ff').once('value', (users)=>{
+        if (!users.exists()) var foundByDisplayName = false
         users.forEach((user)=> {
           this.listUser(user)
         })
+        this.usersRef.orderByChild('username').startAt(this.state.searchText).endAt(this.state.searchText+'\uf8ff').once('value', (usernames)=>{
+          if (!usernames.exists()) var foundByUsername = false
+          usernames.forEach((user)=> {
+            this.listUser(user)
+          })
+          this.usersRef.orderByChild('lastName').startAt(this.state.searchText).endAt(this.state.searchText+'\uf8ff').once('value', (lastNames)=>{
+            if (!users.exists() && !foundByUsername && !foundByDisplayName) this.setState({loading:false, noResult:true})
+            lastNames.forEach((user)=> {
+              this.listUser(user)
+            })
+          })
+        })
       })
-    await this.usersRef.orderByChild('username').startAt(this.state.searchText).endAt(this.state.searchText+'\uf8ff').once('value', (users)=>{
-      users.forEach((user)=> {
-        this.listUser(user)
-      })
-    })
-    await this.usersRef.orderByChild('lastName').startAt(this.state.searchText).endAt(this.state.searchText+'\uf8ff').once('value', (users)=>{
-      users.forEach((user)=> {
-        this.listUser(user)
-      })
-    })
     }else{
       var collegeId = await localStorage.getItem('collegeId')
       this.usersRef.orderByChild('collegeId').equalTo(collegeId).limitToFirst(50).once('value', (users)=> {
@@ -114,57 +118,90 @@ export default class Search extends Component {
           stars:0
         })
       }
-      this.setState({users:this.users})
+      this.setState({users:this.users, loading:false, noResult:false})
     })
   }
-  pageContent () {
+  spinner () {
+     return (
+       <div className='row text-center'>
+           <br />  <br />
+           <CircularProgress size={60} thickness={5} />
+       </div>
+     )
+   }
+  noActivity () {
+     return (
+       <div className='row text-center'>
+         <div className='col-sm-6 col-sm-offset-3'>
+           <br />  <br />
+           <p className='text-info lead'>No Users Matching <i>{this.state.searchText}</i></p>
+         </div>
+         </div>
+     )
+   }
+   //Add Course to firebase db only using their course name and code.
+  showPageContent () {
+    return this.state.users.map((user)=>
+      <Paper zDepth={3}>
+        <Panel>
+          <div className="card">
+            <div className="card card-body">
+              <div className="row">
+                <div className="col-sm-12">
+                    <div className='row'>
+                      <div className='col-sm-2 col-xs-12 text-center'>
+                        <img src={user.profilePicture} className='img-thumbnail img-responsive' style={{width:100, height:100}} />
+                        <p>
+                          {user.points === 0 && <StarHalf style={{width:20, height:20, color:blue300}} />}
+                          {(()=>{
+                              for(var i=0; i<user.stars; i++) return <Star style={{width:20, height:20, color:blue300}} />
+                          })()
+                          }
+                        </p>
+                      </div>
+                      <div className='col-sm-10 col-xs-12' style={{borderLeft:'1px solid red'}}>
+                        <span className='pull-right'>
+                          <RaisedButton labelStyle={{color:'white'}}
+                            buttonStyle={{backgroundColor:'#2d6ca1', borderColor:'white'}}
+                            label="Follow" style={styles.button}
+                            labelPosition="before"
+                            icon={<Person style={{width:20, height:20}} />} />
+                          </span>
+                        <p style={{fontSize:16, fontWeight:'600'}}>{user.displayName}</p>
+                          <p style={{lineHeight:0.1, fontStyle:'italic'}}> @{user.username}</p>
+                          <p>{user.college}</p>
+                          <hr />
+                          <p><span  style={{fontWeight:'600'}}>Sessions Completed: {user.completed}</span> &nbsp;&nbsp;&nbsp;<span  style={{fontWeight:'600'}}>Points: {user.points}</span></p>
+                      </div>
+                    </div>
+                </div>
+              </div>
+              <div>
+              </div>
+            </div>
+          </div>
+        </Panel>
+      </Paper>
+    )
+  }
+  loadPageContent () {
     return (
       <div className="col-sm-8 col-sm-offset-2">
         <br/>
         <div style={{marginTop:60}}></div>
-        {this.state.users.map((user)=>
-          <Paper zDepth={3}>
-            <Panel>
-              <div className="card">
-                <div className="card card-body">
-                  <div className="row">
-                    <div className="col-sm-12">
-                        <div className='row'>
-                          <div className='col-sm-2 col-xs-12 text-center'>
-                            <img src={user.profilePicture} className='img-thumbnail img-responsive' style={{width:100, height:100}} />
-                            <p>
-                              {user.points === 0 && <StarHalf style={{width:20, height:20, color:blue300}} />}
-                              {(()=>{
-                                  for(var i=0; i<user.stars; i++) return <Star style={{width:20, height:20, color:blue300}} />
-                              })()
-                              }
-                            </p>
-                          </div>
-                          <div className='col-sm-10 col-xs-12' style={{borderLeft:'1px solid red'}}>
-                            <span className='pull-right'>
-                              <RaisedButton labelStyle={{color:'white'}}
-                                buttonStyle={{backgroundColor:'#2d6ca1', borderColor:'white'}}
-                                label="Follow" style={styles.button}
-                                labelPosition="before"
-                                icon={<Person style={{width:20, height:20}} />} />
-                              </span>
-                            <p style={{fontSize:16, fontWeight:'600'}}>{user.displayName}</p>
-                              <p style={{lineHeight:0.1, fontStyle:'italic'}}> @{user.username}</p>
-                              <p>{user.college}</p>
-                              <hr />
-                              <p><span  style={{fontWeight:'600'}}>Sessions Completed: {user.completed}</span> &nbsp;&nbsp;&nbsp;<span  style={{fontWeight:'600'}}>Points: {user.points}</span></p>
-                          </div>
-                        </div>
-                    </div>
-                  </div>
-                  <div>
-                  </div>
-                </div>
-              </div>
-            </Panel>
-          </Paper>
-        )}
-
+        {
+          (()=>{
+          if (this.state.loading){
+            return this.spinner()
+          }
+          else if (this.state.noResult) {
+            return this.noActivity()
+          }
+          else {
+            return this.showPageContent()
+          }
+        })()
+      }
       </div>
     )
   }
@@ -176,11 +213,12 @@ export default class Search extends Component {
   onSearch () {
     this.tempUsers = this.users
     this.users = []
+    this.setState({loading:true})
     this.findUsers()
   }
   render () {
     return (
-      <NavBar onSearch={this.onSearch.bind(this)} searchPage={true} onTextChange={this.onTextChange.bind(this)} children={this.pageContent()} />
+      <NavBar onSearch={this.onSearch.bind(this)} searchPage={true} onTextChange={this.onTextChange.bind(this)} children={this.loadPageContent()} />
       )
     }
   }

@@ -97,11 +97,9 @@ export default class Search extends Component {
   }
   spinner () {
      return (
-       <div className='container'>
-         <div className='col-md-2 col-md-offset-5'>
+       <div className='row text-center'>
            <br />  <br />
            <CircularProgress size={60} thickness={5} />
-         </div>
        </div>
      )
    }

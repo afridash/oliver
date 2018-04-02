@@ -102,6 +102,7 @@ Logged.muiName = 'IconMenu';
            this.questions.push({key:question.key,
              answer:question.val().answer,
              question:question.val().question,
+             comments:question.hasChild('comments') ? question.val().comments : 0,
              selected:'',
              id:id++})
        })
@@ -178,6 +179,7 @@ Logged.muiName = 'IconMenu';
                            <div className='panel panel-default'  style={{paddingTop:10, margin:3, background:this.state.divColor, cursor:'pointer'}} onMouseEnter={this.handleFocus}  onMouseLeave={this.handleFocus2}>
                              <p style={{fontSize:20}}> &nbsp;&nbsp;{question.answer}</p>
                            </div>
+                           <p style={{fontSize:12, fontWeight:'600'}}>Replies: {question.comments}</p>
                          </div>
                        </div>
                      </div>

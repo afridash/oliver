@@ -30,6 +30,7 @@ import Chat from 'material-ui/svg-icons/communication/chat-bubble-outline';
 import {Firebase} from '../auth/firebase'
 import {Redirect, Link} from 'react-router-dom'
 import CircularProgress from 'material-ui/CircularProgress';
+import * as Notifications from '../auth/notifications'
 import * as timestamp from '../auth/timestamp'
 import {
   blue300,
@@ -60,7 +61,6 @@ const style = {
     height:50,
     textAlign: 'center',
 };
-
 const iconStyles = {
   marginRight: 24,
 }
@@ -88,8 +88,9 @@ const iconStyles = {
        firebase.auth().onAuthStateChanged(this.handleUser)
        this.usersRef = firebase.database().ref().child('users')
        this.exploreRef = firebase.database().ref().child('explore')
+       this.likesRef = firebase.database().ref('explore_likes')
        this.handleScroll = this.handleScroll.bind(this);
-       this.increment = 14
+       this.increment = 5
        this.data = []
        this.explores = []
    }
@@ -109,16 +110,43 @@ const iconStyles = {
      this.showNextSet()
    }
  }
+ onRowPress(key, post){
+   if (post.postLike) {
+     this.unlikePost(post.key)
+     post.starCount = post.starCount - 1
+   } else {
+     this.likePost(post.key, post)
+     post.starCount = post.starCount + 1
+   }
+   post.postLike = !post.postLike
+   var clone = this.state.explores
+   clone[key] = post
+   this.setState({explores:clone})
+ }
+ likePost (postId, post) {
+  this.likesRef.child(postId).child(this.state.userId).set(true)
+    this.exploreRef.child(this.state.collegeId).child(postId).child('starCount').once('value', (likesCount)=>{
+     likesCount.ref.set(likesCount.val() + 1)
+   })
+   Notifications.sendNotification(post.userId, 'explore_like', postId, post.message + " " + post.percentage + "% in "+ post.title + "("+post.code+")", post.username)
+ }
+ unlikePost (postId) {
+   this.likesRef.child(postId).child(this.state.userId).remove()
+   this.exploreRef.child(this.state.collegeId).child(postId).child('starCount').once('value', (likesCount)=>{
+      likesCount.ref.set(likesCount.val() - 1)
+   })
+ }
   handleUser = (user) => {
      if (user) {
        this.setState({username:user.displayName, userId:user.uid, photoURL:user.photoURL})
        this.usersRef.child(user.uid).child('collegeId').once('value', (college)=>{
+         this.setState({collegeId:college.val()})
          this.getExplore (college.val())
        })
      }
    }
   async getExplore (collegeId) {
-     await this.exploreRef.child(collegeId).limitToFirst(200).once('value', (explores)=> {
+     await this.exploreRef.child(collegeId).limitToFirst(200).once('value', async (explores)=> {
 
        if (!explores.exists()) this.setState({
          isloading:false,
@@ -126,15 +154,33 @@ const iconStyles = {
        })
        //Loop through each question
        explores.forEach ((explore) => {
-           this.explores.push({key:explore.key, course:explore.val().course, courseCode:explore.val().courseCode, createdAt:explore.val().createdAt,
-             message:explore.val().message,profilePicture:explore.val().profilePicture, percentage:explore.val().percentage, uid:explore.val().userId,
-             username:explore.val().username, starCount:explore.val().starCount, courseId:explore.val().courseId})
+         this.likesRef.child(explore.key).child(this.state.userId).once('value', (likeVal)=>{
+           if (likeVal.exists()) {
+             this.explores.push({key:explore.key, course:explore.val().course, courseCode:explore.val().courseCode, createdAt:explore.val().createdAt,
+               message:explore.val().message,profilePicture:explore.val().profilePicture, percentage:explore.val().percentage, userId:explore.val().userId,
+               username:explore.val().username, starCount:explore.val().starCount, courseId:explore.val().courseId, postLike:true, comments:explore.hasChild('comments') ? explore.val().comments : 0})
+           }else {
+             this.explores.push({key:explore.key, course:explore.val().course, courseCode:explore.val().courseCode, createdAt:explore.val().createdAt,
+               message:explore.val().message,profilePicture:explore.val().profilePicture, percentage:explore.val().percentage, userId:explore.val().userId,
+               username:explore.val().username, starCount:explore.val().starCount, courseId:explore.val().courseId, postLike:false, comments:explore.hasChild('comments') ? explore.val().comments : 0})
+           }
+           this.explores.length > this.increment ? this.setState({next:true}) : this.setState({next:false})
+           this.showFirstSet(this.explores.length, this.explores)
+         })
        })
      })
-     await  this.explores.length > this.increment ? this.setState({next:true}) : this.setState({next:false})
-     this.showNextSet()
+
    }
   select = (index) => this.setState({selectedIndex: index});
+  showFirstSet (length, el) {
+    if (length < this.increment) {
+      var data= []
+      for (var i=0; i<length; i++){
+        data.push(this.explores[i])
+        this.setState({explores:data, isloading:false})
+      }
+    }
+  }
   async getNextSet () {
      for (var i=this.state.current; i<=this.state.counter; i++){
        this.data.push(this.explores[i])
@@ -152,11 +198,9 @@ const iconStyles = {
   }
   spinner () {
      return (
-       <div className='container'>
-         <div className='col-md-2 col-md-offset-5'>
+       <div className='row text-center'>
            <br />  <br />
            <CircularProgress size={60} thickness={5} />
-         </div>
        </div>
      )
    }
@@ -176,45 +220,48 @@ const iconStyles = {
   showPageContent () {
      return (
      <div className="row">
-       {this.state.explores.map((explore)=>
+       {this.state.explores.map((explore, key)=>
          <div className="col-md-8 col-md-offset-2 col-sm-8 col-sm-offset-2" >
            <Paper style={style.paper} zDepth={2} rounded={true}
              children={<div>
                <div className="row">
                  <br/>
-                 <div className="col-md-6">
+                 <div className="col-sm-3">
                    <Avatar
                      src={explore.profilePicture}
                      size={80}
                    />
-                   <h2 style={{fontSize:25}}>{explore.username}</h2>
-
+                   <h2 style={{fontSize:20}}>{explore.username}</h2>
                  </div>
-                 <div >
-
-                     <h3 style={{fontSize:40, color:blue300}}> {explore.percentage}% </h3>
+                 <div className='col-sm-9' >
+                   <div className="col-sm-12">
+                   <div className="well">
+                     <p style={{fontSize:14}}> {explore.message}...I got {explore.percentage} % in {explore.course} {explore.courseCode} </p>
                    </div>
-
-                     <div className="row">
+                   <div className='col-sm-12'>
+                     <div className='col-sm-3'>
+                        <Fav onClick={()=>this.onRowPress(key, explore)} style={{cursor:'pointer', color: explore.postLike ? 'red' : 'black'}} ></Fav>
+                        {explore.starCount !== 0 && <span>{explore.starCount}</span>}
+                     </div>
+                     <div className='col-sm-3'>
+                       <Link style={{textDecoration:'none'}} to={'/explore/'+explore.key}>
+                         <Chat style={{cursor:'pointer'}}></Chat>
+                         {explore.comments !== 0 && <span>{explore.comments}</span>}
+                       </Link>
+                     </div>
+                     <div className='col-sm-6'>
+                       <Link style={{textDecoration:'none'}} to={'/practice/'+ explore.courseId}>
+                         <p>START</p>
+                       </Link>
+                     </div>
+                   </div>
+                   </div>
+                   </div>
+                     <div className="col-sm-12">
                          <div className="col-sm-10 col-sm-offset-1">
-                           <div className="well">
-                             <p style={{fontSize:20}}> {explore.message}...I got {explore.percentage} % in {explore.course} {explore.courseCode} </p>
-                           </div>
-                         <div className="col-sm-8 col-sm-offset-2"><br />
-                         <Link to={'/practice/'+ explore.courseId}>
-                           <RaisedButton label="Start" fullWidth={true} style={style.chip}/>
-                         </Link>
-                         <br /> <br />
-                         <Fav style={{cursor:'pointer', position:'absolute',left:0}}></Fav>
-                         <Link to={'/explore/'+explore.key}>
-                           <Chat  style={{cursor:'pointer', position:'absolute',right:0}}></Chat>
-                         </Link>
-
-                           <br />    <br />
+                           <br/><br/>
                            {timestamp.timeSince(explore.createdAt)}
                          </div>
-                           </div>
-
                      </div>
 
                </div>

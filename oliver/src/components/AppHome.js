@@ -42,6 +42,15 @@ const style = {
 const iconStyles = {
   marginRight: 24,
 };
+const muiTheme = getMuiTheme({
+   palette: {
+     textColor: '#424242',
+   },
+   appBar: {
+     height: 50,
+     color:'#2d6ca1',
+   },
+ })
 
  class AppHome extends Component {
    constructor(props) {
@@ -184,23 +193,12 @@ const iconStyles = {
      )
    }
   loading () {
-    const muiTheme = getMuiTheme({
-       palette: {
-         textColor: '#424242',
-       },
-       appBar: {
-         height: 50,
-         color:'#2d6ca1',
-       },
-     })
     return (
       <MuiThemeProvider muiTheme={muiTheme} >
       <div className='row text-center'>
         <div style={{marginTop:60}}></div>
-        <div className='col-sm-6 col-sm-offset-3'>
           <br />  <br />
           <CircularProgress size={60} thickness={5} />
-        </div>
         </div>
       </MuiThemeProvider>
     )
