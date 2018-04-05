@@ -1,39 +1,21 @@
-import React, {Component} from 'react';
-import AppBar from 'material-ui/AppBar';
-import IconButton from 'material-ui/IconButton';
-import IconMenu from 'material-ui/IconMenu';
-import MenuItem from 'material-ui/MenuItem';
-import FlatButton from 'material-ui/FlatButton';
-import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
-import Menu from 'material-ui/svg-icons/navigation/menu';
-import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-import getMuiTheme from 'material-ui/styles/getMuiTheme';
-import FontIcon from 'material-ui/FontIcon';
-import IconLocationOn from 'material-ui/svg-icons/communication/location-on';
-import SearchBar from 'material-ui-search-bar';
-import Badge from 'material-ui/Badge';
-import NotificationsIcon from 'material-ui/svg-icons/social/notifications';
-import PlusOne from 'material-ui/svg-icons/action/bookmark';
-import Restore from 'material-ui/svg-icons/action/restore';
-import Avatar from 'material-ui/Avatar';
-import FileFolder from 'material-ui/svg-icons/file/folder';
-import List from 'material-ui/List/List';
-import ListItem from 'material-ui/List/ListItem';
-import Divider from 'material-ui/Divider';
+import React, {Component} from 'react'
+import AppBar from 'material-ui/AppBar'
+import IconButton from 'material-ui/IconButton'
+import IconMenu from 'material-ui/IconMenu'
+import MenuItem from 'material-ui/MenuItem'
+import FlatButton from 'material-ui/FlatButton'
+import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert'
+import Menu from 'material-ui/svg-icons/navigation/menu'
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
+import getMuiTheme from 'material-ui/styles/getMuiTheme'
+import SearchBar from 'material-ui-search-bar'
+import Badge from 'material-ui/Badge'
+import NotificationsIcon from 'material-ui/svg-icons/social/notifications'
+import Avatar from 'material-ui/Avatar'
+import Divider from 'material-ui/Divider'
 import {Redirect} from 'react-router-dom'
 import {Link} from 'react-router-dom'
 const firebase = require('firebase')
-
-class Login extends Component {
-  static muiName = 'FlatButton';
-
-  render() {
-    return (
-      <FlatButton {...this.props} label="Login" />
-    );
-  }
-}
-
 const Logged = (props) => (
   <IconMenu
     {...props}
@@ -48,9 +30,7 @@ const Logged = (props) => (
     <MenuItem primaryText="Sign out" />
   </IconMenu>
 );
-
-Logged.muiName = 'IconMenu';
-
+Logged.muiName = 'IconMenu'
  const muiTheme = getMuiTheme({
    palette: {
      textColor: '#424242',
@@ -144,6 +124,15 @@ Logged.muiName = 'IconMenu';
                iconElementRight={
                  <div className='col-sm-12'>
                    <div className="hidden-lg hidden-md ">
+                     <Link onClick={()=>this.loadNotifications()} to={"/notifications"}>
+                      <Badge
+                        badgeContent={this.state.badges}
+                        badgeStyle={{color:'white', backgroundColor: this.state.badges ? 'red' : 'transparent', top:10, left:25, }}
+                        style={{cursor:'pointer'}}
+                        >
+                          <NotificationsIcon  style={{color:'white'}} />
+                        </Badge>
+                      </Link>
                      <IconMenu
                        iconButtonElement={
                          <Avatar
@@ -172,16 +161,6 @@ Logged.muiName = 'IconMenu';
                                </Link>
                              <MenuItem value="3" primaryText="Sign out" onClick={(event) => this.handleLogout(event)}/>
                            </IconMenu>
-                           <IconMenu
-                             iconButtonElement={<IconButton><MoreVertIcon /></IconButton>}
-                             anchorOrigin={{horizontal: 'right', vertical: 'bottom'}}
-                             targetOrigin={{horizontal: 'right', vertical: 'top'}}
-                             iconStyle={{color:'white'}}
-                             >
-                               <Link to='/' style={{textDecoration:'none'}}><MenuItem value="2" primaryText="About"  /></Link>
-                               <Link to='/policy' style={{textDecoration:'none'}}><MenuItem value="4" primaryText="Privacy" /></Link>
-                               <MenuItem value="4" primaryText="Copyright @ Afridash Ltd" />
-                             </IconMenu>
                              <IconMenu
                                iconButtonElement={<IconButton><Menu /></IconButton>}
                                anchorOrigin={{horizontal: 'right', vertical: 'bottom'}}

@@ -1,50 +1,14 @@
 import React, {Component} from 'react';
-import AppBar from 'material-ui/AppBar';
-import IconButton from 'material-ui/IconButton';
-import IconMenu from 'material-ui/IconMenu';
-import MenuItem from 'material-ui/MenuItem';
-import FlatButton from 'material-ui/FlatButton';
-import RaisedButton from 'material-ui/RaisedButton';
-import Toggle from 'material-ui/Toggle';
-import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
-import NavigationClose from 'material-ui/svg-icons/navigation/close';
-import darkBaseTheme from 'material-ui/styles/baseThemes/darkBaseTheme';
-import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-import getMuiTheme from 'material-ui/styles/getMuiTheme';
-import {cyan500} from 'material-ui/styles/colors';
-import FontIcon from 'material-ui/FontIcon';
-import {BottomNavigation, BottomNavigationItem} from 'material-ui/BottomNavigation';
-import Paper from 'material-ui/Paper';
-import IconLocationOn from 'material-ui/svg-icons/communication/location-on';
-import SearchBar from 'material-ui-search-bar';
-import {blue500, red500, greenA200} from 'material-ui/styles/colors';
-import SvgIcon from 'material-ui/SvgIcon';
-import Badge from 'material-ui/Badge';
-import NotificationsIcon from 'material-ui/svg-icons/social/notifications';
-import BookMark from 'material-ui/svg-icons/action/bookmark';
-import Restore from 'material-ui/svg-icons/action/restore';
-import Avatar from 'material-ui/Avatar';
-import FileFolder from 'material-ui/svg-icons/file/folder';
-import List from 'material-ui/List/List';
-import ListItem from 'material-ui/List/ListItem';
-import Chip from 'material-ui/Chip';
-import Dialog from 'material-ui/Dialog';
+import IconButton from 'material-ui/IconButton'
+import RaisedButton from 'material-ui/RaisedButton'
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
+import getMuiTheme from 'material-ui/styles/getMuiTheme'
+import Paper from 'material-ui/Paper'
 import {Link} from 'react-router-dom'
-import {RadioButton, RadioButtonGroup} from 'material-ui/RadioButton';
-import Popover, {PopoverAnimationVertical} from 'material-ui/Popover';
-import Menu from 'material-ui/Menu';
-import Divider from 'material-ui/Divider';
-import {Nav, Navbar, NavDropdown, Tabs, ButtonToolbar, Button, Table, ButtonGroup, Row, Col, Grid, Panel, FormGroup, FormControl} from 'react-bootstrap';
-import FileFileDownload from 'material-ui/svg-icons/file/file-download';
 import Remove from 'material-ui/svg-icons/content/delete-sweep';
 import CircularProgress from 'material-ui/CircularProgress';
 
 const firebase = require('firebase')
-const styles = {
-  radioButton: {
-    marginTop: 16,
-  },
-};
 /**
  * This example is taking advantage of the composability of the `AppBar`
  * to render different components depending on the application state.

@@ -1,5 +1,4 @@
 import React, { Component } from 'react'
-import { Button, FormGroup, FormControl, ControlLabel } from "react-bootstrap"
 import { Link, Redirect } from 'react-router-dom'
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
 import SelectField from 'material-ui/SelectField';
@@ -7,7 +6,6 @@ import MenuItem from 'material-ui/MenuItem';
 import RaisedButton from 'material-ui/RaisedButton'
 import TextField from 'material-ui/TextField'
 import {Tabs, Tab} from 'material-ui/Tabs';
-import {orange500, blue500} from 'material-ui/styles/colors';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import {Firebase} from '../auth/firebase'
 const firebase =  require('firebase')
@@ -48,7 +46,6 @@ const muiTheme = getMuiTheme({
   },
 
 })
-const items = [];
 export default class Home extends Component {
   constructor(props){
     super(props);
@@ -64,7 +61,7 @@ export default class Home extends Component {
       email:'',
       firstName:'',
       lastName:'',
-      password:''
+      confirmPassword:''
     }
     this.colleges = []
     this.picture ='https://firebasestorage.googleapis.com/v0/b/oliver-f5285.appspot.com/o/users%2Fprofile%2Fuserprofile.png?alt=media&token=e96bc455-8477-46db-a3a2-05b4a1031fe8'
@@ -92,14 +89,12 @@ export default class Home extends Component {
   async handleLogin (event) {
     this.setState({loading:true})
       event.preventDefault()
-      var loggedInError = false
       await firebase.auth().signInWithEmailAndPassword(this.state.email, this.state.password).then((user)=>{
         this.usersRef.child(user.uid).child('collegeId').once('value', (college)=>{
           localStorage.setItem('collegeId', college.val())
         })
         this.setState({redirect:true, loading:false})
       }).catch((error)=> {
-      var errorCode = error.code;
       var errorMessage = error.message
       this.setState({error:errorMessage, loading:false})
     })
@@ -177,9 +172,8 @@ export default class Home extends Component {
     return (
       this.state.redirect ? <Redirect to='/AppHome' push/> : <div>
         <section className="header parallax home-parallax page" id="HOME">
-        <h2></h2>
         <div className="section_overlay">
-          <nav className="navbar navbar-default navbar-fixed-top" role="navigation">
+          <nav className="navbar navbar-default navbar-fixed-top">
               <div className="container">
                   <div className="navbar-header">
                       <button type="button" className="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">

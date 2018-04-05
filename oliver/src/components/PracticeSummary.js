@@ -1,33 +1,14 @@
-import React, {Component} from 'react';
-import FlatButton from 'material-ui/FlatButton';
-import RaisedButton from 'material-ui/RaisedButton';
-import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-import getMuiTheme from 'material-ui/styles/getMuiTheme';
-import {cyan500} from 'material-ui/styles/colors';
-import FontIcon from 'material-ui/FontIcon';
-import Paper from 'material-ui/Paper';
-import IconLocationOn from 'material-ui/svg-icons/communication/location-on';
-import {blue500, red500,} from 'material-ui/styles/colors';
-import SvgIcon from 'material-ui/SvgIcon';
-import { Button} from 'react-bootstrap';
+import React, {Component} from 'react'
+import RaisedButton from 'material-ui/RaisedButton'
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
+import getMuiTheme from 'material-ui/styles/getMuiTheme'
+import Paper from 'material-ui/Paper'
 import {Link} from 'react-router-dom'
 import {Firebase} from '../auth/firebase'
 import * as firebase from 'firebase'
 import {
   blue300,
-} from 'material-ui/styles/colors';
-
-const styles = {
-  radioButton: {
-    marginTop: 16,
-  },
-};
-
-const iconStyles = {
-  marginRight: 24,
-};
-
-
+} from 'material-ui/styles/colors'
 /**
  * This example is taking advantage of the composability of the `AppBar`
  * to render different components depending on the application state.
@@ -81,7 +62,7 @@ export default class PracticeSummary extends Component {
     * Go back home
     */
     var num = this.state.messages.length
-    var item = this.state.messages[Math.floor(Math.random()*num)]
+    var message = this.state.messages[Math.floor(Math.random()*num)]
     var data = {
         profilePicture:this.state.profilePicture,
         username:this.state.username,
@@ -89,7 +70,7 @@ export default class PracticeSummary extends Component {
         courseCode:this.props.code,
         courseId:this.props.courseId,
         createdAt:firebase.database.ServerValue.TIMESTAMP,
-        message: item.message,
+        message: message.message,
         starCount:0,
         userId:this.state.userId,
         percentage: (this.state.correctAnswers/this.state.totalQuestions * 100).toFixed(2)
@@ -98,7 +79,7 @@ export default class PracticeSummary extends Component {
     var key = item.key
     item.setWithPriority(data, 0 - Date.now())
     this.followersRef.child(key).child(this.state.userId).set(true)
-    var ref = this.statsRef.child(this.state.userId).child('explore_posts').once('value', (snapshot)=>{
+    this.statsRef.child(this.state.userId).child('explore_posts').once('value', (snapshot)=>{
       if (snapshot.exists()) snapshot.ref.set(snapshot.val() + 1)
       else snapshot.ref.set(1)
     })

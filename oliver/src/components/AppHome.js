@@ -1,30 +1,18 @@
 import React, {Component} from 'react'
-import SvgIcon from 'material-ui/SvgIcon'
 import Paper from 'material-ui/Paper'
 import RaisedButton from 'material-ui/RaisedButton'
-import FlatButton from 'material-ui/FlatButton'
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
 import getMuiTheme from 'material-ui/styles/getMuiTheme'
 import Popover, {PopoverAnimationVertical} from 'material-ui/Popover'
 import Menu from 'material-ui/Menu'
 import MenuItem from 'material-ui/MenuItem'
-import {Redirect, Link} from 'react-router-dom'
+import {Link} from 'react-router-dom'
 import CircularProgress from 'material-ui/CircularProgress'
 import { ToastContainer, toast } from 'react-toastify'
 import {
   blue300,
-  indigo900,
-  orange200,
-  deepOrange300,
-  pink400,
-  purple500,
 } from 'material-ui/styles/colors';
 const firebase = require('firebase')
-const styles = {
-  radioButton: {
-    marginTop: 16,
-  },
-};
 
 const style = {
   chip: {
@@ -52,7 +40,7 @@ const muiTheme = getMuiTheme({
    },
  })
 
- class AppHome extends Component {
+class AppHome extends Component {
    constructor(props) {
      super(props);
      this.state = {
@@ -138,11 +126,11 @@ const muiTheme = getMuiTheme({
          <div style={{marginTop:80}}></div>
          <ToastContainer />
          {this.state.data.map((course)=>
-           <div className="col-lg-4" >
+           <div className="col-lg-4 col-md-6 col-sm-6" >
              <Paper style={style.paper} zDepth={2} rounded={true}
-               children={<div>
-                 <div className="row">
-                   <div className='col-sm-4'>
+               children={<div className='row'>
+                 <div className="col-lg-12 col-md-12 col-sm-12" style={{marginTop:5}}>
+                   <div className='col-sm-4 col-xs-4'>
                      <div className="panel panel-info" style={{borderRightWidth:2, borderTopWidth:0, borderLeftWidth:0, borderBottomWidth:0, borderColor:'none', margin:0}}>
                        <div className="panel-heading" style={{background:blue300,color:'white'}}> {course.code} </div>
                        <div className="panel-body">
@@ -151,14 +139,15 @@ const muiTheme = getMuiTheme({
                        </div>
                      </div>
                    </div>
-                   <div className="col-sm-8">
+                   <div className="col-sm-8 col-xs-8">
                      <div>
                        <Paper style={style} zDepth={2}
                          children={<div>
-                         <p>{course.name} <span onClick={(e)=>this.handleClick(e, course)} style={{fontSize:16, padding:5}} className='pull-right fa fa-angle-down fa-4x'></span></p>
+                          <span onClick={(e)=>this.handleClick(e, course)} style={{fontSize:16, padding:5}} className='pull-right fa fa-angle-down fa-4x'></span>
+                         <p>{course.name}</p>
                        </div>}/>
                      </div>
-                       <div className="row">
+                       <div>
                          <div className="col-sm-10 col-sm-offset-1">
                            <Link to={"/theories/"+course.key}>
                              <RaisedButton label="Theory" fullWidth={true} style={style.chip} />

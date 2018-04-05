@@ -1,21 +1,15 @@
 import React, {Component} from 'react'
 import {Firebase} from '../auth/firebase'
 import * as timestamp from '../auth/timestamp'
-import {Link, Redirect} from 'react-router-dom'
 import CircularProgress from 'material-ui/CircularProgress'
 import Paper from 'material-ui/Paper'
 import IconButton from 'material-ui/IconButton'
 import RaisedButton from 'material-ui/RaisedButton';
 import Divider from 'material-ui/Divider'
 import Delete from 'material-ui/svg-icons/action/delete'
-import {Card, CardHeader, CardTitle, CardText} from 'material-ui/Card'
-import {Panel, OverlayTrigger, Tooltip} from 'react-bootstrap'
+import {Panel, Tooltip} from 'react-bootstrap'
 import Remove from 'material-ui/svg-icons/content/delete-sweep';
 const firebase = require('firebase')
-
-const tooltip = (
-  <Tooltip id="tooltip">Delete</Tooltip>
-);
 const style = {
   chip: {
     margin: 4,

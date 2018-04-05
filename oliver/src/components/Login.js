@@ -1,6 +1,5 @@
 import React, {Component} from 'react'
-import { Button, FormGroup, FormControl, ControlLabel } from "react-bootstrap"
-import { Link,Redirect, } from 'react-router-dom'
+import {Redirect} from 'react-router-dom'
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
 import RaisedButton from 'material-ui/RaisedButton'
 import TextField from 'material-ui/TextField'
@@ -30,8 +29,7 @@ class Login extends Component {
     event.preventDefault()
     await firebase.auth().signInWithEmailAndPassword(this.state.email, this.state.password).then((user)=> {
         this.setState({redirect:true})
-    }).catch(function(error) {
-    var errorCode = error.code;
+    }).catch((error)=> {
     var errorMessage = error.message;
     this.setState({error:errorMessage})
   })

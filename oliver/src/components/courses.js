@@ -1,15 +1,8 @@
 import React, {Component} from 'react'
-import PropTypes from 'prop-types'
-import * as timestamp from '../auth/timestamp'
 import CircularProgress from 'material-ui/CircularProgress'
 import Paper from 'material-ui/Paper'
-import Avatar from 'material-ui/Avatar'
-import IconButton from 'material-ui/IconButton'
 import {Link} from 'react-router-dom'
 import RaisedButton from 'material-ui/RaisedButton';
-import Delete from 'material-ui/svg-icons/action/delete'
-import {Card, CardHeader, CardTitle, CardText} from 'material-ui/Card'
-import {Panel, OverlayTrigger, Tooltip} from 'react-bootstrap'
 import { ToastContainer, toast } from 'react-toastify';
 import Firebase from '../auth/firebase'
 import _ from 'lodash'
@@ -61,6 +54,10 @@ export default class Search extends Component {
       [event.target.name]: event.target.value,
     })
   }
+  async saveToLocalStorage (course) {
+     await localStorage.setItem('courseTitle', course.name)
+     await localStorage.setItem('courseCode', course.code)
+   }
   async retrieveCoursesOnline () {
     //1.Retrieve users courses from faculties in firebase and store them locally using AsyncStorage
     //Also filters the courses by department using the department Key
@@ -159,7 +156,7 @@ export default class Search extends Component {
                             <Link to={"/objective/"+course.key}>
                               <RaisedButton label="Objective" fullWidth={true} style={style.chip}  />
                             </Link>
-                            <Link to={"/practice/"+course.key}>
+                            <Link onClick={this.saveToLocalStorage(course)} to={"/practice/"+course.key}>
                               <RaisedButton label="Exam" fullWidth={true} style={style.chip} />
                             </Link>
                             <RaisedButton onClick={()=>this.writeAddCourses(course)} primary={true} label="Add To My Courses" fullWidth={true} style={style.chip} />

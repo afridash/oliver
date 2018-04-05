@@ -4,13 +4,9 @@ import FlatButton from 'material-ui/FlatButton';
 import RaisedButton from 'material-ui/RaisedButton';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
-import FontIcon from 'material-ui/FontIcon';
 import Paper from 'material-ui/Paper';
-import IconLocationOn from 'material-ui/svg-icons/communication/location-on';
 import {red500} from 'material-ui/styles/colors';
-import SvgIcon from 'material-ui/SvgIcon';
 import BookMark from 'material-ui/svg-icons/action/bookmark';
-import Restore from 'material-ui/svg-icons/action/restore';
 import CircularProgress from 'material-ui/CircularProgress';
 import Summary from './PracticeSummary'
 import { Button} from 'react-bootstrap';
@@ -33,9 +29,6 @@ const style = {
   button: {
     margin: 3,
   },
-};
-const iconStyles = {
-  marginRight: 24,
 };
  const muiTheme = getMuiTheme({
    palette: {
@@ -87,8 +80,14 @@ class Practice extends Component {
     }
   }
   getCourseInfo (userId) {
-    this.courseRef.child(userId).child(this.courseId).once('value', (course) => {
+    this.courseRef.child(userId).child(this.courseId).once('value', async (course) => {
+      if (course.exists())
       this.setState({code:course.val().code, title:course.val().name})
+      else {
+        var title = await localStorage.getItem('courseTitle')
+        var code = await localStorage.getItem('courseCode')
+        this.setState({code:code, title:title})
+      }
     })
   }
   componentWillMount () {
@@ -119,7 +118,7 @@ class Practice extends Component {
         }
       })
       this.setState({questions:this.questions, isloading:false, noActivity:this.questions.length > 0 ? false : true })
-      if (this.timer == 0) {
+      if (this.timer === 0) {
         this.timer = setInterval(this.countDown, 1000);
       }
     })
@@ -203,7 +202,7 @@ class Practice extends Component {
   countDown() {
     // Remove one second, set state so a re-render happens.
     let seconds = this.state.seconds - 1;
-    if (seconds == 10) {
+    if (seconds === 10) {
       this.setState({
       timeColor:'red',
         });
@@ -214,7 +213,7 @@ class Practice extends Component {
     });
 
     // Check if we're at zero.
-    if (seconds == 0) {
+    if (seconds === 0) {
       clearInterval(this.timer);
     }
   }

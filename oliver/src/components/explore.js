@@ -1,52 +1,17 @@
-import React, {Component} from 'react';
-import AppBar from 'material-ui/AppBar';
-import IconButton from 'material-ui/IconButton';
-import IconMenu from 'material-ui/IconMenu';
-import MenuItem from 'material-ui/MenuItem';
-import FlatButton from 'material-ui/FlatButton';
-import RaisedButton from 'material-ui/RaisedButton';
-import Toggle from 'material-ui/Toggle';
-import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
-import NavigationClose from 'material-ui/svg-icons/navigation/close';
-import darkBaseTheme from 'material-ui/styles/baseThemes/darkBaseTheme';
-import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-import getMuiTheme from 'material-ui/styles/getMuiTheme';
-import {cyan500} from 'material-ui/styles/colors';
-import FontIcon from 'material-ui/FontIcon';
-import Paper from 'material-ui/Paper';
-import IconLocationOn from 'material-ui/svg-icons/communication/location-on';
-import SearchBar from 'material-ui-search-bar';
-import {blue500, red500, greenA200} from 'material-ui/styles/colors';
-import SvgIcon from 'material-ui/SvgIcon';
-import Badge from 'material-ui/Badge';
-import NotificationsIcon from 'material-ui/svg-icons/social/notifications';
-import Restore from 'material-ui/svg-icons/action/restore';
+import React, {Component} from 'react'
+import RaisedButton from 'material-ui/RaisedButton'
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
+import getMuiTheme from 'material-ui/styles/getMuiTheme'
+import Paper from 'material-ui/Paper'
 import Avatar from 'material-ui/Avatar';
-import FileFolder from 'material-ui/svg-icons/file/folder';
-import List from 'material-ui/List/List';
-import Divider from 'material-ui/Divider';
 import Fav from 'material-ui/svg-icons/action/favorite-border';
 import Chat from 'material-ui/svg-icons/communication/chat-bubble-outline';
 import {Firebase} from '../auth/firebase'
-import {Redirect, Link} from 'react-router-dom'
+import {Link} from 'react-router-dom'
 import CircularProgress from 'material-ui/CircularProgress';
 import * as Notifications from '../auth/notifications'
 import * as timestamp from '../auth/timestamp'
-import {
-  blue300,
-  indigo900,
-  orange200,
-  deepOrange300,
-  pink400,
-  purple500,
-} from 'material-ui/styles/colors';
 const firebase = require('firebase')
-const styles = {
-  radioButton: {
-    marginTop: 16,
-  },
-};
-
 const style = {
   chip: {
     margin: 4,
@@ -61,9 +26,6 @@ const style = {
     height:50,
     textAlign: 'center',
 };
-const iconStyles = {
-  marginRight: 24,
-}
  const muiTheme = getMuiTheme({
    palette: {
      textColor: '#424242',
@@ -217,40 +179,44 @@ const iconStyles = {
          </div>
      )
    }
+  async saveToLocalStorage (explore) {
+     await localStorage.setItem('courseTitle', explore.course)
+     await localStorage.setItem('courseCode', explore.courseCode)
+   }
   showPageContent () {
      return (
-     <div className="row">
+     <div className="col-sm-8 col-sm-offset-2" >
        {this.state.explores.map((explore, key)=>
-         <div className="col-md-8 col-md-offset-2 col-sm-8 col-sm-offset-2" >
            <Paper style={style.paper} zDepth={2} rounded={true}
-             children={<div>
+             children={
                <div className="row">
                  <br/>
                  <div className="col-sm-3">
                    <Avatar
                      src={explore.profilePicture}
-                     size={80}
+                     size={65}
+                     className='img-responsive'
                    />
-                   <h2 style={{fontSize:20}}>{explore.username}</h2>
+                   <h2 style={{fontSize:16}}>{explore.username}</h2>
                  </div>
-                 <div className='col-sm-9' >
+                 <div className='col-sm-9'  >
                    <div className="col-sm-12">
-                   <div className="well">
+                   <div className="col-sm-12 well">
                      <p style={{fontSize:14}}> {explore.message}...I got {explore.percentage} % in {explore.course} {explore.courseCode} </p>
                    </div>
-                   <div className='col-sm-12'>
-                     <div className='col-sm-3'>
+                   <div className='col-sm-12' style={{height:'30'}}>
+                     <div className='col-xs-3'>
                         <Fav onClick={()=>this.onRowPress(key, explore)} style={{cursor:'pointer', color: explore.postLike ? 'red' : 'black'}} ></Fav>
                         {explore.starCount !== 0 && <span>{explore.starCount}</span>}
                      </div>
-                     <div className='col-sm-3'>
+                     <div className='col-xs-3'>
                        <Link style={{textDecoration:'none'}} to={'/explore/'+explore.key}>
                          <Chat style={{cursor:'pointer'}}></Chat>
                          {explore.comments !== 0 && <span>{explore.comments}</span>}
                        </Link>
                      </div>
-                     <div className='col-sm-6'>
-                       <Link style={{textDecoration:'none'}} to={'/practice/'+ explore.courseId}>
+                     <div className='col-xs-6'>
+                       <Link onClick={()=>this.saveToLocalStorage(explore)} style={{textDecoration:'none'}} to={'/practice/'+ explore.courseId}>
                          <p>START</p>
                        </Link>
                      </div>
@@ -264,22 +230,12 @@ const iconStyles = {
                          </div>
                      </div>
 
-               </div>
-             </div> }/>
-         </div>
+               </div> }/>
                )}
        </div>
         )
    }
   render() {
-    var styles = {
-      appBar: {
-        flexWrap: 'wrap'
-      },
-      tabs: {
-        width: '100%'
-      }
-    }
     return (
       <MuiThemeProvider muiTheme={muiTheme} >
       <div className="center">

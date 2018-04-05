@@ -1,22 +1,16 @@
-import React, {Component} from 'react';
-import IconButton from 'material-ui/IconButton';
-import IconMenu from 'material-ui/IconMenu';
-import MenuItem from 'material-ui/MenuItem';
-import RaisedButton from 'material-ui/RaisedButton';
-import FlatButton from 'material-ui/FlatButton';
-import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
-import darkBaseTheme from 'material-ui/styles/baseThemes/darkBaseTheme';
-import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-import getMuiTheme from 'material-ui/styles/getMuiTheme';
-import FontIcon from 'material-ui/FontIcon';
-import Paper from 'material-ui/Paper';
-import IconLocationOn from 'material-ui/svg-icons/communication/location-on';
+import React, {Component} from 'react'
+import IconButton from 'material-ui/IconButton'
+import IconMenu from 'material-ui/IconMenu'
+import MenuItem from 'material-ui/MenuItem'
+import RaisedButton from 'material-ui/RaisedButton'
+import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert'
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
+import getMuiTheme from 'material-ui/styles/getMuiTheme'
+import Paper from 'material-ui/Paper'
 import {Firebase} from '../auth/firebase'
-import {Redirect, Link} from 'react-router-dom'
-import CircularProgress from 'material-ui/CircularProgress';
+import {Link} from 'react-router-dom'
+import CircularProgress from 'material-ui/CircularProgress'
 const firebase = require('firebase')
-
-
 const Logged = (props) => (
   <IconMenu
     {...props}
@@ -179,7 +173,7 @@ Logged.muiName = 'IconMenu';
                            <div className='panel panel-default'  style={{paddingTop:10, margin:3, background:this.state.divColor, cursor:'pointer'}} onMouseEnter={this.handleFocus}  onMouseLeave={this.handleFocus2}>
                              <p style={{fontSize:20}}> &nbsp;&nbsp;{question.answer}</p>
                            </div>
-                           <p style={{fontSize:12, fontWeight:'600'}}>Replies: {question.comments}</p>
+                           {question.comments !== 0 && <p style={{fontSize:12, fontWeight:'600'}}>Replies: {question.comments}</p>}
                          </div>
                        </div>
                      </div>
