@@ -142,7 +142,7 @@ Logged.muiName = 'IconMenu';
          <div className='col-sm-6 col-sm-offset-3'>
            <br />  <br />
            <p className='text-info lead'>No Objectives...</p>
-           <Link to={"/AppHome"}>
+           <Link to={"/dashboard"}>
              <RaisedButton label="Return Home" primary={true} fullWidth={true} style={style.chip}/>
            </Link>
          </div>

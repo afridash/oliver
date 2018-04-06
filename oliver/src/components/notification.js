@@ -24,7 +24,7 @@ export default class Notification extends Component {
     if (user)
     this.getNotificationInfo(user.uid)
   }
-  getNotificationInfo (userId) {
+  async getNotificationInfo (userId) {
     var userId
     this.notificationsRef.child(userId).child(this.notifId).once('value', (notification) => {
       if (!notification.exists()) {
@@ -36,6 +36,11 @@ export default class Notification extends Component {
       }else {
         userId = notification.val().course
       }
+      if (notification.val().type.includes('theory')) {
+        this.setState({userId:false})
+      }else{
+        this.setState({userId:true})
+      }
       if (userId !== '' && userId !== undefined) {
         this.usersRef.child(userId).child('profilePicture').once('value', (picture)=> {
           this.item = {
@@ -45,11 +50,6 @@ export default class Notification extends Component {
             code:notification.val().code,
             profilePicture:picture.val(),
             userId:userId
-          }
-          if (notification.val().course !== '') {
-            this.setState({userId:true})
-          }else {
-            this.setState({userId:false})
           }
           this.setState({item:this.item, postId:notification.val().postId, loading:false, noActivity:false})
         })
@@ -64,6 +64,7 @@ export default class Notification extends Component {
         }
         this.setState({item:this.item, postId:notification.val().postId, userId:false, loading:false, noActivity:false})
       }
+
     })
   }
   spinner () {
@@ -82,7 +83,7 @@ export default class Notification extends Component {
          <div className='col-sm-6 col-sm-offset-3'>
            <br />  <br />
            <p className='text-info lead'>Item not found...</p>
-           <Link to={"/AppHome"}>
+           <Link to={"/dashboard"}>
              <RaisedButton label="Return Home" primary={true} fullWidth={true}/>
            </Link>
          </div>
@@ -95,6 +96,6 @@ export default class Notification extends Component {
     else if (this.state.noActivity)
       return this.noActivity()
     else
-     return <Comments userId={this.state.userId} itemKey={this.state.postId} item={this.state.item} user={true} />
+     return <Comments userId={this.state.userId} itemKey={this.state.postId} item={this.state.item} user={this.state.userId} />
   }
 }

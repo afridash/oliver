@@ -103,7 +103,7 @@ Logged.muiName = 'IconMenu'
                style={{position:'fixed'}}
                iconElementLeft={
                  <div className='col-sm-12' >
-                   <Link className='col-sm-4' to='/AppHome' >
+                   <Link className='col-sm-4' to='/dashboard' >
                    <Avatar
                      src={require("../images/oliverLogo.png")}
                      size={45}
@@ -175,21 +175,24 @@ Logged.muiName = 'IconMenu'
                                    />
                                    {this.state.showSearchPage && <Redirect to={'/search/'+this.state.searchString} push />}
                                  <Link to='/courses' style={{textDecoration:'none'}}><MenuItem value="2" primaryText="Courses"  /></Link>
-                                 <Link to='/explore' style={{textDecoration:'none'}}><MenuItem value="4" primaryText="Explore" /></Link>
                                  <Link to='/social' style={{textDecoration:'none'}}><MenuItem value="4" primaryText="Social" /></Link>
+                                 <Link to='/explore' style={{textDecoration:'none'}}><MenuItem value="4" primaryText="Explore" /></Link>
+                                 <Link to='/leaderboard' style={{textDecoration:'none'}}><MenuItem value="4" primaryText="Leaderboard" /></Link>
                                </IconMenu>
                    </div>
                    <div className='hidden-sm hidden-xs'>
                      <Link to={"/courses"}>
                       <FlatButton label="Courses" style={{color:'white'}}/>
                     </Link>
-                    <Link to={"/explore"}>
+                    <Link to={"/social"}>
                       <FlatButton label="social" style={{color:'white'}}/>
                     </Link>
                     <Link to={"/explore"}>
                       <FlatButton label="Explore" style={{color:'white'}}/>
                     </Link>
-
+                    <Link to={"/leaderboard"}>
+                      <FlatButton label="Leaderboard" style={{color:'white'}}/>
+                    </Link>
                     <Link onClick={()=>this.loadNotifications()} to={"/notifications"}>
                       <Badge
                         badgeContent={this.state.badges}

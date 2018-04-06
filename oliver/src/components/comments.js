@@ -211,7 +211,7 @@ export default class Comments extends Component {
            if (comments.exists()) comments.ref.set(comments.val() - 1)
            else comments.ref.set(0)
          })
-      } else if (this.props.courseId) {
+      } else {
         this.questionsRef.child(this.props.item['userId']).child(this.props.itemKey).child('comments').once('value', (comments)=>{
           if (comments.exists()) comments.ref.set(comments.val() -  1)
           else comments.ref.set(0)
@@ -230,7 +230,7 @@ export default class Comments extends Component {
     this.setState(prevState =>({following:!prevState.following}))
   }
   shareComment () {
-    if (this.state.text !== '') {
+    if (this.state.comment !== '') {
       var data = {
         userKey: this.state.userId,
         comment: this.state.comment,

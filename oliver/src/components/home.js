@@ -154,6 +154,7 @@ export default class Home extends Component {
       lastName:this.state.lastName,
       email: this.state.email,
       username : this.state.username,
+      displayName:this.state.firstName + ' ' + this.state.lastName,
       userKey:userKey,
       profilePicture:this.picture,
       collegeId:college.key,
@@ -170,7 +171,7 @@ export default class Home extends Component {
   }
   render() {
     return (
-      this.state.redirect ? <Redirect to='/AppHome' push/> : <div>
+      this.state.redirect ? <Redirect to='/dashboard' push/> : <div>
         <section className="header parallax home-parallax page" id="HOME">
         <div className="section_overlay">
           <nav className="navbar navbar-default navbar-fixed-top">
@@ -194,7 +195,7 @@ export default class Home extends Component {
                           <li><a href="#SCREENS">SCREENS</a> </li>
                           <li><a href="#DOWNLOAD">DOWNLOAD </a> </li>
                           <li><a href="#SUSCRIBE">CONTACT </a> </li>
-                          {this.state.loggedIn ? <li><Link to="/AppHome"> DASHBOARD </Link> </li> : <li><a href="Login"> LOGIN</a> </li>}
+                          {this.state.loggedIn ? <li><Link to="/dashboard"> DASHBOARD </Link> </li> : <li><a href="Login"> LOGIN</a> </li>}
                           {this.state.loggedIn && <li><a href='#' onClick={()=>this.logOut()}>LOG OUT </a> </li>}
                       </ul>
                   </div>
@@ -258,7 +259,7 @@ export default class Home extends Component {
                                       {this.state.loading ? <RaisedButton labelStyle={{color:'white'}} buttonStyle={{backgroundColor:'#2d6ca1'}} label="Logging In..." style={styles.button}
                                         />: <RaisedButton type="submit" labelStyle={{color:'white'}} buttonStyle={{backgroundColor:'#2d6ca1'}} label="Login" style={styles.button} onClick={(event) =>
                                           this.handleLogin(event)}/>}
-                                          {this.state.loggedIn && <Link to='/AppHome'><RaisedButton labelStyle={{color:'white'}} buttonStyle={{backgroundColor:'#388E3C', borderColor:'white'}} label={"Continue as " + this.state.username} style={styles.button} /></Link>}
+                                          {this.state.loggedIn && <Link to='/dashboard'><RaisedButton labelStyle={{color:'white'}} buttonStyle={{backgroundColor:'#388E3C', borderColor:'white'}} label={"Continue as " + this.state.username} style={styles.button} /></Link>}
                                     </div>
                                     </form>
                                 </div>

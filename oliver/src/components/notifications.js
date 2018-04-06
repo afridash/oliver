@@ -3,12 +3,12 @@ import {Firebase} from '../auth/firebase'
 import * as timestamp from '../auth/timestamp'
 import {Link} from 'react-router-dom'
 import CircularProgress from 'material-ui/CircularProgress'
-import RaisedButton from 'material-ui/RaisedButton';
+import RaisedButton from 'material-ui/RaisedButton'
 import Paper from 'material-ui/Paper'
 import Avatar from 'material-ui/Avatar'
 import IconButton from 'material-ui/IconButton'
 import {Panel, OverlayTrigger, Tooltip} from 'react-bootstrap'
-import Remove from 'material-ui/svg-icons/content/delete-sweep';
+import Remove from 'material-ui/svg-icons/content/delete-sweep'
 const firebase = require('firebase')
 
 class Notifications extends Component {
@@ -69,7 +69,8 @@ class Notifications extends Component {
   showExploreVote (notification, index, message) {
     return (
       <div className="col-sm-8 col-sm-offset-2">
-          <Paper zDepth={3}>
+        <div style={{margin:10}}>
+          <Paper zDepth={2} rounded={true}>
             <Panel>
               <div className="card">
                 <div className="card-header">
@@ -82,13 +83,13 @@ class Notifications extends Component {
                 <br/>
                 <div className="card card-body">
                   <div className="row">
-                    <div className="col-sm-2">
+                    <div className="col-sm-2 col-xs-2">
                       <Avatar
                         src={notification.profilePicture}
                         size={60}
                       />
                     </div>
-                    <div className="col-sm-10" style={{cursor:'pointer'}}>
+                    <div className="col-sm-10 col-xs-10" style={{cursor:'pointer'}}>
                       <Link style={{textDecoration:'none'}} to={'/notifications/'+ notification.key}>
                         <span className='lead'> {notification.displayName} {message}</span>
                       </Link>
@@ -101,33 +102,35 @@ class Notifications extends Component {
               </div>
             </Panel>
           </Paper>
+        </div>
       </div>
     )
   }
   showTheoryVote (notification, index, message) {
     return (
-      <div className="col-sm-8 col-sm-offset-2">
-          <Paper zDepth={3}>
+      <div className="col-sm-8 col-sm-offset-2" >
+        <div style={{margin:10}}>
+          <Paper zDepth={2} rounded={true}>
             <Panel>
               <div className="card">
                 <div className="card-header">
-                  <span className="pull-right">
-                    <OverlayTrigger placement="bottom" overlay={tooltip}>
-                      <i className="fa fa-trash-o fa-lg" style={{cursor:'pointer'}} onClick={()=> this.handleDelete(notification.key)}></i>
-                    </OverlayTrigger>
+                  <span style={{marginTop:-20}} className="pull-right text-center">
+                    <IconButton tooltip="Remove" onClick={()=> this.handleDelete(notification.key)}>
+                      <Remove />
+                    </IconButton>
                   </span>
                 </div>
                 <br/>
                 <div className="card card-body">
                   <div className="row">
-                    <div className="col-sm-2">
+                    <div className="col-sm-2 col-xs-2">
                       <Avatar
                         src={notification.profilePicture}
                         size={60}
                       />
 
                     </div>
-                    <div className="col-sm-10" stle={{curosr:'pointer'}}>
+                    <div className="col-sm-10 col-xs-10" stle={{curosr:'pointer'}}>
                       <Link style={{textDecoration:'none'}} to={'/notifications/'+ notification.key}>
                         <h4>{notification.displayName} {message}</h4>
                       </Link>
@@ -140,6 +143,7 @@ class Notifications extends Component {
               </div>
             </Panel>
           </Paper>
+        </div>
       </div>
     )
   }
@@ -173,11 +177,9 @@ class Notifications extends Component {
   spinner () {
     return (
       <div className="row text-center">
-        <div className="col-md-6 col-md-offset-3">
           <br/>
           <br/>
           <CircularProgress size={60} thickness={5} />
-        </div>
       </div>
     )
   }
@@ -191,8 +193,7 @@ class Notifications extends Component {
    }
   render () {
     return(
-      <div className="center">
-        <div className="row">
+      <div className="row">
           <div style={{marginTop:100}}></div>
           {
             (()=>{
@@ -207,12 +208,11 @@ class Notifications extends Component {
               }
             })()
           }
-        </div>
         <div className='col-sm-12 text-center'>
           {this.state.next && <RaisedButton className='text-center' label="Show More" primary={true} onClick={()=>{this.showNextSet()}}/>}
         </div>
       </div>
-      );
+      )
     }
 
   }

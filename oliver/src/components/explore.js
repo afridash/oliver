@@ -126,7 +126,6 @@ const style = {
                message:explore.val().message,profilePicture:explore.val().profilePicture, percentage:explore.val().percentage, userId:explore.val().userId,
                username:explore.val().username, starCount:explore.val().starCount, courseId:explore.val().courseId, postLike:false, comments:explore.hasChild('comments') ? explore.val().comments : 0})
            }
-           this.explores.length > this.increment ? this.setState({next:true}) : this.setState({next:false})
            this.showFirstSet(this.explores.length, this.explores)
          })
        })
@@ -172,7 +171,7 @@ const style = {
          <div className='col-sm-6 col-sm-offset-3'>
            <br />  <br />
            <p className='text-info lead'>No explorers on your campus...</p>
-           <Link to={"/AppHome"}>
+           <Link to={"/dashboard"}>
              <RaisedButton label="Return Home" secondary={true} fullWidth={true} style={style.chip}/>
            </Link>
          </div>

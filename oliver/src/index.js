@@ -11,7 +11,7 @@ import {Stats} from './components/Stats'
 import NavBar from './components/navBar'
 import Policy from './components/policy'
 import Home from './components/App'
-import AppHome from './components/AppHome'
+import Dashboard from './components/AppHome'
 import Practice from './components/Practice'
 import Bookmarks from './components/bookmarks'
 import Explore from './components/explore'
@@ -28,6 +28,8 @@ import Student from './components/student'
 import Theory from './components/theory'
 import Courses from './components/courses'
 import Search from './components/search'
+import Leaderboard from './components/leaderboard'
+import Social from './components/social'
 import App from './App';
 import registerServiceWorker from './registerServiceWorker';
 
@@ -48,13 +50,15 @@ ReactDOM.render(
        <Route exact path={'/search'} component={Search}/>
       <Route exact path={'/search/:id'} component={Search}/>
        <NavBar>
-         <Route exact path={"/AppHome"} component={AppHome} />
+         <Route exact path={"/dashboard"} component={Dashboard} />
           <Route path={"/Practice/:id"} component={Practice} />
           <Route exact path={"/explore"} component={Explore} />
           <Route exact path={'/explore/:id'} component={ExploreView} />
           <Route exact path={"/objective/:id"} component={Objective} />
           <Route exact path={"/theories/:id"} component={Theories} />
           <Route exact path={"/bookmarks"} component={Bookmarks} />
+          <Route exact path={"/leaderboard"} component={Leaderboard} />
+          <Route exact path={"/social"} component={Social} />
           <Route exact path={"/PracticeSummary"} component={PracticeSummary} />
           <Route path={'/recents'} component={RecentActivities} />
           <Route exact path={'/notifications'} component={Notifications} />

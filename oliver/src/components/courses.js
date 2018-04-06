@@ -106,7 +106,7 @@ export default class Search extends Component {
          <div className='col-sm-6 col-sm-offset-3'>
            <br />  <br />
            <p className='text-info lead'>No Courses Found</p>
-           <Link to={"/AppHome"}>
+           <Link to={"/dashboard"}>
              <RaisedButton label="Return Home" secondary={true} fullWidth={true} />
            </Link>
          </div>

@@ -112,7 +112,7 @@ export default class PracticeSummary extends Component {
                   <div className="col-sm-10 col-sm-offset-1">
                   <div className="row">
                     <div className="col-sm-6">
-                    <Link to='/apphome' style={{padding:8,borderWidth:0, background:blue300, margin:4,width:'100%'}} type="button" className="btn btn-primary"> RETURN HOME </Link>
+                    <Link to='/dashboard' style={{padding:8,borderWidth:0, background:blue300, margin:4,width:'100%'}} type="button" className="btn btn-primary"> RETURN HOME </Link>
                   </div>
                     <div className="col-sm-6">
                       {this.state.isAvailable &&

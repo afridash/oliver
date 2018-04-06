@@ -55,7 +55,7 @@ export default class Theory extends Component {
          <div className='col-sm-6 col-sm-offset-3'>
            <br />  <br />
            <p className='text-info lead'>Item not found...</p>
-           <Link to={"/AppHome"}>
+           <Link to={"/dashboard"}>
              <RaisedButton label="Return Home" primary={true} fullWidth={true}/>
            </Link>
          </div>

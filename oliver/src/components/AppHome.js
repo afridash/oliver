@@ -40,7 +40,7 @@ const muiTheme = getMuiTheme({
    },
  })
 
-class AppHome extends Component {
+class Dashboard extends Component {
    constructor(props) {
      super(props);
      this.state = {
@@ -228,4 +228,4 @@ class AppHome extends Component {
   }
 }
 
-export default AppHome;
+export default Dashboard;

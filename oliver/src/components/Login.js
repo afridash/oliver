@@ -44,7 +44,7 @@ class Login extends Component {
 
   render () {
   return (
-    this.state.redirect ? <Redirect to='/AppHome' push/> : <div className='center'>
+    this.state.redirect ? <Redirect to='/dashboard' push/> : <div className='center'>
           <MuiThemeProvider>
             <div>
               <br/>
