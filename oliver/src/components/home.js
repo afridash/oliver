@@ -84,6 +84,7 @@ export default class Home extends Component {
   handleUser(user){
       if(user){
         this.setState({username:user.displayName, loggedIn:true})
+        localStorage.setItem('userId', user.uid)
       }
     }
   async handleLogin (event) {
@@ -92,6 +93,7 @@ export default class Home extends Component {
       await firebase.auth().signInWithEmailAndPassword(this.state.email, this.state.password).then((user)=>{
         this.usersRef.child(user.uid).child('collegeId').once('value', (college)=>{
           localStorage.setItem('collegeId', college.val())
+          localStorage.setItem('userId', user.uid)
         })
         this.setState({redirect:true, loading:false})
       }).catch((error)=> {
@@ -162,6 +164,7 @@ export default class Home extends Component {
       signed_up:firebase.database.ServerValue.TIMESTAMP
       })
       localStorage.setItem('collegeId', college.key)
+      localStorage.setItem('userId', userKey)
       this.setState({redirect:true, loading:false})
   }
   logOut () {

@@ -32,7 +32,6 @@ const styles = {
     borderColor: '#2d6ca1',
   },
 };
-
 export default class Comments extends Component {
   constructor (props) {
     super (props)

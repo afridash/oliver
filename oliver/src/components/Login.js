@@ -22,12 +22,14 @@ class Login extends Component {
   handleUser(user){
       if(user){
         this.setState({redirect:true})
+        localStorage.setItem('userId', user.uid)
       }
     }
 
   async handleSubmit (event) {
     event.preventDefault()
     await firebase.auth().signInWithEmailAndPassword(this.state.email, this.state.password).then((user)=> {
+      localStorage.setItem('userId', user.uid)
         this.setState({redirect:true})
     }).catch((error)=> {
     var errorMessage = error.message;

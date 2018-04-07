@@ -15,6 +15,7 @@ import Avatar from 'material-ui/Avatar'
 import Divider from 'material-ui/Divider'
 import {Redirect} from 'react-router-dom'
 import {Link} from 'react-router-dom'
+import '../styles/styles.css'
 const firebase = require('firebase')
 const Logged = (props) => (
   <IconMenu

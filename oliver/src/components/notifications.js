@@ -147,6 +147,47 @@ class Notifications extends Component {
       </div>
     )
   }
+  showFollow (notification, index, message) {
+    return (
+      <div className="col-sm-8 col-sm-offset-2" >
+        <div style={{margin:10}}>
+          <Paper zDepth={2} rounded={true}>
+            <Panel>
+              <div className="card">
+                <div className="card-header">
+                  <span style={{marginTop:-20}} className="pull-right text-center">
+                    <IconButton tooltip="Remove" onClick={()=> this.handleDelete(notification.key)}>
+                      <Remove />
+                    </IconButton>
+                  </span>
+                </div>
+                <br/>
+                <div className="card card-body">
+                  <div className="row">
+                    <div className="col-sm-2 col-xs-2">
+                      <Avatar
+                        src={notification.profilePicture}
+                        size={60}
+                      />
+
+                    </div>
+                    <div className="col-sm-10 col-xs-10" stle={{curosr:'pointer'}}>
+                      <Link style={{textDecoration:'none'}} to={'/social/'+ notification.userId}>
+                        <h4>{notification.displayName} {message}</h4>
+                      </Link>
+                    </div>
+                  </div>
+                </div>
+                <div className="card-footer">
+                  <span className="pull-right">{timestamp.timeSince(notification.createdAt)}</span>
+                </div>
+              </div>
+            </Panel>
+          </Paper>
+        </div>
+      </div>
+    )
+  }
   renderItem(item, index) {
     if (item.type === 'upvote') return this.showExploreVote(item, index, 'upvoted your comment')
     else if (item.type === 'downvote') return this.showExploreVote(item, index, 'downvoted your comment')
@@ -155,9 +196,9 @@ class Notifications extends Component {
     else if (item.type === 'explore_mention') return this.showExploreVote(item, index, 'replied to your comment')
     else if (item.type === 'upvote_theory') return this.showTheoryVote(item, index, 'upvoted your comment to a question')
     else if (item.type === 'downvote_theory') return this.showTheoryVote(item, index, 'downvoted your comment to a question')
-    else if (item.type === 'downvote_theory') return this.showTheoryVote(item, index, 'downvoted your comment to a question')
     else if (item.type === 'theory_comment') return this.showTheoryVote(item, index, 'commented on a question you follow')
     else if (item.type === 'theory_mention') return this.showTheoryVote(item, index, 'replied to your comment on a question')
+    else if (item.type === 'follow') return this.showFollow(item, index, 'started following you')
   }
   showPageContent () {
     return this.state.notifications.map((notification, key) => {

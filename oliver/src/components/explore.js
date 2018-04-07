@@ -3,12 +3,12 @@ import RaisedButton from 'material-ui/RaisedButton'
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
 import getMuiTheme from 'material-ui/styles/getMuiTheme'
 import Paper from 'material-ui/Paper'
-import Avatar from 'material-ui/Avatar';
-import Fav from 'material-ui/svg-icons/action/favorite-border';
-import Chat from 'material-ui/svg-icons/communication/chat-bubble-outline';
+import Avatar from 'material-ui/Avatar'
+import Fav from 'material-ui/svg-icons/action/favorite-border'
+import Chat from 'material-ui/svg-icons/communication/chat-bubble-outline'
 import {Firebase} from '../auth/firebase'
 import {Link} from 'react-router-dom'
-import CircularProgress from 'material-ui/CircularProgress';
+import CircularProgress from 'material-ui/CircularProgress'
 import * as Notifications from '../auth/notifications'
 import * as timestamp from '../auth/timestamp'
 const firebase = require('firebase')
@@ -134,7 +134,7 @@ const style = {
    }
   select = (index) => this.setState({selectedIndex: index});
   showFirstSet (length, el) {
-    if (length < this.increment) {
+    if (length <= this.increment) {
       var data= []
       for (var i=0; i<length; i++){
         data.push(this.explores[i])
