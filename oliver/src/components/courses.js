@@ -2,8 +2,10 @@ import React, {Component} from 'react'
 import CircularProgress from 'material-ui/CircularProgress'
 import Paper from 'material-ui/Paper'
 import {Link} from 'react-router-dom'
-import RaisedButton from 'material-ui/RaisedButton';
-import { ToastContainer, toast } from 'react-toastify';
+import RaisedButton from 'material-ui/RaisedButton'
+import { ToastContainer, toast } from 'react-toastify'
+import IconButton from 'material-ui/IconButton'
+import Delete from 'material-ui/svg-icons/action/info'
 import Firebase from '../auth/firebase'
 import _ from 'lodash'
 import {
@@ -144,9 +146,14 @@ export default class Search extends Component {
                     <div className="col-sm-12">
                       <div>
                         <Paper style={{padding:20,  textAlign:'center',backgroundColor:blue300, color:'white', fontSize:16}}  zDepth={2}
-                          children={<div >
+                          children={
+                            <div >
                           {course.code}
-                        </div>}/>
+                          <IconButton iconStyle={{color:'white'}} tooltip={course.name}>
+                            <Delete />
+                          </IconButton>
+                        </div>
+                      }/>
                       </div>
                         <div className="row">
                           <div className="col-sm-10 col-sm-offset-1">

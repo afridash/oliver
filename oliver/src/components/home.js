@@ -1,12 +1,12 @@
 import React, { Component } from 'react'
 import { Link, Redirect } from 'react-router-dom'
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
-import SelectField from 'material-ui/SelectField';
-import MenuItem from 'material-ui/MenuItem';
+import SelectField from 'material-ui/SelectField'
+import MenuItem from 'material-ui/MenuItem'
 import RaisedButton from 'material-ui/RaisedButton'
 import TextField from 'material-ui/TextField'
-import {Tabs, Tab} from 'material-ui/Tabs';
-import getMuiTheme from 'material-ui/styles/getMuiTheme';
+import {Tabs, Tab} from 'material-ui/Tabs'
+import getMuiTheme from 'material-ui/styles/getMuiTheme'
 import {Firebase} from '../auth/firebase'
 const firebase =  require('firebase')
 const styles = {
@@ -61,7 +61,8 @@ export default class Home extends Component {
       email:'',
       firstName:'',
       lastName:'',
-      confirmPassword:''
+      confirmPassword:'',
+      signupEmail:''
     }
     this.colleges = []
     this.picture ='https://firebasestorage.googleapis.com/v0/b/oliver-f5285.appspot.com/o/users%2Fprofile%2Fuserprofile.png?alt=media&token=e96bc455-8477-46db-a3a2-05b4a1031fe8'
@@ -118,7 +119,7 @@ export default class Home extends Component {
   handleSignUp (event) {
     this.setState({loading:true})
     event.preventDefault()
-    if (this.state.firstName !== '' && this.state.lastName !== '' && this.state.username !== '' && this.state.selected !=='' && this.state.email !=='') {
+    if (this.state.firstName !== '' && this.state.lastName !== '' && this.state.username !== '' && this.state.selected !=='' && this.state.signupEmail !=='') {
       if (this.state.password === this.state.confirmPassword) {
         firebase.auth().createUserWithEmailAndPassword(this.state.signupEmail, this.state.password).then((user)=> {
           this.setUser(user)
@@ -225,7 +226,7 @@ export default class Home extends Component {
                           name='value'
                           >
                             <Tab label="LOGIN" value="a">
-                              <div style={styles.box}>
+                              <div>
                                 <div className="col-sm-12" >
                                   <h3 style={styles.labelStyle} className='text-center'>Login</h3>
                                   <form>

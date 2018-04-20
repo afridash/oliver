@@ -5,7 +5,7 @@ import * as firebase from "firebase";
     authDomain: "oliver-f5285.firebaseapp.com",
     databaseURL: "https://oliver-f5285.firebaseio.com",
     projectId: "oliver-f5285",
-    storageBucket: "",
+    storageBucket: "oliver-f5285.appspot.com",
     messagingSenderId: "757475891712"
   };
  export const Firebase = firebase.initializeApp(config);

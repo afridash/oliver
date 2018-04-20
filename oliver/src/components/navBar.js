@@ -42,7 +42,7 @@ Logged.muiName = 'IconMenu'
    },
  })
 
-  export default class NavBar extends Component {
+export default class NavBar extends Component {
    constructor(props) {
      super(props);
      this.state = {
@@ -148,11 +148,13 @@ Logged.muiName = 'IconMenu'
                          onRequestChange={this.handleOnRequestChange}
                          >
                            <Divider />
-                           <MenuItem primaryText={this.state.username} leftIcon={
-                             <Avatar
-                               src={this.state.photoURL}
-                               size={35}
-                             />} />
+                           <Link style={{textDecoration:'none'}} to='/profile/'>
+                             <MenuItem primaryText={this.state.username} leftIcon={
+                               <Avatar
+                                 src={this.state.photoURL}
+                                 size={35}
+                               />} />
+                           </Link>
                              <Divider />
                                <Link style={{textDecoration:'none', color:'black'}} to={"/bookmarks"}>
                                <MenuItem value="1" primaryText='Bookmarks' />
@@ -160,26 +162,29 @@ Logged.muiName = 'IconMenu'
                                <Link style={{textDecoration:'none', color:'black', padding:10}} to={"/recents"}>
                                <MenuItem value="2" primaryText='Recent Activities' />
                                </Link>
+                               <Link to='/followers' style={{textDecoration:'none',  color:'black', padding:10}}>
+                               <MenuItem value="4" primaryText="Followers" />
+                             </Link>
                              <MenuItem value="3" primaryText="Sign out" onClick={(event) => this.handleLogout(event)}/>
                            </IconMenu>
-                             <IconMenu
-                               iconButtonElement={<IconButton><Menu /></IconButton>}
-                               anchorOrigin={{horizontal: 'right', vertical: 'bottom'}}
-                               targetOrigin={{horizontal: 'right', vertical: 'top'}}
-                               iconStyle={{color:'white'}}
-                               >
-                                   <SearchBar
-                                     onChange={(text) => this.setSearchText(text)}
-                                     onRequestSearch={() => this.showSearch()}
-                                     style={{marginTop:'5%'}}
-                                     placeholder='Search users'
-                                   />
-                                   {this.state.showSearchPage && <Redirect to={'/search/'+this.state.searchString} push />}
-                                 <Link to='/courses' style={{textDecoration:'none'}}><MenuItem value="2" primaryText="Courses"  /></Link>
-                                 <Link to='/social' style={{textDecoration:'none'}}><MenuItem value="4" primaryText="Social" /></Link>
-                                 <Link to='/explore' style={{textDecoration:'none'}}><MenuItem value="4" primaryText="Explore" /></Link>
-                                 <Link to='/leaderboard' style={{textDecoration:'none'}}><MenuItem value="4" primaryText="Leaderboard" /></Link>
-                               </IconMenu>
+                           <IconMenu
+                             iconButtonElement={<IconButton><Menu /></IconButton>}
+                             anchorOrigin={{horizontal: 'right', vertical: 'bottom'}}
+                             targetOrigin={{horizontal: 'right', vertical: 'top'}}
+                             iconStyle={{color:'white'}}
+                             >
+                                 <SearchBar
+                                   onChange={(text) => this.setSearchText(text)}
+                                   onRequestSearch={() => this.showSearch()}
+                                   style={{marginTop:'5%'}}
+                                   placeholder='Search users'
+                                 />
+                                 {this.state.showSearchPage && <Redirect to={'/search/'+this.state.searchString} push />}
+                               <Link to='/courses' style={{textDecoration:'none'}}><MenuItem value="2" primaryText="Courses"  /></Link>
+                               <Link to='/social' style={{textDecoration:'none'}}><MenuItem value="4" primaryText="Social" /></Link>
+                               <Link to='/explore' style={{textDecoration:'none'}}><MenuItem value="4" primaryText="Explore" /></Link>
+                               <Link to='/leaderboard' style={{textDecoration:'none'}}><MenuItem value="4" primaryText="Leaderboard" /></Link>
+                             </IconMenu>
                    </div>
                    <div className='hidden-sm hidden-xs'>
                      <Link to={"/courses"}>
@@ -216,12 +221,13 @@ Logged.muiName = 'IconMenu'
                         open={this.state.openMenu}
                         onRequestChange={this.handleOnRequestChange}
                         >
-                          <Divider />
-                          <MenuItem primaryText={this.state.username} leftIcon={
-                            <Avatar
-                              src={this.state.photoURL}
-                              size={35}
-                            />} />
+                          <Link style={{textDecoration:'none'}} to='/profile/'>
+                            <MenuItem primaryText={this.state.username} leftIcon={
+                              <Avatar
+                                src={this.state.photoURL}
+                                size={35}
+                              />} />
+                          </Link>
                             <Divider />
                               <Link style={{textDecoration:'none', color:'black'}} to={"/bookmarks"}>
                               <MenuItem value="1" primaryText='Bookmarks' />
@@ -229,6 +235,9 @@ Logged.muiName = 'IconMenu'
                               <Link style={{textDecoration:'none', color:'black', padding:10}} to={"/recents"}>
                               <MenuItem value="2" primaryText='Recent Activities' />
                               </Link>
+                               <Link to='/followers' style={{textDecoration:'none',  color:'black', padding:10}}>
+                               <MenuItem value="4" primaryText="Followers" />
+                             </Link>
                             <MenuItem value="3" primaryText="Sign out" onClick={(event) => this.handleLogout(event)}/>
                           </IconMenu>
                           <IconMenu

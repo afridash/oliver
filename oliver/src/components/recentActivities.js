@@ -4,11 +4,11 @@ import * as timestamp from '../auth/timestamp'
 import CircularProgress from 'material-ui/CircularProgress'
 import Paper from 'material-ui/Paper'
 import IconButton from 'material-ui/IconButton'
-import RaisedButton from 'material-ui/RaisedButton';
+import RaisedButton from 'material-ui/RaisedButton'
 import Divider from 'material-ui/Divider'
 import Delete from 'material-ui/svg-icons/action/delete'
 import {Panel, Tooltip} from 'react-bootstrap'
-import Remove from 'material-ui/svg-icons/content/delete-sweep';
+import Remove from 'material-ui/svg-icons/content/delete-sweep'
 const firebase = require('firebase')
 const style = {
   chip: {

@@ -1,12 +1,13 @@
-import React, {Component} from 'react';
+import React, {Component} from 'react'
 import IconButton from 'material-ui/IconButton'
 import RaisedButton from 'material-ui/RaisedButton'
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
 import getMuiTheme from 'material-ui/styles/getMuiTheme'
 import Paper from 'material-ui/Paper'
 import {Link} from 'react-router-dom'
-import Remove from 'material-ui/svg-icons/content/delete-sweep';
-import CircularProgress from 'material-ui/CircularProgress';
+import Remove from 'material-ui/svg-icons/content/delete-sweep'
+import Interweave from 'interweave'
+import CircularProgress from 'material-ui/CircularProgress'
 
 const firebase = require('firebase')
 /**
@@ -123,20 +124,24 @@ export default class Bookmarks extends Component {
            <Paper  zDepth={2}
              children={<div>
             <div className="panel panel-default">
-              <div className="panel-heading">
-             <p style={{ fontSize:20}}>{bookmark.question }
+              <div className="panel-heading" style={{fontSize:18}}>
+                <Interweave
+                  tagName="span"
+                  content={bookmark.question }
+                />
                <span className="pull-right">
                  <IconButton tooltip="Remove" onClick={()=> this.handleDelete(bookmark.key)}>
                    <Remove />
                  </IconButton>
-               </span></p>
+               </span>
               </div>
               <div className="panel-body">
-                <div style={{fontSize:20}} >
-                  <div className='panel panel-default'  style={{paddingTop:10, margin:3, background:this.state.divColor}}>
-                   <p style={{fontSize:20}}>Correct Answer: {bookmark.answer}</p></div>
-                </div>
-
+                <div className='panel panel-default'  style={{fontSize:20, padding:10, margin:3, background:this.state.divColor}}>
+                  <Interweave
+                    tagName="span"
+                    content={'<span>Correct Answer: ' + bookmark.answer + '</span>'}
+                  />
+               </div>
               </div>
             </div>
           </div>

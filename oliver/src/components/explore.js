@@ -71,8 +71,8 @@ const style = {
    if (windowBottom >= docHeight) {
      this.showNextSet()
    }
- }
- onRowPress(key, post){
+  }
+  onRowPress(key, post){
    if (post.postLike) {
      this.unlikePost(post.key)
      post.starCount = post.starCount - 1
@@ -85,14 +85,14 @@ const style = {
    clone[key] = post
    this.setState({explores:clone})
  }
- likePost (postId, post) {
+  likePost (postId, post) {
   this.likesRef.child(postId).child(this.state.userId).set(true)
     this.exploreRef.child(this.state.collegeId).child(postId).child('starCount').once('value', (likesCount)=>{
      likesCount.ref.set(likesCount.val() + 1)
    })
    Notifications.sendNotification(post.userId, 'explore_like', postId, post.message + " " + post.percentage + "% in "+ post.title + "("+post.code+")", post.username)
  }
- unlikePost (postId) {
+  unlikePost (postId) {
    this.likesRef.child(postId).child(this.state.userId).remove()
    this.exploreRef.child(this.state.collegeId).child(postId).child('starCount').once('value', (likesCount)=>{
       likesCount.ref.set(likesCount.val() - 1)

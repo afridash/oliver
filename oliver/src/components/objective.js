@@ -9,6 +9,7 @@ import IconButton from 'material-ui/IconButton'
 import MenuItem from 'material-ui/MenuItem'
 import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert'
 import {Link} from 'react-router-dom'
+import Interweave from 'interweave'
 import CircularProgress from 'material-ui/CircularProgress'
 const firebase = require('firebase')
 const style = {
@@ -161,31 +162,51 @@ Logged.muiName = 'IconMenu';
               <Paper  zDepth={2}
                 children={<div className='col-sm-10 col-sm-offset-1'>
                <div className="panel panel-default">
-                 <div className="panel-heading">
-                   <p style={{ fontSize:20}}>{question.id}. &nbsp;&nbsp; {question.question}</p>
+                 <div className="panel-heading" style={{fontSize:14}}>
+                   <Interweave
+                     tagName="p"
+                     content={question.id + '. '+ question.question}
+                   />
                  </div>
                  <div className="panel-body">
                    <div style={{fontSize:16}} >
                      <div className='col-sm-12'>
-                       <div className='col-sm-3'>
-                         <span>A: {question.optionA}</span>
+                       <div className='col-sm-3' >
+                         <Interweave
+                           tagName="span"
+                           content={'<span> A. ' + question.optionA + '</span>'}
+                         />
+                         &nbsp;<span className="badge">2</span>
                        </div>
                        <div className='col-sm-3'>
-                          <span>B: {question.optionB}</span>
+                         <Interweave
+                           tagName="span"
+                           content={'<span> B. ' + question.optionB + '</span>'}
+                         />
+                         &nbsp;<span className="badge">2</span>
                        </div>
                        <div className='col-sm-3'>
-                         <span>C: {question.optionC}</span>
+                         <Interweave
+                           tagName="span"
+                           content={'<span> C. ' + question.optionC + '</span>'}
+                         />
+                         &nbsp;<span className="badge">2</span>
                        </div>
                        <div className='col-sm-3'>
-                          <span>D: {question.optionD}</span>
+                         <Interweave
+                           tagName="span"
+                           content={'<span> D. ' + question.optionD + '</span>'}
+                         />
+                         &nbsp;<span className="badge">2</span>
                        </div>
                      </div>
                      <div className='col-sm-12'>
                         <div className='panel panel-default'
-                          style={{paddingTop:10, margin:3, background:this.state.divColor, cursor:'pointer'}}
-                           onMouseEnter={this.handleFocus}
-                           onMouseLeave={this.handleFocus2}>
-                           <p style={{fontSize:20}}> &nbsp;&nbsp;Answer: {question.answer}</p>
+                          style={{padding:10, margin:3, background:this.state.divColor}}>
+                            <Interweave
+                              tagName="span"
+                              content={'<span> Answer. ' + question.answer + '</span>'}
+                            />
                          </div>
                      </div>
                    </div>

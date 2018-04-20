@@ -9,6 +9,7 @@ import Person from 'material-ui/svg-icons/social/person-add'
 import * as Notifications from '../auth/notifications'
 import {Panel} from 'react-bootstrap'
 import Firebase from '../auth/firebase'
+import {Link} from 'react-router-dom'
 import NavBar from './navBar'
 import {
   blue300,
@@ -38,6 +39,7 @@ export default class Search extends Component {
     this.usersRef = firebase.database().ref().child('users')
     this.statsRef = firebase.database().ref().child('user_stats')
     this.notificationsRef = firebase.database().ref('notifications')
+    this.followingRef = firebase.database().ref().child('following')
     this.badgesRef = firebase.database().ref().child('badges')
     firebase.auth().onAuthStateChanged(this.handleUser)
   }
@@ -139,36 +141,47 @@ export default class Search extends Component {
   followUser (user, index) {
     if (user.following) {
       this.followersRef.child(user.userId).child(this.state.userId).remove()
+      this.followingRef.child(this.state.userId).child(user.userId).remove()
       this.usersRef.child(user.userId).child('followers').once('value', (followers)=> {
         if (followers.exists()) followers.ref.set(followers.val() - 1)
+      })
+      this.usersRef.child(this.state.userId).child('following').once('value', (following)=> {
+        if (following.exists()) following.ref.set(following.val() - 1)
       })
       user.followers = user.followers - 1
     }else {
         this.followersRef.child(user.userId).child(this.state.userId).set(true)
+        this.followingRef.child(this.state.userId).child(user.userId).set(true)
         this.usersRef.child(user.userId).child('followers').once('value', (followers)=> {
           if (followers.exists()) followers.ref.set(followers.val() + 1)
           else followers.ref.set(1)
         })
+        this.usersRef.child(this.state.userId).child('following').once('value', (following)=> {
+          if (following.exists()) following.ref.set(following.val() + 1)
+          else following.ref.set(1)
+        })
         user.followers = user.followers + 1
+        //Send notification for new follower
+        var postData = {
+          userId: this.state.userId,
+          profilePicture: this.state.profilePicture,
+          displayName: this.state.displayName,
+          type: 'follow',
+          createdAt: firebase.database.ServerValue.TIMESTAMP
+        }
+        var item = this.notificationsRef.child(user.userId).push()
+        item.setWithPriority(postData, 0 - Date.now())
+        //Update badges
+        this.badgesRef.child(user.userId).child('notificationsBadges').once('value', (badgeCount)=>{
+          if (badgeCount.val()) badgeCount.ref.set(badgeCount.val() + 1)
+          else badgeCount.ref.set(1)
+        })
     }
+    //Update the UI
     user.following = !user.following
     var clone = this.state.users
     clone[index] = user
     this.setState({users:clone})
-
-    var postData = {
-      userId: this.state.userId,
-      profilePicture: this.state.profilePicture,
-      displayName: this.state.displayName,
-      type: 'follow',
-      createdAt: firebase.database.ServerValue.TIMESTAMP
-    }
-    var item = this.notificationsRef.child(user.userId).push()
-    item.setWithPriority(postData, 0 - Date.now())
-    this.badgesRef.child(user.userId).child('notificationsBadges').once('value', (badgeCount)=>{
-      if (badgeCount.val()) badgeCount.ref.set(badgeCount.val() + 1)
-      else badgeCount.ref.set(1)
-    })
   }
   spinner () {
      return (
@@ -234,7 +247,7 @@ export default class Search extends Component {
                               )
                           })()}
                           </span>
-                        <p style={{fontSize:16, fontWeight:'600'}}>{user.displayName}</p>
+                          <Link style={{textDecoration:'none'}} to={'/social/'+user.userId}><p style={{fontSize:16, fontWeight:'600'}}>{user.displayName}</p></Link>
                           <p style={{lineHeight:0.1, fontStyle:'italic'}}> @{user.username}</p>
                           <p>{user.college}</p>
                           <hr />

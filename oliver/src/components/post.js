@@ -18,7 +18,6 @@ import MenuItem from 'material-ui/MenuItem'
 import TextField from 'material-ui/TextField'
 import {Panel} from 'react-bootstrap'
 import * as Notifications from '../auth/notifications'
-import Interweave from 'interweave'
 import Firebase from '../auth/firebase'
 import * as TimeStamp from '../auth/timestamp'
 import {
@@ -33,7 +32,7 @@ const styles = {
     borderColor: '#2d6ca1',
   },
 };
-export default class Comments extends Component {
+export default class Post extends Component {
   constructor (props) {
     super (props)
     this.state = {
@@ -41,36 +40,37 @@ export default class Comments extends Component {
       tagged: [],
       index: 0,
       userId:'',
-      followers: [],
       username:'',
       user:'',
       name:'Richard Igbiriki',
       comment:'',
       following:false
     }
-    this.commentsRef = firebase.database().ref().child('answers').child(this.props.itemKey)
-    this.upvoteRef = firebase.database().ref().child('upvotes')
-    this.bookmarksRef = firebase.database().ref().child('bookmarks')
-    this.questionsRef = firebase.database().ref().child('questions')
-    this.exploreRef = firebase.database().ref().child('explore')
-    this.followersRef = firebase.database().ref().child('question_followers').child(this.props.itemKey)
+    this.postId = this.props.match.params.id
+    this.commentsRef = firebase.database().ref().child('post_comments')
+    this.postsRef = firebase.database().ref().child('posts')
+    this.likesRef = firebase.database().ref().child('comment_likes')
     this.usersRef = firebase.database().ref().child('users')
-    this.statsRef = firebase.database().ref().child('student_stats')
     firebase.auth().onAuthStateChanged(this.handleUser)
     this.data = []
     this.tagged = []
   }
+  componentWillMount () {
+    this.postsRef.child(this.postId).once('value', (post)=> {
+      this.setState({
+        post:post.val().post,
+        postPicture:post.val().profilePicture,
+        postUserId:post.val().userId,
+        postDisplayName:post.val().displayName,
+        postCreatedAt:post.val().createdAt,
+      })
+    })
+  }
   handleUser = async (user) => {
     if (user) {
       this.usersRef.child(user.uid).child('username').once('value', async (username)=> {
-        var collegeId = await localStorage.getItem('collegeId')
-        await this.setState({userId:user.uid, user:user.displayName, username:username.val(), profilePicture:user.photoURL, collegeId:collegeId})
+        await this.setState({userId:user.uid, user:user.displayName, username:username.val(), profilePicture:user.photoURL})
         this.retrieveComments()
-        this.retrieveFollowers()
-        this.followersRef.child(user.uid).once('value', (following)=>{
-          if (following.exists()) this.setState({following:true})
-          else this.setState({following:false})
-        })
       })
     }
   }
@@ -108,8 +108,8 @@ export default class Comments extends Component {
       if (!snapshot.exists()) this.setState({isLoading:false, refreshing:false})
     })
     //Retrieve all comments
-     this.commentsRef.on('child_added', (snapshot)=>{
-       this.upvoteRef.child(snapshot.key).child(this.state.userId).once('value', (upvoted)=>{
+     this.commentsRef.child(this.postId).on('child_added', (snapshot)=>{
+       this.likesRef.child(snapshot.key).child(this.state.userId).once('value', (upvoted)=>{
          if (upvoted.exists() && upvoted.val() === true) {
            this.data.unshift({key:snapshot.key, comment:snapshot.val().comment, createdAt:snapshot.val().createdAt,
               username:snapshot.val().username, userId:snapshot.val().userKey, user:snapshot.val().user,
@@ -130,26 +130,16 @@ export default class Comments extends Component {
        })
     })
   }
-  retrieveFollowers () {
-    //Retrieve followers from firebase for notifications
-    this.followersRef.once('value', (snapshots)=>{
-      this.followers = []
-      snapshots.forEach((snapshot)=>{
-        this.followers.push({userId:snapshot.key})
-        this.setState({followers:this.followers})
-      })
-    })
-  }
   upvote (item, index) {
     //If the user has not previously upvoted the answer
     if (!item.upvoted) {
       //Set value for upvote to true for user
-     this.upvoteRef.child(item.key).child(this.state.userId).set(true)
+     this.likesRef.child(item.key).child(this.state.userId).set(true)
      //If the user had previously downvoted the answer, increase number of votes by 2
      if (item.downvoted && item.votes === -1) {
        item.votes = item.votes + 2
        //Update number of votes by 2
-       this.commentsRef.child(item.key).child('votes').once('value', (votes)=>{
+       this.commentsRef.child(this.postId).child(item.key).child('votes').once('value', (votes)=>{
          votes.ref.set(votes.val() + 2)
        })
      }
@@ -157,7 +147,7 @@ export default class Comments extends Component {
        //If the user is just upvoting without previously downvoting
        //Update records by 1
        item.votes = item.votes + 1
-       this.commentsRef.child(item.key).child('votes').once('value', (votes)=>{
+       this.commentsRef.child(this.postId).child(item.key).child('votes').once('value', (votes)=>{
          votes.ref.set(votes.val() + 1)
        })
      }
@@ -168,23 +158,21 @@ export default class Comments extends Component {
      clone[index] = item
      this.setState({comments:clone})
      //Send notification to user
-     if (this.props.userId)
-     Notifications.sendNotification(item.userId, 'upvote', this.props.itemKey, this.props.item['post'], this.props.item['code'], this.props.item['userId'])
-     else Notifications.sendNotification(item.userId, 'upvote_theory', this.props.itemKey, this.props.item['post'], this.props.item['code'], this.props.item['courseId'])
+     Notifications.sendUserNotification(item.userId, 'comment_like', this.postId)
     }
   }
   downvote (item, index) {
     //See upvote for comments
     if (!item.downvoted) {
-      this.upvoteRef.child(item.key).child(this.state.userId).set(false)
+      this.likesRef.child(item.key).child(this.state.userId).set(false)
       if (item.upvoted && item.votes === 1) {
         item.votes = item.votes - 2
-        this.commentsRef.child(item.key).child('votes').once('value', (votes)=>{
+        this.commentsRef.child(this.postId).child(item.key).child('votes').once('value', (votes)=>{
           votes.ref.set(votes.val() - 2)
         })}
       else {
         item.votes = item.votes - 1
-        this.commentsRef.child(item.key).child('votes').once('value', (votes)=>{
+        this.commentsRef.child(this.postId).child(item.key).child('votes').once('value', (votes)=>{
           votes.ref.set(votes.val() - 1)
         })
       }
@@ -193,41 +181,19 @@ export default class Comments extends Component {
       var clone = this.state.comments
       clone[index] = item
       this.setState({comments:clone})
-
-      //Send notification to user
-      if(this.props.userId)
-      Notifications.sendNotification(item.userId, 'downvote', this.props.itemKey, this.props.item['post'], this.props.item['code'], this.props.item['userId'])
-      else Notifications.sendNotification(item.userId, 'downvote_theory', this.props.itemKey, this.props.item['post'], this.props.item['code'], this.props.item['userId'])
     }
   }
   deleteComment () {
     var key = this.state.deleteKey
-      this.upvoteRef.child(key).remove()
-      this.commentsRef.child(key).remove()
+      this.likesRef.child(key).remove()
+      this.commentsRef.child(this.postId).child(key).remove()
       this.data = this.state.comments.filter((comment)=> { return comment.key !== key})
       this.setState({comments:this.data})
-      if (this.props.userId) {
-         this.exploreRef.child(this.state.collegeId).child(this.props.itemKey).child('comments').once('value', (comments) => {
-           if (comments.exists()) comments.ref.set(comments.val() - 1)
-           else comments.ref.set(0)
-         })
-      } else {
-        this.questionsRef.child(this.props.item['userId']).child(this.props.itemKey).child('comments').once('value', (comments)=>{
-          if (comments.exists()) comments.ref.set(comments.val() -  1)
-          else comments.ref.set(0)
-        })
-      }
-    this.handleRequestClose()
-  }
-  followQuestion () {
-    //Check if question has been previously followed, if so remove it
-    //Follow new questions
-    if (this.state.following) {
-      this.followersRef.child(this.state.userId).remove()
-    }else {
-        this.followersRef.child(this.state.userId).set(true)
-    }
-    this.setState(prevState =>({following:!prevState.following}))
+       this.postsRef.child(this.postId).child('comments').once('value', (comments) => {
+         if (comments.exists()) comments.ref.set(comments.val() - 1)
+         else comments.ref.set(0)
+       })
+       this.handleRequestClose()
   }
   shareComment () {
     if (this.state.comment !== '') {
@@ -240,7 +206,7 @@ export default class Comments extends Component {
         votes: 0,
         createdAt: firebase.database.ServerValue.TIMESTAMP
       }
-      this.commentsRef.push(data)
+      this.commentsRef.child(this.postId).push(data)
       this.setState({comment: ''})
       this.handleNotifications()
       //Send notifications to tagged followers
@@ -249,34 +215,14 @@ export default class Comments extends Component {
    }
   sendTagNotification () {
      this.tagged = this.state.tagged.filter((user)=> { return this.state.comment.includes(user.username)})
-      if (this.props.userId) {
-        this.tagged.map((user)=> Notifications.sendNotification(user.userId, 'explore_mention', this.props.itemKey, this.props.item['post'], this.props.item['code'], this.props.item['userId']))
-      }else {
-        this.tagged.map((user)=> Notifications.sendNotification(user.userId, 'theory_mention', this.props.itemKey, this.props.item['post'], this.props.item['code'], this.props.item['userId']))
-      }
+      this.tagged.map((user)=> Notifications.sendUserNotification(user.userId, 'comment_mention', this.postId))
    }
   handleNotifications () {
-     if (this.props.userId) {
-       this.state.followers.map((follower)=>{
-         Notifications.sendNotification(follower.userId, 'explore_comment', this.props.itemKey, this.props.item['post'], this.props.item['code'], this.props.item['userId'])
-       })
-        this.exploreRef.child(this.state.collegeId).child(this.props.itemKey).child('comments').once('value', (comments) => {
-          if (comments.exists()) comments.ref.set(comments.val() + 1)
-          else comments.ref.set(1)
-        })
-     } else {
-       this.state.followers.map((follower)=>{
-         Notifications.sendNotification(follower.userId, 'theory_comment', this.props.itemKey, this.props.item['post'], this.props.item['code'], this.props.item['userId'])
-       })
-       this.questionsRef.child(this.props.item['userId']).child(this.props.itemKey).child('comments').once('value', (comments)=>{
-         if (comments.exists()) comments.ref.set(comments.val() + 1)
-         else comments.ref.set(1)
-       })
-       this.statsRef.child(this.props.item['userId']).child(this.state.userId).child('total_comments').once('value', (snapshot)=>{
-         if (snapshot.exists()) snapshot.ref.set(snapshot.val() + 1)
-         else snapshot.ref.set(1)
-       })
-     }
+    Notifications.sendUserNotification(this.state.postUserId, 'comment', this.postId)
+    this.postsRef.child(this.postId).child('comments').once('value', (comments) => {
+      if (comments.exists()) comments.ref.set(comments.val() + 1)
+      else comments.ref.set(1)
+    })
    }
   formatTaggedComment (comment) {
     //Break from recursion if there are no more @ symbols in the text
@@ -318,44 +264,21 @@ export default class Comments extends Component {
                     <div className="row">
                       <div className="col-sm-12">
                           <div className='row'>
-                            <div className='pull-right'>
-                              <span className='pull-right' style={{marginRight:5}}>
-                                {this.state.following ? <RaisedButton labelStyle={{color:'white'}}
-                                  buttonStyle={{backgroundColor:'red', borderColor:'white'}}
-                                  label="Unfollow" style={styles.button}
-                                  onClick={()=>this.followQuestion()}
-                                  labelPosition="before"
-                                  icon={<NotificationsIcon style={{width:20, height:20}} />}
-                                />:
-                                <RaisedButton labelStyle={{color:'white'}}
-                                  buttonStyle={{backgroundColor:'#2d6ca1', borderColor:'white'}}
-                                  label="Follow" style={styles.button}
-                                  onClick={()=>this.followQuestion()}
-                                  labelPosition="before"
-                                  icon={<NotificationsIcon style={{width:20, height:20}} />}
-                                />}
-
-                              </span>
-                          </div>
-                            {this.props.user ?
-                              <div className='col-sm-2'>
+                              <div className='col-sm-3 text-center'>
                                 <Avatar
-                                  src={this.props.item['profilePicture']}
-                                  size={60}
-                                />
-                              <p className='lead'> {this.props.item['code']}</p>
+                                  src={this.state.postPicture}
+                                  size={65}
+                                /><p className='lead'> {this.state.postDisplayName}</p>
                               </div>
-                            :
-                            <p className='lead'>{this.props.item['code']}</p>
-                          }
-                            <div className='col-sm-10'>
-                              <Interweave
-                                tagName="p"
-                                content={this.props.item['post']}
-                              />
+                            <div className='col-sm-9'>
+                              <p>{this.state.post}</p>
                             </div>
                           </div>
-                          {!this.props.noCreatedAt && <span className="pull-right">{timestamp.timeSince(this.props.item['createdAt'])}</span>}
+                          <span className="pull-right">
+                            {
+                              timestamp.timeSince(this.state.postCreatedAt)
+                          }
+                        </span>
                       </div>
                     </div>
                     <div>

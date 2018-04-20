@@ -8,6 +8,7 @@ import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
 import getMuiTheme from 'material-ui/styles/getMuiTheme'
 import Paper from 'material-ui/Paper'
 import {Firebase} from '../auth/firebase'
+import Interweave from 'interweave'
 import {Link} from 'react-router-dom'
 import CircularProgress from 'material-ui/CircularProgress'
 const firebase = require('firebase')
@@ -145,8 +146,8 @@ Logged.muiName = 'IconMenu';
          <div className='col-sm-6 col-sm-offset-3'>
            <br />  <br />
            <p className='text-info lead'>No Theories...</p>
-           <Link to={"/dashboard"}>
-             <RaisedButton label="Return Home" primary={true} fullWidth={true} style={style.chip}/>
+           <Link to={"/objective/"+this.courseId}>
+             <RaisedButton label="View Objectives" primary={true} fullWidth={true} style={style.chip}/>
            </Link>
          </div>
          </div>
@@ -166,12 +167,20 @@ Logged.muiName = 'IconMenu';
                       children={<div className='col-sm-offset-1 col-sm-10'>
                      <div className="panel panel-default">
                        <div className="panel-heading">
-                      <p style={{ fontSize:20}}>{question.id}. &nbsp; {question.question}</p>
+                         <Interweave
+                           tagName="p"
+                           content={question.id + '. '+ question.question}
+                         />
                        </div>
                        <div className="panel-body">
-                         <div style={{fontSize:20}} >
+                         <div >
                            <div className='panel panel-default'  style={{paddingTop:10, margin:3, background:this.state.divColor, cursor:'pointer'}} onMouseEnter={this.handleFocus}  onMouseLeave={this.handleFocus2}>
-                             <p style={{fontSize:20}}> &nbsp;&nbsp;{question.answer}</p>
+                             <div style={{padding:10}}>
+                               <Interweave
+                                 tagName="p"
+                                 content={question.answer}
+                               />
+                             </div>
                            </div>
                            {question.comments !== 0 && <p style={{fontSize:12, fontWeight:'600'}}>Replies: {question.comments}</p>}
                          </div>

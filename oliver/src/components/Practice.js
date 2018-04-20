@@ -1,16 +1,17 @@
-import React, {Component} from 'react';
+import React, {Component} from 'react'
 import {Link} from 'react-router-dom'
-import FlatButton from 'material-ui/FlatButton';
-import RaisedButton from 'material-ui/RaisedButton';
-import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-import getMuiTheme from 'material-ui/styles/getMuiTheme';
-import Paper from 'material-ui/Paper';
-import {red500} from 'material-ui/styles/colors';
-import BookMark from 'material-ui/svg-icons/action/bookmark';
-import CircularProgress from 'material-ui/CircularProgress';
+import FlatButton from 'material-ui/FlatButton'
+import RaisedButton from 'material-ui/RaisedButton'
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
+import getMuiTheme from 'material-ui/styles/getMuiTheme'
+import Paper from 'material-ui/Paper'
+import {red500} from 'material-ui/styles/colors'
+import BookMark from 'material-ui/svg-icons/action/bookmark'
+import CircularProgress from 'material-ui/CircularProgress'
 import Summary from './PracticeSummary'
-import { Button} from 'react-bootstrap';
+import { Button} from 'react-bootstrap'
 import {Firebase} from '../auth/firebase'
+import Interweave from 'interweave'
 import {
   blue300,
 } from 'material-ui/styles/colors';
@@ -403,25 +404,39 @@ class Practice extends Component {
               }
                  />
               </div>
-            <div className="panel-body">
-            <p style={{padding:10, fontSize:20}}>{index+1}. {this.state.questions[index].question}</p>
+            <div className="panel-body" style={{padding:10, fontSize:20}}>
+              <Interweave
+                tagName="p"
+                content={index+1 + '. ' + this.state.questions[index].question}
+              />
               <div onClick={()=>this.handleBookMark(this.state.questions[index])}>
                   <BookMark  style={{color:this.state.questions[index].bookmark ? red500 : blue300, cursor:'pointer'}}/>
               </div>
                       <div style={{textAlign:'center', fontSize:20}} >
-                        <div onClick={()=>this.selectOption('A', this.state.questions[index].optionA)} className='panel panel-default'  style={{paddingTop:10, margin:3, background: this.state.questions[index].selected === 'A' ? blue300 : 'white', cursor:'pointer'}} >
-                          <p style={{fontSize:20}}>{this.state.questions[index].optionA}</p>
+                        <div onClick={()=>this.selectOption('A', this.state.questions[index].optionA)} className='panel panel-default'  style={{fontSize:20, paddingTop:10, margin:3, background: this.state.questions[index].selected === 'A' ? blue300 : 'white', cursor:'pointer'}} >
+                          <Interweave
+                            tagName="p"
+                            content={this.state.questions[index].optionA}
+                          />
                         </div>
-                        <div onClick={()=>this.selectOption('B', this.state.questions[index].optionB)}  className='panel panel-default' style={{paddingTop:10, margin:3,background:this.state.questions[index].selected === 'B' ? blue300 : 'white',  cursor:'pointer'}} >
-                          <p style={{fontSize:20}}>{this.state.questions[index].optionB}</p>
+                        <div onClick={()=>this.selectOption('B', this.state.questions[index].optionB)}  className='panel panel-default' style={{fontSize:20, paddingTop:10, margin:3,background:this.state.questions[index].selected === 'B' ? blue300 : 'white',  cursor:'pointer'}} >
+                          <Interweave
+                            tagName="p"
+                            content={this.state.questions[index].optionB}
+                          />
                         </div>
-                        <div onClick={()=>this.selectOption('C', this.state.questions[index].optionC)} className='panel panel-default' style={{paddingTop:10, margin:3,  background:this.state.questions[index].selected === 'C' ? blue300 : 'white', cursor:'pointer'}} >
-                          <p style={{fontSize:20}}>{this.state.questions[index].optionC}</p>
+                        <div onClick={()=>this.selectOption('C', this.state.questions[index].optionC)} className='panel panel-default' style={{fontSize:20, paddingTop:10, margin:3,  background:this.state.questions[index].selected === 'C' ? blue300 : 'white', cursor:'pointer'}} >
+                          <Interweave
+                            tagName="p"
+                            content={this.state.questions[index].optionC}
+                          />
                         </div>
-                        <div onClick={()=>this.selectOption('D', this.state.questions[index].optionD)} className='panel panel-default' style={{paddingTop:10, margin:3, background:this.state.questions[index].selected === 'D' ? blue300 : 'white', cursor:'pointer'}} >
-                          <p style={{fontSize:20}}>{this.state.questions[index].optionD}</p>
+                        <div onClick={()=>this.selectOption('D', this.state.questions[index].optionD)} className='panel panel-default' style={{fontSize:20, paddingTop:10, margin:3, background:this.state.questions[index].selected === 'D' ? blue300 : 'white', cursor:'pointer'}} >
+                          <Interweave
+                            tagName="p"
+                            content={this.state.questions[index].optionD}
+                          />
                         </div>
-
                       </div>
                       <div className="col-sm-10 col-sm-offset-1">
                         {index > 0 && <FlatButton label="Previous" onClick={()=>this.setState({index: this.state.index -=1})} style={{position:'absolute',left:0} } />}

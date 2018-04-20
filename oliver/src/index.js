@@ -30,6 +30,9 @@ import Courses from './components/courses'
 import Search from './components/search'
 import Leaderboard from './components/leaderboard'
 import Social from './components/social'
+import Post from './components/post'
+import Followers from './components/followers'
+import Profile from './components/profile'
 import App from './App';
 import registerServiceWorker from './registerServiceWorker';
 
@@ -58,8 +61,13 @@ ReactDOM.render(
           <Route exact path={"/theories/:id"} component={Theories} />
           <Route exact path={"/bookmarks"} component={Bookmarks} />
           <Route exact path={"/leaderboard"} component={Leaderboard} />
+          <Route exact path={"/profile"} component={Profile} />
+          <Route exact path={"/profile/:id"} component={Profile} />
           <Route exact path={"/social"} component={Social} />
           <Route exact path={"/social/:id"} component={Social} />
+          <Route exact path={"/post/:id"} component={Post} />
+          <Route exact path={"/followers/"} component={Followers} />
+          <Route exact path={"/followers/:id"} component={Followers} />
           <Route exact path={"/PracticeSummary"} component={PracticeSummary} />
           <Route path={'/recents'} component={RecentActivities} />
           <Route exact path={'/notifications'} component={Notifications} />
