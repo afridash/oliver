@@ -10,7 +10,7 @@ import Firebase from '../auth/firebase'
 import _ from 'lodash'
 import {
   blue300,
-} from 'material-ui/styles/colors';
+} from 'material-ui/styles/colors'
 const firebase = require('firebase')
 const style = {
   chip: {

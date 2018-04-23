@@ -9,6 +9,7 @@ import Chat from 'material-ui/svg-icons/communication/chat-bubble-outline'
 import {Panel} from 'react-bootstrap'
 import Star from 'material-ui/svg-icons/toggle/star'
 import * as Notifications from '../auth/notifications'
+import * as timestamp from '../auth/timestamp'
 import Person from 'material-ui/svg-icons/social/person-add'
 import Arrow from 'material-ui/svg-icons/navigation/expand-more'
 import Popover, {PopoverAnimationVertical} from 'material-ui/Popover'
@@ -112,6 +113,21 @@ export default class Social extends Component {
       }
       this.setState({userId:user.uid, displayName:user.displayName, profilePicture:user.photoURL})
       }
+  }
+  componentWillReceiveProps(newProps) {
+    if (newProps.match.params.id !== this.userId) {
+      this.userId = newProps.match.params.id
+      this.getUser(this.userId)
+      this.retrieveFollowers(this.userId)
+      this.retrievePosts(this.userId)
+      if (this.userId !== this.state.userId)
+      this.setState({postAvailable:false})
+      else this.setState({postAvailable:true})
+      this.data = []
+      this.posts = []
+      this.followers = []
+      this.setState({followers:[], posts:[]})
+    }
   }
   handleChange = (event) => {
     this.setState({[event.target.name]:event.target.value})
@@ -529,6 +545,7 @@ export default class Social extends Component {
                            <MenuItem primaryText="Remove" onClick={()=>this.deletePost()} />
                          </Menu>
                        </Popover>
+                       <i className='pull-right'>{timestamp.timeSince(post.createdAt)}</i>
                       </div>
                       </div>
                   </div> }

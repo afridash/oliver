@@ -8,7 +8,7 @@ import RaisedButton from 'material-ui/RaisedButton'
 import StarHalf from 'material-ui/svg-icons/toggle/star-half'
 import Dialog from 'material-ui/Dialog'
 import Person from 'material-ui/svg-icons/social/person-add'
-import Snackbar from 'material-ui/Snackbar';
+import Snackbar from 'material-ui/Snackbar'
 import {Tabs, Tab} from 'material-ui/Tabs'
 import * as Notifications from '../auth/notifications'
 import getMuiTheme from 'material-ui/styles/getMuiTheme'

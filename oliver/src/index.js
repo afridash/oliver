@@ -33,6 +33,7 @@ import Social from './components/social'
 import Post from './components/post'
 import Followers from './components/followers'
 import Profile from './components/profile'
+import Uploads from './components/uploads'
 import App from './App';
 import registerServiceWorker from './registerServiceWorker';
 
@@ -54,6 +55,7 @@ ReactDOM.render(
       <Route exact path={'/search/:id'} component={Search}/>
        <NavBar>
          <Route exact path={"/dashboard"} component={Dashboard} />
+         <Route exact path={"/uploads"} component={Uploads} />
           <Route path={"/Practice/:id"} component={Practice} />
           <Route exact path={"/explore"} component={Explore} />
           <Route exact path={'/explore/:id'} component={ExploreView} />

@@ -8,6 +8,11 @@ import Fav from 'material-ui/svg-icons/action/favorite-border'
 import Chat from 'material-ui/svg-icons/communication/chat-bubble-outline'
 import {Firebase} from '../auth/firebase'
 import {Link} from 'react-router-dom'
+import IconButton from 'material-ui/IconButton'
+import Arrow from 'material-ui/svg-icons/navigation/expand-more'
+import Popover, {PopoverAnimationVertical} from 'material-ui/Popover'
+import Menu from 'material-ui/Menu'
+import MenuItem from 'material-ui/MenuItem'
 import CircularProgress from 'material-ui/CircularProgress'
 import * as Notifications from '../auth/notifications'
 import * as timestamp from '../auth/timestamp'
@@ -85,7 +90,7 @@ const style = {
    clone[key] = post
    this.setState({explores:clone})
  }
-  likePost (postId, post) {
+ likePost (postId, post) {
   this.likesRef.child(postId).child(this.state.userId).set(true)
     this.exploreRef.child(this.state.collegeId).child(postId).child('starCount').once('value', (likesCount)=>{
      likesCount.ref.set(likesCount.val() + 1)
@@ -107,6 +112,31 @@ const style = {
        })
      }
    }
+  handleClick (event, post) {
+   this.setState({
+     openComment: true,
+     anchorComment: event.currentTarget,
+     deleteKey: post.key,
+   })
+   }
+  async deletePost () {
+   this.exploreRef.child(this.state.collegeId).child(this.state.deleteKey).remove()
+   firebase.database().ref().child('answers').child(this.state.deleteKey).remove()
+   this.likesRef.child(this.state.deleteKey).remove()
+
+   this.explores = this.explores.filter((explore)=> explore.key !== this.state.deleteKey)
+   if (this.explores.length > 0){
+     this.showFirstSet(this.explores.length)
+   }else this.setState({noActivity:true, explores:[]})
+
+   this.handleRequestClose()
+ }
+  handleRequestClose = () => {
+  this.setState({
+    open: false,
+    openComment:false,
+  })
+ }
   async getExplore (collegeId) {
      await this.exploreRef.child(collegeId).limitToFirst(200).once('value', async (explores)=> {
 
@@ -189,6 +219,12 @@ const style = {
            <Paper style={style.paper} zDepth={2} rounded={true}
              children={
                <div className="row">
+                 <br />
+                 {this.state.userId === explore.userId &&
+                    <span style={{position:'absolute', right:'6%'}}>
+                 <IconButton ><Arrow onClick={(e)=>this.handleClick(e, explore)} /></IconButton>
+                </span>}
+                <p>{timestamp.timeSince(explore.createdAt)}</p>
                  <br/>
                  <div className="col-sm-3">
                    <Avatar
@@ -198,7 +234,7 @@ const style = {
                    />
                    <h2 style={{fontSize:16}}>{explore.username}</h2>
                  </div>
-                 <div className='col-sm-9'  >
+                 <div className='col-sm-9' >
                    <div className="col-sm-12">
                    <div className="col-sm-12 well">
                      <p style={{fontSize:14}}> {explore.message}...I got {explore.percentage} % in {explore.course} {explore.courseCode} </p>
@@ -222,15 +258,21 @@ const style = {
                    </div>
                    </div>
                    </div>
-                     <div className="col-sm-12">
-                         <div className="col-sm-10 col-sm-offset-1">
-                           <br/><br/>
-                           {timestamp.timeSince(explore.createdAt)}
-                         </div>
-                     </div>
 
                </div> }/>
                )}
+           <Popover
+              open={this.state.openComment}
+              anchorEl={this.state.anchorComment}
+              anchorOrigin={{horizontal: 'left', vertical: 'bottom'}}
+              targetOrigin={{horizontal: 'left', vertical: 'top'}}
+              onRequestClose={this.handleRequestClose}
+              animation={PopoverAnimationVertical}
+            >
+              <Menu>
+                <MenuItem primaryText="Delete" onClick={()=>this.deletePost()} />
+              </Menu>
+            </Popover>
        </div>
         )
    }
