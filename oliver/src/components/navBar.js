@@ -166,7 +166,7 @@ export default class NavBar extends Component {
                          >
                            <Divider />
                            <Link style={{textDecoration:'none'}} to='/profile/'>
-                             <MenuItem primaryText={this.state.username} leftIcon={
+                             <MenuItem onClick={this.handleRequestClose} primaryText={this.state.username} leftIcon={
                                <Avatar
                                  src={this.state.photoURL}
                                  size={35}
@@ -244,7 +244,7 @@ export default class NavBar extends Component {
                         onRequestChange={this.handleOnRequestChange}
                         >
                           <Link style={{textDecoration:'none'}} to='/profile/'>
-                            <MenuItem primaryText={this.state.username} leftIcon={
+                            <MenuItem onClick={this.handleRequestClose} primaryText={this.state.username} leftIcon={
                               <Avatar
                                 src={this.state.photoURL}
                                 size={35}

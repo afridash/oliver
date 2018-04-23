@@ -11,6 +11,7 @@ import Person from 'material-ui/svg-icons/social/person-add'
 import Snackbar from 'material-ui/Snackbar'
 import {Tabs, Tab} from 'material-ui/Tabs'
 import * as Notifications from '../auth/notifications'
+import TextField from 'material-ui/TextField'
 import getMuiTheme from 'material-ui/styles/getMuiTheme'
 import {Panel} from 'react-bootstrap'
 import Firebase from '../auth/firebase'
@@ -20,6 +21,7 @@ import FileReaderInput from 'react-file-reader-input'
 import NavBar from './navBar'
 import {
   blue300,
+  red500,
 } from 'material-ui/styles/colors'
 const firebase = require('firebase')
 const styles = {
@@ -68,6 +70,21 @@ export default class Profile extends Component {
   handleRequestClose = () => {
     this.setState({
       openSnack: false,
+    })
+  }
+  handleTextChange = (e) => {
+    this.setState({
+      [e.target.name] : e.target.value
+    })
+  }
+  saveUserName () {
+    this.usersRef.child(this.state.userId).update({username:this.state.username})
+    let {user} = this.state
+    user['username'] = this.state.username
+    this.setState({
+      editUsername:false,
+      user
+
     })
   }
   componentDidMount () {
@@ -419,7 +436,20 @@ export default class Profile extends Component {
                     })()}
                     </span>
                   <p style={{fontSize:16, fontWeight:'600'}}>{user.displayName}</p>
-                    <p style={{lineHeight:0.1, fontStyle:'italic'}}> @{user.username}</p>
+                    {this.state.editUsername ? <div>
+                      <TextField
+                        hintText={user.username}
+                        fullWidth={true}
+                        name='username'
+                        floatingLabelText={user.username}
+                        className='text-center'
+                        onChange = {this.handleTextChange}
+                      />
+                      <span style={{color:blue300, fontSize:12, cursor:'pointer', padding:10}} onClick={()=>this.saveUserName()}>Save</span>
+                      <span style={{color:red500, fontSize:12, cursor:'pointer', padding:10}} onClick={()=>this.setState({editUsername:false})}>Cancel</span>
+                    </div> :
+                      <p style={{lineHeight:0.1, fontStyle:'italic'}}> @{user.username} {user.userId === this.state.userId && <span style={{color:blue300, fontSize:10, cursor:'pointer'}} onClick={()=>this.setState({editUsername:true})}>Edit</span>}</p>
+                    }
                     <p>{user.college} {user.userId === this.state.userId && <span style={{color:blue300, fontSize:10, cursor:'pointer'}} onClick={this.handleOpen}>Change</span>}</p>
                     <Dialog
                       title="Select University"
