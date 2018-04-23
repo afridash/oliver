@@ -119,7 +119,7 @@ export default class Home extends Component {
   handleSignUp (event) {
     this.setState({loading:true})
     event.preventDefault()
-    if (this.state.firstName !== '' && this.state.lastName !== '' && this.state.username !== '' && this.state.selected !=='' && this.state.signupEmail !=='') {
+    if (this.state.firstName !== '' && this.state.lastName !== '' && this.state.username !== '' && this.state.selected !== '' && this.state.signupEmail !=='') {
       if (this.state.password === this.state.confirmPassword) {
         firebase.auth().createUserWithEmailAndPassword(this.state.signupEmail, this.state.password).then((user)=> {
           this.setUser(user)
@@ -155,7 +155,7 @@ export default class Home extends Component {
     this.usersRef.child(userKey).set({
       firstName: this.state.firstName,
       lastName:this.state.lastName,
-      email: this.state.email,
+      email: this.state.signupEmail,
       username : this.state.username,
       displayName:this.state.firstName + ' ' + this.state.lastName,
       userKey:userKey,
