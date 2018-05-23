@@ -27,11 +27,13 @@ export default class SignUp extends Component {
   }
   async createAccount () {
     if(validate.verifyLength(this.state.password,this.state.passwordConfirm) && validate.verifyMatch(this.state.password,this.state.passwordConfirm)){
-      return Actions.universities({password:this.state.password,
+      return Actions.universities({
+        password:this.state.password,
         email:this.state.email,
         firstName:this.state.firstName,
         lastName:this.state.lastName,
-        username:this.state.username
+        username:this.state.username,
+        displayName:this.state.firstName + ' ' + this.state.lastName
       })
     }else{
       Alert.alert('Passwords do not match, please try again')

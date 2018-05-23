@@ -14,6 +14,7 @@ import {
   Lightbox,
 } from 'react-native-router-flux';
 import theme, { styles } from 'react-native-theme'
+import { Root } from "native-base";
 import Index from './components/index'
 import Login from './components/login'
 import SignUp from './components/signup'
@@ -40,7 +41,8 @@ import VerifyPin from './components/verification'
 import Preferences from './components/preferences'
 import Contact from './components/contact'
 import About from './components/about'
-import MenuIcon from './assets/images/menu_burger.png';
+import MenuIcon from './assets/images/menu_burger.png'
+import Footer from './components/footer'
 
 const reducerCreate = params => {
   const defaultReducer = new Reducer(params);
@@ -81,7 +83,7 @@ export default class App extends React.Component {
     }
   }
   render() {
-    return (
+    return (<Root>
       <Router
         createReducer={reducerCreate}
         SceneStyle={styles}
@@ -110,7 +112,43 @@ export default class App extends React.Component {
                   */}
 
                   <Scene hideNavBar>
-                    <Scene key="home" initial component={Home} />
+                      <Scene
+                        initial
+                        key="footer"
+                        hideNavBar={true}
+                        tabs={true}
+                        tabBarPosition={'bottom'}
+                        tabBarComponent={Footer}
+                        >
+                      <Scene
+                        key="home"
+                        tab="home"
+                        icon="home"
+                        component={Home}
+                        hideNavBar={true}
+                      />
+                      <Scene
+                        key="social"
+                        tab="social"
+                        icon="md-person"
+                        component={Add}
+                        hideNavBar={true}
+                      />
+                      <Scene
+                        key="explore"
+                        tab="explore"
+                        icon="md-compass"
+                        component={Explore}
+                        hideNavBar={true}
+                      />
+                      <Scene
+                        key="search"
+                        tab="search"
+                        icon="search"
+                        component={Courses}
+                        hideNavBar={true}
+                      />
+                    </Scene>
                       <Scene key="start_exam" component={Exams}  />
                       <Scene key="add_course" component={Add} />
                       <Scene key="themes" component={Themes} />
@@ -134,6 +172,7 @@ export default class App extends React.Component {
             </Lightbox>
         </Overlay>
       </Router>
+      </Root>
     );
   }
 }

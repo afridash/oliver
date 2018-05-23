@@ -34,7 +34,8 @@ export default class SignUp extends Component {
         email:this.state.email,
         firstName:this.state.firstName,
         lastName:this.state.lastName,
-        username:this.state.username
+        username:this.state.username,
+        displayName:this.state.firstName + ' ' + this.state.lastName
       })
     }else{
       Alert.alert('Passwords do not match, please try again')

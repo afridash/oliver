@@ -4,7 +4,6 @@
 import React, {Component} from 'react'
 import {
   View,
-  Text,
   StatusBar,
   StyleSheet,
   Platform,
@@ -17,15 +16,19 @@ import {
 } from 'react-native'
 import {Actions} from 'react-native-router-flux'
 import theme, { styles } from 'react-native-theme'
-import {
-  AdMobBanner,
- } from 'react-native-admob'
 import Analytics from 'react-native-firebase-analytics'
 import Button from 'react-native-button'
 import Swipeable from 'react-native-swipeable'
+import { Container, Header, Content, Card, CardItem, Body, Text, ActionSheet, Icon} from 'native-base'
 import Firebase from '../auth/firebase'
-const firebase = require('firebase')
 import NavBar from './navBar'
+const firebase = require('firebase')
+var BUTTONS = [
+  { text: "Delete", icon: "trash", iconColor: "#fa213b" },
+  { text: "Cancel", icon: "close", iconColor: "#25de5b" }
+];
+var DESTRUCTIVE_INDEX = 0;
+var CANCEL_INDEX = 1;
 export default class Home extends Component {
   constructor (props) {
     super (props)
@@ -46,22 +49,6 @@ export default class Home extends Component {
     this.renderItem = this.renderItem.bind(this)
     this.historyRef = firebase.database().ref().child('activities')
     this.coursesRef = firebase.database().ref().child('course_activities')
-    this.verifyCollege()
-    this.rightButtons = [
-      <Text onPress={()=>this.handleSwipeClick()} style={customStyles.swipeButton}>Delete</Text>,
-    ]
-  }
-  async verifyCollege () {
-    var lincoln = '-KxDQcHjbMhp6mTgkqnK'
-    var college = await AsyncStorage.getItem('collegeId')
-    if (college === lincoln) {
-      await this.checkIfVerified()
-    }
-  }
-  async checkIfVerified () {
-    var verified = await AsyncStorage.getItem('verified')
-    if (verified === null || verified === '1') return Actions.replace('getCode')
-    else this.setState({verified:true})
   }
   async componentWillMount () {
     theme.setRoot(this)
@@ -87,7 +74,7 @@ export default class Home extends Component {
     Analytics.setUserProperty('username', this.state.username)
     Analytics.logEvent('view_item', {
     'page_id': 'home'
-  });
+    });
   }
   async checkUnsavedActivities () {
     //Save activities online if there are any unsaved
@@ -106,15 +93,6 @@ export default class Home extends Component {
       }
     }
   }
-  componentWillReceiveProps (p) {
-     this._setHighScore()
-  }
-  async _setHighScore () {
-    await this.data.map(async (course)=>{
-      course.high = await this.getHighScore(course.key)
-    })
-    this.setState({questions:this.data, noCourses:false, isLoading:false})
-  }
   async retrieveCoursesOffline () {
     //Retrieved and parse stored data in AsyncStorage
     //If no such data, read courses from firebase, then store them locally
@@ -125,9 +103,6 @@ export default class Home extends Component {
       this.readAddCourses()
     }else{
       this.data = courses
-      await this.data.map(async (course)=>{
-        course.high = await this.getHighScore(course.key)
-      })
       this.checkInternetStatus()
       this.setState({data:this.data, noCourses:false, isLoading:false})
     }
@@ -138,23 +113,22 @@ export default class Home extends Component {
     }
   }
   async readAddCourses() {
+    this.setState({refreshing:true})
     AsyncStorage.setItem('currentUser', this.state.userId)
       /* 1. Set courses to empty before reloading online data to avoid duplicate entries
         2. Retrieve users courses from firebase and store them locally using AsyncStorage */
     this.data = []
-    this.setState({refreshing:true})
     await this.ref.child(this.state.userId).once('value', (snapshot)=>{
       if (!snapshot.exists()) {
         AsyncStorage.setItem('user_courses', JSON.stringify([]))
         this.setState({refreshing:false, noCourses:true})
       }
       snapshot.forEach((course)=>{
-        this.data.push({key:course.key, show:false, name:course.val().name, code:course.val().code})
+        this.data.push({key:course.key, show:false, name:course.val().name, code:course.val().code, highest:course.val().highest})
         this.setState({data:this.data, refreshing:false,noCourses:false, isLoading:false})
          AsyncStorage.setItem('user_courses', JSON.stringify(this.data))
       })
     })
-    if (!this.state.noCourses) this._setHighScore()
   }
   handleSwipeClick () {
     //Delete row that has been clicked on after swiping
@@ -164,59 +138,65 @@ export default class Home extends Component {
     this.ref.child(this.state.userId).child(this.state.deleteRef).remove()
     this.registeredRef.child(this.state.deleteRef).child(this.state.userId).remove()
   }
-  _onPressItem (index) {
-    //Update view to reflect the information on the clicked item
-    var clone = this.state.data
-    clone[index].show = !clone[index].show
-    this.setState({data:clone})
-  }
-  async getHighScore (item) {
-    var result
-    try {
-      const value = await AsyncStorage.getItem(item+'high')
-      if (value !== null){
-        result = value
-      }else {
-        result = 'Not Started'
+  showOptions (item, index) {
+    return (
+          ActionSheet.show(
+      {
+        options: BUTTONS,
+        cancelButtonIndex: CANCEL_INDEX,
+        destructiveButtonIndex: DESTRUCTIVE_INDEX,
+        title: "Delete Course"
+      },
+      async buttonIndex => {
+        if (buttonIndex === 0) {
+          await this.setState({activeRow:index})
+           this.handleSwipeClick()
+        }
       }
-    } catch (error) {
-    }
-    return result
+    )
+   )
   }
   renderItem({ item, index }) {
      return (
-       <View
-         style={customStyles.listItem}
-         >
-      <Swipeable onRightActionRelease={()=>this.setState({activeRow:index, deleteRef:item.key})}
-        rightActionActivationDistance={100} onRef={ref => this.swipeable = ref}
-        rightButtons={this.rightButtons} onSwipeStart={()=>this.setState(prevState =>({swipingStarted:!prevState.swipingStarted}))} onSwipeComplete={()=>this.setState(prevState =>({swipingStarted:!prevState.swipingStarted}))}>
-        <TouchableHighlight underlayColor={'transparent'}  onPress={()=>this._onPressItem(index)}
-          style={{flex:1}}>
-          <View style={{flex:1, flexDirection:'row', justifyContent:'space-between'}}>
-            <View style={{flex:1}}><Text style={[customStyles.listText, styles.textColor]}> {item.name} ({item.code})</Text></View>
-            <View>
-                {!item.show ? <Image source={require('../assets/images/arrow_right.png')} style={[styles.iconColor, customStyles.icon]} resizeMode={'contain'}/> : <Image source={require('../assets/images/arrow_down.png')} style={[styles.iconColor, customStyles.icon]} resizeMode={'contain'}/>}
-            </View>
-          </View>
-        </TouchableHighlight>
-          {item.show && <View style={{flex:1}}>
-            <View style={[customStyles.actionsContainer,styles.actionsContainer]}>
-            <Text onPress={()=>Actions.theory({courseId:item.key, courseCode:item.code})} style={[customStyles.actions, styles.textColor]}>Study Theory Questions</Text>
-          </View>
-          <View style={[customStyles.actionsContainer,styles.actionsContainer]}>
-            <Text onPress={()=>Actions.objectives({courseId:item.key, courseCode:item.code})} style={[customStyles.actions, styles.textColor]}>Study Objectives</Text>
-          </View>
-          <View style={[customStyles.actionsContainer,styles.actionsContainer]}>
-            <Text onPress={()=>Actions.start_exam({courseId:item.key, courseCode:item.code, course:item.name})} style={[customStyles.actions, styles.textColor]}>Practice Exam (H: {item.high})</Text>
-          </View>
-          </View>
-        }
-      </Swipeable>
-    </View>
+       <View style={customStyles.listItem}>
+          <Card>
+            <CardItem>
+              <Body>
+                <Text style={[customStyles.listText, styles.homeTextColor]}>
+                  {item.name} ({item.code})
+                </Text>
+              </Body>
+              <Button transparent
+                onPress={() => this.showOptions(item, index)}>
+                <Icon name='ios-arrow-down' />
+              </Button>
+            </CardItem>
+              <Card style={customStyles.actions}>
+                <CardItem>
+                  <Body>
+                    <Text onPress={()=>Actions.theory({courseId:item.key, courseCode:item.code})} style={[styles.homeTextColor]}>Study Theory Questions</Text>
+                  </Body>
+                </CardItem>
+              </Card>
+            <Card style={customStyles.actions}>
+              <CardItem>
+                <Body>
+                  <Text onPress={()=>Actions.objectives({courseId:item.key, courseCode:item.code})} style={[styles.homeTextColor]}>Study Objectives</Text>
+                </Body>
+              </CardItem>
+            </Card>
+            <Card style={customStyles.actions}>
+              <CardItem>
+                <Body>
+                  <Text onPress={()=>Actions.start_exam({courseId:item.key, courseCode:item.code, course:item.name})} style={[styles.homeTextColor]}>Practice Exam (High Score: {item.highest})</Text>
+                </Body>
+              </CardItem>
+            </Card>
+          </Card>
+       </View>
       )
    }
-   searchcourses (text) {
+  searchcourses (text) {
      //Search for user entry using the second variable that the courses are stored in.
      //Filter each and return those that contain the searched string
      var clone = this.data
@@ -225,7 +205,7 @@ export default class Home extends Component {
      this.setState({data:this.result, noSearchResult:false})
      else this.setState({noSearchResult:true})
    }
-   renderHeader () {
+  renderHeader () {
      return  (
        <View style={customStyles.inputContainer} >
          <TextInput
@@ -236,32 +216,17 @@ export default class Home extends Component {
        </View>
      )
    }
-   renderFlatList () {
-     return (
-       <FlatList
-         scrollEnabled={!this.state.swipingStarted}
-         data={this.state.data}
-         ItemSeparatorComponent={()=><View style={customStyles.separator}></View>}
-         renderItem={this.renderItem}
-         refreshControl={
-          <RefreshControl
-          refreshing={this.state.refreshing}
-             onRefresh={this.readAddCourses.bind(this)}
-         />
-        }
-    />
-     )
-   }
-   bannerError = (error) => {
+  bannerError = (error) => {
      //Failed to load banner
    }
-   render () {
+  render () {
     return (
-      <View style={styles.container}>
+      <Container style={styles.container}>
+        <NavBar title='My Courses' />
         <StatusBar
           barStyle="light-content"
         />
-        <NavBar title='My Courses' />
+
         <View style={{flex:1}} >
           <View style={customStyles.container}>
             <View style={{flex:1, flexDirection:'row'}}>{this.renderHeader()}</View>
@@ -284,19 +249,24 @@ export default class Home extends Component {
                   <View style={{flex:1, justifyContent:'center', alignItems:'center'}}>
                   <Text style={[customStyles.listText, styles.textColor]}>:( Nothing Found</Text></View>
                 )
-                else return this.renderFlatList()
+                else return (
+                  <FlatList
+                    data={this.state.data}
+                    renderItem={this.renderItem}
+                    refreshControl={
+                     <RefreshControl
+                     refreshing={this.state.refreshing}
+                        onRefresh={()=>this.readAddCourses()}
+                    />
+                   }
+               />
+                )
               })()
             }
             </View>
-            {!this.state.verified && <AdMobBanner
-                adSize="smartBannerPortrait"
-                adUnitID="ca-app-pub-1090704049569053/1792603919"
-                testDeviceID="EMULATOR"
-                didFailToReceiveAdWithError={this.bannerError} />}
-
           </View>
         </View>
-      </View>
+      </Container>
     )
   }
 }
@@ -324,7 +294,7 @@ const customStyles = StyleSheet.create({
     fontFamily:(Platform.OS === 'ios') ? 'verdana' : 'serif',
   },
   listItem:{
-    padding:20,
+    padding:5,
   },
   listText:{
     fontSize:18,
@@ -332,18 +302,18 @@ const customStyles = StyleSheet.create({
     margin:5,
   },
   actionsContainer:{
-    borderWidth:1,
-    borderRadius:10,
-    overflow:'hidden',
+    flex:1,
     margin:5,
     marginLeft:20,
-    marginRight:20
+    marginRight:20,
+    padding:5
   },
   actions:{
-    padding:15,
-    fontSize:14,
-    fontFamily:(Platform.OS === 'ios') ? 'verdana' : 'serif',
-    },
+    flex:1,
+    marginLeft:10,
+    marginRight:10,
+    padding:5,
+  },
   input: {
   height: 50,
   flex: 1,

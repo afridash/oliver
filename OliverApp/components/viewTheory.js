@@ -20,9 +20,6 @@ import {Actions} from 'react-native-router-flux'
 import theme, { styles } from 'react-native-theme'
 import Button from 'react-native-button'
 import PureRenderMixin from 'react-addons-pure-render-mixin';
-import {
-  AdMobBanner,
- } from 'react-native-admob'
 import Firebase from '../auth/firebase'
 import * as Notifications from '../auth/notifications'
 import * as timestamp from '../auth/timestamp'
@@ -298,12 +295,6 @@ export default class Theory extends Component {
          </Button>
         </View>}
            {this.props.answer !== ''&& !this.props.comments && <Text style={[customStyles.answer, styles.textColor]}>Suggested Answer: {this.props.answer}</Text>}
-           {!this.state.verified && <AdMobBanner
-             adSize="smartBannerPortrait"
-             adUnitID="ca-app-pub-1090704049569053/1792603919"
-             testDeviceID="EMULATOR"
-             didFailToReceiveAdWithError={this.bannerError} />
-           }
        </View>
      )
    }
