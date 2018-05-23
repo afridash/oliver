@@ -81,7 +81,7 @@ export default class DrawerContent extends React.Component {
                   {this.state.badges !== 0 && <View style={sidebar.badge}><Text style={{color:'white', textAlign:'center'}}>{this.state.badges}</Text></View>}
                 </Button>
                   <Button style={[sidebar.secondaryContainer, styles.textColor]} onPress={()=>Actions.replace('explore')} >
-                    <Image source={require('../assets/images/explore.png')} style={[sidebar.home, styles.iconColor]} />  Explore</Button>
+                    <Image source={require('../assets/images/explore.png')} style={[sidebar.home, styles.iconColor]} />  Leaderboard</Button>
           </View>
         </View>
         <View style={[sidebar.line, styles.actionsContainer]}>

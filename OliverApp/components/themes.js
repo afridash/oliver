@@ -9,9 +9,6 @@ import {
 } from 'react-native'
 import {Actions} from 'react-native-router-flux'
 import theme, { styles } from 'react-native-theme'
-import {
-  AdMobBanner,
- } from 'react-native-admob'
 import Button from 'react-native-button'
 import NavBar from './navBar'
 export default class Themes extends Component {
@@ -168,13 +165,6 @@ export default class Themes extends Component {
             </Button>
           </View>
           <View style={{flex:1}}></View>
-          {!this.state.verified &&
-            <AdMobBanner
-             adSize="smartBannerPortrait"
-             adUnitID="ca-app-pub-1090704049569053/1792603919"
-             testDeviceID="EMULATOR"
-             didFailToReceiveAdWithError={this.bannerError} />
-          }
         </View>
       </View>
     )

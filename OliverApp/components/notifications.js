@@ -13,9 +13,6 @@ import {
 import Firebase from '../auth/firebase'
 const firebase = require('firebase')
 import {Actions} from 'react-native-router-flux'
-import {
-  AdMobBanner,
- } from 'react-native-admob'
 import theme, { styles } from 'react-native-theme'
 import Button from 'react-native-button'
 import Swipeable from 'react-native-swipeable'
@@ -190,13 +187,6 @@ export default class Notifications extends Component {
             })()
           }
           </View>
-          {!this.state.verified &&
-            <AdMobBanner
-             adSize="smartBannerPortrait"
-             adUnitID="ca-app-pub-1090704049569053/1792603919"
-             testDeviceID="EMULATOR"
-             didFailToReceiveAdWithError={this.bannerError} />
-           }
         </View>
       </View>
     )

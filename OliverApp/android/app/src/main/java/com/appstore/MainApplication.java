@@ -9,7 +9,6 @@ import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.shell.MainReactPackage;
 import com.facebook.soloader.SoLoader;
-import com.sbugert.rnadmob.RNAdMobPackage;
 import com.evollu.react.fa.FIRAnalyticsPackage;
 import java.util.Arrays;
 import java.util.List;
@@ -28,8 +27,7 @@ public class MainApplication extends Application implements ReactApplication {
               new MainReactPackage(),
               new ImagePickerPackage(),
               new RNFetchBlobPackage(),
-              new FIRAnalyticsPackage(),
-              new RNAdMobPackage()
+              new FIRAnalyticsPackage()
       );
     }
 

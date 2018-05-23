@@ -15,9 +15,6 @@ import {
 } from 'react-native'
 import {Actions} from 'react-native-router-flux'
 import theme, { styles } from 'react-native-theme'
-import {
-  AdMobBanner,
- } from 'react-native-admob'
 import _ from 'lodash'
 import Firebase from '../auth/firebase'
 import NavBar from './navBar'
@@ -230,12 +227,6 @@ export default class Courses extends Component {
               })()
             }
             </View>
-            {!this.state.verified && <AdMobBanner
-              adSize="smartBannerPortrait"
-              adUnitID="ca-app-pub-1090704049569053/1792603919"
-              testDeviceID="EMULATOR"
-              didFailToReceiveAdWithError={this.bannerError} />
-            }
           </View>
         </View>
       </View>

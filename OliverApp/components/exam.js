@@ -14,9 +14,6 @@ import {
   TouchableHighlight,
   ScrollView,
 } from 'react-native'
-import {
-  AdMobInterstitial,
- } from 'react-native-admob'
  import Analytics from 'react-native-firebase-analytics'
 import {Actions} from 'react-native-router-flux'
 import theme, { styles } from 'react-native-theme'
@@ -24,8 +21,6 @@ import Button from 'react-native-button'
 import Firebase from '../auth/firebase'
 const firebase = require('firebase')
 import NavBar from './navBar'
-AdMobInterstitial.setTestDevices(['EMULATOR']);
-AdMobInterstitial.setAdUnitID('ca-app-pub-1090704049569053/9261698690');
 export default class Exams extends Component {
   constructor (props) {
     super (props)
@@ -62,19 +57,11 @@ export default class Exams extends Component {
     await this.getInfo()
     //Retrieve locally stored images or download questions if none
     this.retrieveQuestionsOffline()
-    this.saveStarted()
     Analytics.setUserId(this.state.userId)
     Analytics.setUserProperty('username', this.state.username)
     Analytics.logEvent('exam_started', {
     'user': this.state.username
   })
-  }
-  saveStarted () {
-    //Save to number of tests started
-    var ref = this.statsRef.child(this.state.userId).child('total_started').once('value', (snapshot)=>{
-      if (snapshot.exists()) snapshot.ref.set(snapshot.val() + 1)
-      else snapshot.ref.set(1)
-    })
   }
   async getInfo () {
     //Retrieve user from local storage
@@ -83,8 +70,6 @@ export default class Exams extends Component {
     var college = await AsyncStorage.getItem('collegeId')
     var username = await AsyncStorage.getItem('username')
     var profilePicture = await AsyncStorage.getItem('pPicture')
-    var verified = await AsyncStorage.getItem('verified')
-    if (verified !== null && verified !== '1') this.setState({verified:true})
     this.setState({userId:key, status, college, profilePicture, username:username})
   }
   async downloadQuestions () {
@@ -204,12 +189,6 @@ export default class Exams extends Component {
     }
   }
   _saveToHistory (){
-      if (!this.state.verified){
-        AdMobInterstitial.requestAd().then(function(){
-         AdMobInterstitial.showAd()
-      }).catch((e)=>{
-      })
-    }
     var data = {
       title:this.props.course,
       code:this.props.courseCode,

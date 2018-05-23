@@ -71,6 +71,12 @@ theme.add({ // Add default theme
   iconColor:{
     tintColor:'white',
   },
+  homeTextColor:{
+    color:'#34495e',
+  },
+  homeActionsContainer:{
+    color:'#34495e'
+  },
 });
 
 theme.add({ // Add LIGHT theme

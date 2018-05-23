@@ -1,5 +1,5 @@
-import React from 'react';
-import PropTypes from 'prop-types';
+import React from 'react'
+import PropTypes from 'prop-types'
 import { StyleSheet,
   Text,
   View,
@@ -8,14 +8,11 @@ import { StyleSheet,
   Image,
   AsyncStorage,
   TouchableHighlight,
-  ImageBackground } from 'react-native';
-import Button from 'react-native-button';
+  ImageBackground } from 'react-native'
+import Button from 'react-native-button'
 import { Actions } from 'react-native-router-flux'
 import theme, { styles } from 'react-native-theme'
 var ImagePicker = require('react-native-image-picker')
-import {
-  AdMobBanner,
- } from 'react-native-admob'
 import Firebase from '../auth/firebase'
 const firebase = require('firebase')
 import NavBar from './navBar'
@@ -174,12 +171,6 @@ export default class Profile extends React.Component {
         </View>
         <View style={{flex:2, backgroundColor:'white'}}>
         </View>
-        {!this.state.verified && <AdMobBanner
-         adSize="smartBannerPortrait"
-         adUnitID="ca-app-pub-1090704049569053/1792603919"
-         testDeviceID="EMULATOR"
-         didFailToReceiveAdWithError={this.bannerError} />
-       }
       </View>
     </View>
     );
