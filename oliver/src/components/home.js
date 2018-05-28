@@ -82,6 +82,13 @@ export default class Home extends Component {
       })
     })
   }
+  componentDidMount () {
+    this.usersRef.once('value', (users)=> {
+      users.forEach((user)=> {
+        user.ref.update({displayName: user.val().firstName + ' ' + user.val().lastName})
+      })
+    })
+  }
   handleUser(user){
       if(user){
         this.setState({username:user.displayName, loggedIn:true})
@@ -119,10 +126,11 @@ export default class Home extends Component {
   handleSignUp (event) {
     this.setState({loading:true})
     event.preventDefault()
-    if (this.state.firstName !== '' && this.state.lastName !== '' && this.state.username !== '' && this.state.selected !=='' && this.state.signupEmail !=='') {
+    if (this.state.firstName !== '' && this.state.lastName !== '' && this.state.username !== '' && this.state.selected !== '' && this.state.signupEmail !=='') {
+      var username = this.state.username
       if (this.state.password === this.state.confirmPassword) {
         firebase.auth().createUserWithEmailAndPassword(this.state.signupEmail, this.state.password).then((user)=> {
-          this.setUser(user)
+          this.setUser(user, username)
         }).catch((error)=> {
           var errorCode = error.code;
           var errorMessage = error.message
@@ -136,13 +144,13 @@ export default class Home extends Component {
     }
 
   }
-  setUser (user) {
+  setUser (user, username) {
        user.updateProfile({
         displayName: this.state.firstName + " "+this.state.lastName,
         photoURL:this.picture
       }).then(()=> {
         user.sendEmailVerification().then(()=> {
-          this.saveUserInfo(user.uid)
+          this.saveUserInfo(user.uid, username)
         }).catch((error)=> {
               this.setState({signUpError:error.message, loading:false})
           })
@@ -150,18 +158,19 @@ export default class Home extends Component {
         this.setState({signUpError:error.message, loading:false})
       })
   }
-  saveUserInfo(userKey){
-    var college = this.state.colleges[this.state.selectedIndex]
+  saveUserInfo(userKey, username){
+    var college = this.state.colleges[this.state.selectedIndex-1]
     this.usersRef.child(userKey).set({
       firstName: this.state.firstName,
       lastName:this.state.lastName,
-      email: this.state.email,
-      username : this.state.username,
+      email: this.state.signupEmail,
+      username:username,
       displayName:this.state.firstName + ' ' + this.state.lastName,
       userKey:userKey,
       profilePicture:this.picture,
       collegeId:college.key,
       college:college.name,
+      signup_method:'web',
       signed_up:firebase.database.ServerValue.TIMESTAMP
       })
       localStorage.setItem('collegeId', college.key)

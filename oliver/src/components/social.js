@@ -135,11 +135,12 @@ export default class Social extends Component {
       data['postKey'] = postKey
       data['key'] = key
       this.posts.unshift(data)
+      this.data.unshift(data)
       this.state.followers.forEach((follower)=> {
         item = this.userPostsRef.child(follower.userId).push()
         item.setWithPriority(postKey, 0 - Date.now())
       })
-      this.setState({post:'', posts:this.posts, noActivity:false})
+      this.setState({post:'', posts:this.data, noActivity:false})
     }
   }
   handleClickComment (event, post) {
@@ -324,7 +325,7 @@ export default class Social extends Component {
   }
   unlikePost (postId) {
     this.likesRef.child(postId).child(this.state.userId).remove()
-    this.exploreRef.child(this.state.collegeId).child(postId).child('starCount').once('value', (likesCount)=>{
+    this.exploreRef.child(postId).child('starCount').once('value', (likesCount)=>{
         likesCount.ref.set(likesCount.val() - 1)
     })
   }

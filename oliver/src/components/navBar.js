@@ -81,6 +81,22 @@ export default class NavBar extends Component {
       });
         this.setState({redirect:true})
     }
+    handleRequestClose = () => {
+      this.setState({
+        openMenu:false,
+        openMore:false,
+        openLargeProfile:false,
+        openBurger:false
+      })
+    }
+    handleOnRequestChange = () => {
+      this.setState({
+        openMenu:false,
+        openMore:false,
+        openLargeProfile:false,
+        openBurger:false
+      })
+    }
    setSearchText (text) {
     if (this.props.searchPage) {
       this.props.onTextChange(text)
@@ -135,6 +151,7 @@ export default class NavBar extends Component {
                         </Badge>
                       </Link>
                      <IconMenu
+                       onClick={()=>this.setState({openMenu:!this.state.openMenu})}
                        iconButtonElement={
                          <Avatar
                            src={this.state.photoURL}
@@ -149,29 +166,32 @@ export default class NavBar extends Component {
                          >
                            <Divider />
                            <Link style={{textDecoration:'none'}} to='/profile/'>
-                             <MenuItem primaryText={this.state.username} leftIcon={
+                             <MenuItem onClick={this.handleRequestClose} primaryText={this.state.username} leftIcon={
                                <Avatar
                                  src={this.state.photoURL}
                                  size={35}
                                />} />
                            </Link>
                              <Divider />
-                               <Link style={{textDecoration:'none', color:'black'}} to={"/bookmarks"}>
+                               <Link onClick={this.handleRequestClose} style={{textDecoration:'none', color:'black'}} to={"/bookmarks"}>
                                <MenuItem value="1" primaryText='Bookmarks' />
                                </Link>
-                               <Link style={{textDecoration:'none', color:'black', padding:10}} to={"/recents"}>
+                               <Link onClick={this.handleRequestClose} style={{textDecoration:'none', color:'black', padding:10}} to={"/recents"}>
                                <MenuItem value="2" primaryText='Recent Activities' />
                                </Link>
-                               <Link to='/followers' style={{textDecoration:'none',  color:'black', padding:10}}>
+                               <Link onClick={this.handleRequestClose} to='/followers' style={{textDecoration:'none',  color:'black', padding:10}}>
                                <MenuItem value="4" primaryText="Followers" />
                              </Link>
                              <MenuItem value="3" primaryText="Sign out" onClick={(event) => this.handleLogout(event)}/>
                            </IconMenu>
                            <IconMenu
+                             onClick={()=>this.setState({openMore:!this.state.openMore})}
                              iconButtonElement={<IconButton><Menu /></IconButton>}
                              anchorOrigin={{horizontal: 'right', vertical: 'bottom'}}
                              targetOrigin={{horizontal: 'right', vertical: 'top'}}
                              iconStyle={{color:'white'}}
+                             open={this.state.openMore}
+                             onRequestChange={this.handleOnRequestChange}
                              >
                                  <SearchBar
                                    onChange={(text) => this.setSearchText(text)}
@@ -180,10 +200,11 @@ export default class NavBar extends Component {
                                    placeholder='Search users'
                                  />
                                  {this.state.showSearchPage && <Redirect to={'/search/'+this.state.searchString} push />}
-                               <Link to='/courses' style={{textDecoration:'none'}}><MenuItem value="2" primaryText="Courses"  /></Link>
-                               <Link to='/social' style={{textDecoration:'none'}}><MenuItem value="4" primaryText="Social" /></Link>
-                               <Link to='/explore' style={{textDecoration:'none'}}><MenuItem value="4" primaryText="Explore" /></Link>
-                               <Link to='/leaderboard' style={{textDecoration:'none'}}><MenuItem value="4" primaryText="Leaderboard" /></Link>
+                               <Link onClick={this.handleRequestClose} to='/courses' style={{textDecoration:'none'}}><MenuItem value="2" primaryText="Courses"  /></Link>
+                               <Link onClick={this.handleRequestClose} to='/social' style={{textDecoration:'none'}}><MenuItem value="4" primaryText="Social" /></Link>
+                               <Link onClick={this.handleRequestClose} to='/explore' style={{textDecoration:'none'}}><MenuItem value="4" primaryText="Explore" /></Link>
+                               <Link onClick={this.handleRequestClose} to='/leaderboard' style={{textDecoration:'none'}}><MenuItem value="4" primaryText="Leaderboard" /></Link>
+                               <Link onClick={this.handleRequestClose} to='/uploads' style={{textDecoration:'none'}}><MenuItem primaryText="Upload Questions" /></Link>
                              </IconMenu>
                    </div>
                    <div className='hidden-sm hidden-xs'>
@@ -218,24 +239,25 @@ export default class NavBar extends Component {
                         />}
                         anchorOrigin={{horizontal: 'left', vertical: 'bottom'}}
                         targetOrigin={{horizontal: 'left', vertical: 'top'}}
-                        open={this.state.openMenu}
+                        onClick={()=>this.setState({openLargeProfile:!this.state.openLargeProfile})}
+                        open={this.state.openLargeProfile}
                         onRequestChange={this.handleOnRequestChange}
                         >
                           <Link style={{textDecoration:'none'}} to='/profile/'>
-                            <MenuItem primaryText={this.state.username} leftIcon={
+                            <MenuItem onClick={this.handleRequestClose} primaryText={this.state.username} leftIcon={
                               <Avatar
                                 src={this.state.photoURL}
                                 size={35}
                               />} />
                           </Link>
                             <Divider />
-                              <Link style={{textDecoration:'none', color:'black'}} to={"/bookmarks"}>
+                              <Link onClick={this.handleRequestClose} style={{textDecoration:'none', color:'black'}} to={"/bookmarks"}>
                               <MenuItem value="1" primaryText='Bookmarks' />
                               </Link>
-                              <Link style={{textDecoration:'none', color:'black', padding:10}} to={"/recents"}>
+                              <Link onClick={this.handleRequestClose} style={{textDecoration:'none', color:'black', padding:10}} to={"/recents"}>
                               <MenuItem value="2" primaryText='Recent Activities' />
                               </Link>
-                               <Link to='/followers' style={{textDecoration:'none',  color:'black', padding:10}}>
+                               <Link onClick={this.handleRequestClose} to='/followers' style={{textDecoration:'none',  color:'black', padding:10}}>
                                <MenuItem value="4" primaryText="Followers" />
                              </Link>
                             <MenuItem value="3" primaryText="Sign out" onClick={(event) => this.handleLogout(event)}/>
@@ -245,9 +267,13 @@ export default class NavBar extends Component {
                             anchorOrigin={{horizontal: 'right', vertical: 'bottom'}}
                             targetOrigin={{horizontal: 'right', vertical: 'top'}}
                             iconStyle={{color:'white'}}
+                            onClick={()=>this.setState({openBurger:!this.state.openBurger})}
+                            open={this.state.openBurger}
+                            onRequestChange={this.handleOnRequestChange}
                             >
-                              <Link to='/' style={{textDecoration:'none'}}><MenuItem value="2" primaryText="About"  /></Link>
-                              <Link to='/policy' style={{textDecoration:'none'}}><MenuItem value="4" primaryText="Privacy" /></Link>
+                              <Link onClick={this.handleRequestClose} to='/' style={{textDecoration:'none'}}><MenuItem value="2" primaryText="About"  /></Link>
+                              <Link onClick={this.handleRequestClose} to='/policy' style={{textDecoration:'none'}}><MenuItem value="4" primaryText="Privacy" /></Link>
+                              <Link onClick={this.handleRequestClose} to='/uploads' style={{textDecoration:'none'}}><MenuItem primaryText="Upload Questions" /></Link>
                               <MenuItem value="4" primaryText="Copyright @ Afridash Ltd" />
                             </IconMenu>
                    </div>
