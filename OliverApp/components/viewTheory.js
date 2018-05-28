@@ -108,20 +108,18 @@ export default class Theory extends Component {
               username:snapshot.val().username, userId:snapshot.val().userKey, user:snapshot.val().user,
               profilePicture:snapshot.val().profilePicture, votes:snapshot.val().votes,
             upvoted:true, downvoted:false})
-           this.setState({comments:this.data, refreshing:false, noComments:false, isLoading:false})
          }else if(upvoted.exists() && upvoted.val() === false) {
            this.data.push({key:snapshot.key, comment:snapshot.val().comment, createdAt:snapshot.val().createdAt,
               username:snapshot.val().username, userId:snapshot.val().userKey, user:snapshot.val().user,
               profilePicture:snapshot.val().profilePicture, votes:snapshot.val().votes,
             upvoted:false, downvoted:true})
-           this.setState({comments:this.data, refreshing:false, noComments:false, isLoading:false})
          }else{
            this.data.push({key:snapshot.key, comment:snapshot.val().comment, createdAt:snapshot.val().createdAt,
               username:snapshot.val().username, userId:snapshot.val().userKey, user:snapshot.val().user,
               profilePicture:snapshot.val().profilePicture, votes:snapshot.val().votes,
             upvoted:false, downvoted:false})
-           this.setState({comments:this.data, refreshing:false, noComments:false, isLoading:false})
          }
+         this.setState({comments:this.data, refreshing:false, noComments:false, isLoading:false, refreshComments:!this.state.refreshComments})
        })
     })
   }
@@ -151,7 +149,7 @@ export default class Theory extends Component {
      item.downvoted = false
      var clone = this.state.comments
      clone[index] = item
-     this.setState({comments:clone})
+     this.setState({comments:clone, refreshComments:!this.state.refreshComments})
      //Send notification to user
      if (this.props.userId)
      Notifications.sendNotification(item.userId, 'upvote', this.props.questionId, this.props.question, this.props.courseCode, this.props.userId)
@@ -177,7 +175,7 @@ export default class Theory extends Component {
       item.upvoted = false
       var clone = this.state.comments
       clone[index] = item
-      this.setState({comments:clone})
+      this.setState({comments:clone, refreshComments:!this.state.refreshComments})
       //Send notification to user
       if (this.props.userId)
       Notifications.sendNotification(item.userId, 'downvote', this.props.questionId, this.props.question, this.props.courseCode, this.props.userId)
@@ -303,6 +301,7 @@ export default class Theory extends Component {
        <View style={{flex:1, flexDirection:'row'}}>
          <FlatList
            data={this.state.comments}
+           extraData={this.state.refreshComments}
            ListHeaderComponent = {this.renderHeader()}
            ItemSeparatorComponent={()=><View style={customStyles.separator}></View>}
            renderItem={this.renderItem}
@@ -372,9 +371,6 @@ export default class Theory extends Component {
        height: curHeight
      });
    }
-  bannerError = (e) => {
-    //Failed to load banner
-  }
   replyTo (userId, username) {
     username = username.replace(' ', '_')
     if (userId !== this.state.currentUser){

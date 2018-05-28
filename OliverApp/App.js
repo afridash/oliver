@@ -43,7 +43,11 @@ import Contact from './components/contact'
 import About from './components/about'
 import MenuIcon from './assets/images/menu_burger.png'
 import Footer from './components/footer'
-
+import Search from './components/search'
+import Social from './components/social'
+import SocialUser from './components/social-second'
+import Post from './components/post'
+import Leaders from './components/leaderboard'
 const reducerCreate = params => {
   const defaultReducer = new Reducer(params);
   return (state, action) => {
@@ -121,35 +125,55 @@ export default class App extends React.Component {
                         tabBarComponent={Footer}
                         >
                       <Scene
-                        key="home"
-                        tab="home"
+                        key="Home"
+                        tab="Home"
                         icon="home"
                         component={Home}
                         hideNavBar={true}
                       />
                       <Scene
-                        key="social"
-                        tab="social"
+                        initial
+                        key="Social"
                         icon="md-person"
-                        component={Add}
                         hideNavBar={true}
-                      />
+                       >
+                        <Scene
+                          key="Social"
+                          tab="Social"
+                          component={Social} />
+                          <Scene
+                            key="user"
+                            tab="Social"
+                            component={SocialUser} />
+                      </Scene>
                       <Scene
-                        key="explore"
-                        tab="explore"
+                        key="Explore"
+                        tab="Explore"
                         icon="md-compass"
                         component={Explore}
                         hideNavBar={true}
                       />
                       <Scene
-                        key="search"
-                        tab="search"
+                        tab="Search"
+                        key="Search"
                         icon="search"
-                        component={Courses}
                         hideNavBar={true}
-                      />
+                      >
+                        <Scene
+                          tab="Search"
+                          key="Search"
+                          component={Search}
+                         />
+                         <Scene
+                           key="user"
+                           tab="Search"
+                           component={SocialUser}
+                         />
+                      </Scene>
                     </Scene>
                       <Scene key="start_exam" component={Exams}  />
+                      <Scene
+                        key="post" component={Post} />
                       <Scene key="add_course" component={Add} />
                       <Scene key="themes" component={Themes} />
                       <Scene key="bookmarks" component={Bookmarks} />
@@ -158,6 +182,7 @@ export default class App extends React.Component {
                       <Scene key="courses" component={Courses} />
                       <Scene key="profile" component={Profile} />
                       <Scene key="recents" component={Recents} />
+                      <Scene key="leaders" component={Leaders} />
                       <Scene key="view" component={ViewFull} />
                       <Scene key="explore" component={Explore} />
                       <Scene key="viewTheory" component={Theory} />

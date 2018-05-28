@@ -16,12 +16,11 @@ import {
 import {Actions} from 'react-native-router-flux'
 import theme, { styles } from 'react-native-theme'
 import Button from 'react-native-button'
- import * as Notifications from '../auth/notifications'
+import * as Notifications from '../auth/notifications'
 import Firebase from '../auth/firebase'
-const firebase = require('firebase')
 import * as timestamp from '../auth/timestamp'
-
 import NavBar from './navBar'
+const firebase = require('firebase')
 export default class Explore extends Component {
   constructor (props) {
     super (props)

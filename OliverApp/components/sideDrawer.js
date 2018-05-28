@@ -68,7 +68,7 @@ export default class DrawerContent extends React.Component {
             </View>
           </TouchableHighlight>
           <View style={sidebar.menu}>
-            <Button style={[sidebar.secondaryContainer, styles.textColor]} onPress={()=>Actions.replace('home')}>
+            <Button style={[sidebar.secondaryContainer, styles.textColor]} onPress={()=>Actions.replace('Home')}>
               <Image source={require('../assets/images/homeicon.png')} style={[sidebar.home, styles.iconColor]} />  Home</Button>
               <Button style={[sidebar.secondaryContainer, styles.textColor]} onPress={()=>Actions.replace('courses')}>
                 <Image source={require('../assets/images/courses.png')} style={[sidebar.home, styles.iconColor]} />  Find Courses</Button>
@@ -80,7 +80,7 @@ export default class DrawerContent extends React.Component {
                   <Image source={require('../assets/images/bell.png')} style={[sidebar.home, styles.iconColor]} />  Notifications
                   {this.state.badges !== 0 && <View style={sidebar.badge}><Text style={{color:'white', textAlign:'center'}}>{this.state.badges}</Text></View>}
                 </Button>
-                  <Button style={[sidebar.secondaryContainer, styles.textColor]} onPress={()=>Actions.replace('explore')} >
+                  <Button style={[sidebar.secondaryContainer, styles.textColor]} onPress={()=>Actions.replace('leaders')} >
                     <Image source={require('../assets/images/explore.png')} style={[sidebar.home, styles.iconColor]} />  Leaderboard</Button>
           </View>
         </View>

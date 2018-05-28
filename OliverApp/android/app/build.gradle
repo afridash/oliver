@@ -139,7 +139,6 @@ android {
 
 dependencies {
     compile project(':react-native-firebase-analytics')
-    compile project(':RNAdMob')
     compile project(':react-native-image-picker')
     compile project(':react-native-fetch-blob')
     compile fileTree(dir: "libs", include: ["*.jar"])

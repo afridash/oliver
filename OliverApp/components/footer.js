@@ -1,7 +1,9 @@
 import React, { Component } from 'react'
 import _ from 'lodash';
-import { Footer, FooterTab, Button, Badge, Text, Icon } from 'native-base'
-import { Actions } from 'react-native-router-flux';
+import { Footer, FooterTab, Button, Badge, Text, Icon, StyleProvider } from 'native-base'
+import { Actions } from 'react-native-router-flux'
+import getTheme from '../native-base-theme/components';
+import platform from '../native-base-theme/variables/platform';
 
 export default class Footer_Component extends Component {
   constructor(props) {
@@ -28,11 +30,13 @@ export default class Footer_Component extends Component {
     })
 
     return (
+      <StyleProvider style={getTheme(platform)}>
       <Footer>
         <FooterTab>
           {tabs}
         </FooterTab>
       </Footer>
+    </StyleProvider>
     );
   }
 }

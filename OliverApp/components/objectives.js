@@ -116,9 +116,6 @@ export default class Objectives extends Component {
     </View>
       )
    }
-   bannerError = (e) => {
-     //Failed to load banner
-   }
    renderFlatList () {
      return (
        <FlatList

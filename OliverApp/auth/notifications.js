@@ -51,3 +51,32 @@ export function sendNotification (userKey, type, key , post='', code='', course=
     }
   }
 }
+export function sendUserNotification (userKey, type, key) {
+  this.user = firebase.auth().currentUser
+  this.notificationsRef = firebase.database().ref('notifications')
+  this.badgesRef = firebase.database().ref().child('badges')
+  if (userKey !== this.user.uid) {
+    var postData = {
+      userId: this.user.uid,
+      profilePicture: this.user.photoURL,
+      displayName: this.user.displayName,
+      type: type,
+      postId: key,
+      createdAt: firebase.database.ServerValue.TIMESTAMP
+    }
+    var item = this.notificationsRef.child(userKey).push()
+    item.setWithPriority(postData, 0 - Date.now())
+    //Save notification badge
+    if (type === 'accepted_request' || type === 'friend_request') {
+      this.badgesRef.child(userKey).child('friendsBadges').once('value', (badgeCount)=>{
+        if (badgeCount.val()) badgeCount.ref.set(badgeCount.val()+1)
+        else badgeCount.ref.set(1)
+      })
+    }else {
+      this.badgesRef.child(userKey).child('notificationsBadges').once('value', (badgeCount)=>{
+        if (badgeCount.val()) badgeCount.ref.set(badgeCount.val()+1)
+        else badgeCount.ref.set(1)
+      })
+    }
+  }
+}
