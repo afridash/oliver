@@ -103,8 +103,8 @@ export default class Home extends Component {
       this.readAddCourses()
     }else{
       this.data = courses
-      this.checkInternetStatus()
       this.setState({data:this.data, noCourses:false, isLoading:false})
+      this.checkInternetStatus()
     }
   }
   async checkInternetStatus () {
@@ -124,7 +124,7 @@ export default class Home extends Component {
         this.setState({refreshing:false, noCourses:true})
       }
       snapshot.forEach((course)=>{
-        this.data.push({key:course.key, show:false, name:course.val().name, code:course.val().code, highest:course.val().highest})
+        this.data.unshift({key:course.key, show:false, name:course.val().name, code:course.val().code, highest:course.val().highest})
         this.setState({data:this.data, refreshing:false,noCourses:false, isLoading:false})
          AsyncStorage.setItem('user_courses', JSON.stringify(this.data))
       })
@@ -168,7 +168,7 @@ export default class Home extends Component {
               </Body>
               <Button transparent
                 onPress={() => this.showOptions(item, index)}>
-                <Icon name='ios-arrow-down' />
+                <Icon name='ios-arrow-down' style={{fontSize:18, color:'lightgrey'}} />
               </Button>
             </CardItem>
               <Card style={customStyles.actions}>
@@ -216,9 +216,6 @@ export default class Home extends Component {
        </View>
      )
    }
-  bannerError = (error) => {
-     //Failed to load banner
-   }
   render () {
     return (
       <Container style={styles.container}>
@@ -256,7 +253,7 @@ export default class Home extends Component {
                     refreshControl={
                      <RefreshControl
                      refreshing={this.state.refreshing}
-                        onRefresh={()=>this.readAddCourses()}
+                        onRefresh={()=>this.readAddCourses.bind(this)}
                     />
                    }
                />

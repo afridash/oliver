@@ -15,9 +15,9 @@ const firebase = require('firebase')
 import {Actions} from 'react-native-router-flux'
 import theme, { styles } from 'react-native-theme'
 import Button from 'react-native-button'
-import Swipeable from 'react-native-swipeable'
+import HTMLView from 'react-native-htmlview'
 import NavBar from './navBar'
-
+var color = theme.name
 export default class Objectives extends Component {
   constructor (props) {
     super (props)
@@ -38,6 +38,7 @@ export default class Objectives extends Component {
   async componentWillMount () {
     //Set theme styles
     theme.setRoot(this)
+    color = theme.name
     //Retrieve user key
     var key = await AsyncStorage.getItem('myKey')
     var currentUser = await AsyncStorage.getItem('currentUser')
@@ -77,9 +78,8 @@ export default class Objectives extends Component {
     this.ref.orderByChild('type').equalTo('objective').once('value', (snapshot)=>{
       if (!snapshot.exists()) {
           AsyncStorage.setItem(this.props.courseId+'study', JSON.stringify([]))
-        this.setState({refreshing:false, noQuestions:true,isLoading:false})
+        this.setState({refreshing:false, noQuestions:true,})
       }
-      else this.setState({refreshing:false, noQuestions:false,isLoading:true})
       var answer
       snapshot.forEach((snap)=>{
           if (snap.val().answer.toUpperCase() === 'A') answer = snap.val().optionA
@@ -88,7 +88,7 @@ export default class Objectives extends Component {
           else if (snap.val().answer.toUpperCase() === 'D') answer = snap.val().optionD
           else answer = ''
           this.data.push({key:snap.key, question:snap.val().question, show:false, textAnswer:answer})
-          this.setState({data:this.data, noQuestions:false,isLoading:false, refreshing:false})
+          this.setState({data:this.data, noQuestions:false, refreshing:false})
           AsyncStorage.setItem(this.props.courseId+'study', JSON.stringify(this.data))
       })
     })
@@ -99,38 +99,61 @@ export default class Objectives extends Component {
     this.setState({data:clone})
   }
   renderItem({ item, index }) {
+    const htmlStyles = {
+      p: {
+        fontSize:16,
+        padding:-10,
+        color: (color === 'default' ) ? 'white' : '#ed9b9b',
+        fontFamily:(Platform.OS === 'ios') ? 'verdana' : 'serif',
+      }
+    }
     return (
      <View
       style={customStyles.listItem}
     >
-      <View style={{flex:1, flexDirection:'row', justifyContent:'space-between'}}>
-        <Text onPress={()=>this._onPressItem(index)} style={[customStyles.listText, styles.textColor]}>{index+1} {item.question}</Text>
-        {!item.show ? <Image source={require('../assets/images/arrow_right.png')} style={[styles.iconColor, customStyles.icon]} resizeMode={'contain'}/> : <Image source={require('../assets/images/arrow_down.png')} style={[styles.iconColor, customStyles.icon]} resizeMode={'contain'}/>}
-      </View>
+      <TouchableWithoutFeedback onPress={()=>this._onPressItem(index)}
+       style={{flex:1}}>
+        <View style={{flex:1, flexDirection:'row', justifyContent:'space-between'}}>
+          <View>
+            <HTMLView
+            value={"<p>"+item.question+"</p>"}
+            stylesheet={htmlStyles}
+            />
+          </View>
+          <View>
+            {!item.show ? <Image source={require('../assets/images/arrow_right.png')} style={[styles.iconColor, customStyles.icon]} resizeMode={'contain'}/> : <Image source={require('../assets/images/arrow_down.png')} style={[styles.iconColor, customStyles.icon]} resizeMode={'contain'}/>}
+          </View>
+        </View>
+      </TouchableWithoutFeedback>
       {item.show && <View style={{flex:1}}>
         <View style={[customStyles.actionsContainer, styles.actionsContainer]}>
-        <Text style={[customStyles.actions, styles.textColor]}>{item.textAnswer}</Text>
+        <View style={[customStyles.actions]}>
+          <HTMLView
+          value={"<p>"+item.textAnswer+"</p>"}
+          stylesheet={htmlStyles}
+          />
+        </View>
       </View>
       </View>
     }
     </View>
       )
    }
-   renderFlatList () {
-     return (
-       <FlatList
-         data={this.state.data}
-         ItemSeparatorComponent={()=><View style={customStyles.separator}></View>}
-         renderItem={this.renderItem}
-         refreshControl={
-          <RefreshControl
-          refreshing={this.state.refreshing}
-             onRefresh={this.retrieveQuestionsOnline.bind(this)}
-         />
-        }
-    />
-     )
-   }
+  renderFlatList () {
+   return (
+     <FlatList
+       data={this.state.data}
+       ItemSeparatorComponent={()=><View style={customStyles.separator}></View>}
+       renderItem={this.renderItem}
+       refreshControl={
+        <RefreshControl
+        refreshing={this.state.refreshing}
+           onRefresh={this.retrieveQuestionsOnline.bind(this)}
+       />
+      }
+  />
+   )
+ }
   render () {
     return (
       <View style={styles.container}>
@@ -138,11 +161,7 @@ export default class Objectives extends Component {
         <View style={styles.secondaryContainer} >
           <View style={{flex:6, flexDirection:'row'}}>
             {(()=>{
-              if (this.state.isLoading) return (
-                <View style={{flex:1, justifyContent:'center', alignItems:'center'}}>
-                  <Text style={[customStyles.listText, styles.textColor]}>Loading...</Text></View>
-              )
-              else if (this.state.noQuestions) return (<View style={{flex:1, justifyContent:'center', alignItems:'center'}}>
+               if (this.state.noQuestions) return (<View style={{flex:1, justifyContent:'center', alignItems:'center'}}>
                 <Text style={[customStyles.listText, styles.textColor]}>:( No Objectives...Check Back Later</Text></View>)
               else return this.renderFlatList()
             })()

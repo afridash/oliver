@@ -11,13 +11,15 @@ import {
   FlatList,
   Image,
   RefreshControl,
+  TouchableWithoutFeedback,
 } from 'react-native'
 import {Actions} from 'react-native-router-flux'
 import theme, { styles } from 'react-native-theme'
+import HTMLView from 'react-native-htmlview'
 import Button from 'react-native-button'
 import Firebase from '../auth/firebase'
 const firebase = require('firebase')
-
+var color = theme.name
 import NavBar from './navBar'
 export default class Theories extends Component {
   constructor (props) {
@@ -37,6 +39,7 @@ export default class Theories extends Component {
   async componentWillMount () {
     //Set theme styles
     theme.setRoot(this)
+    color = theme.name
     //Retrieve user key
     var key = await AsyncStorage.getItem('myKey')
     var currentUser = await AsyncStorage.getItem('currentUser')
@@ -89,15 +92,32 @@ export default class Theories extends Component {
     })
   }
   renderItem({ item, index }) {
+    const htmlStyles = {
+      p: {
+        fontSize:16,
+        padding:-10,
+        color: (color === 'default' ) ? 'white' : '#ed9b9b',
+        fontFamily:(Platform.OS === 'ios') ? 'verdana' : 'serif',
+      }
+    }
    return (
      <View
       style={customStyles.listItem}>
-      <View style={{flex:1, flexDirection:'row', justifyContent:'space-between'}}>
-        <Text
-          onPress={()=>Actions.viewTheory({courseCode:this.props.courseCode, question:item.question, questionId:item.key, answer:item.answered ? item.answer : "", courseId:this.props.courseId})}
-          style={[customStyles.listText, styles.textColor]}>{index+1}.  {item.question}</Text>
-       <Image source={require('../assets/images/arrow_right.png')} style={[styles.iconColor, customStyles.icon]} resizeMode={'contain'}/>
-      </View>
+      <TouchableWithoutFeedback
+        onPress={()=>Actions.viewTheory({courseCode:this.props.courseCode, question:item.question, questionId:item.key, answer:item.answered ? item.answer : "", courseId:this.props.courseId})}
+        style={{flex:1}}>
+        <View style={{flex:1, flexDirection:'row', justifyContent:'space-between', alignItems:'center'}}>
+          <View>
+            <HTMLView
+            value={"<p>"+item.question+"</p>"}
+            stylesheet={htmlStyles}
+            />
+          </View>
+          <View>
+             <Image source={require('../assets/images/arrow_right.png')} style={[styles.iconColor, customStyles.icon]} resizeMode={'contain'}/>
+          </View>
+        </View>
+      </TouchableWithoutFeedback>
       <Text style={[styles.textColor, customStyles.responses]}>{item.comments !== 0 && "Responses: "+item.comments}</Text>
     </View>
       )

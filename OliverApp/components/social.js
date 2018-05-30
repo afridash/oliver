@@ -385,8 +385,8 @@ export default class Social extends Component {
           </View>
           <View style={{marginTop:10, padding:5}}>
             {this.checkMessageLength(item.post) ?
-              <Text style={[styles.textColor, customStyles.details]}>{item.post.substr(0, 350)}...Show More</Text> :
-              <Text style={[styles.textColor, customStyles.details]}>{item.post}</Text> }
+              <Text onPress={()=>Actions.post({postId:item.postKey})} style={[styles.textColor, customStyles.details]}>{item.post.substr(0, 350)}...Show More</Text> :
+              <Text onPress={()=>Actions.post({postId:item.postKey})} style={[styles.textColor, customStyles.details]}>{item.post}</Text> }
           </View>
           <View style={customStyles.interactions}>
             <View style={{flex:1, alignItems:'flex-start',justifyContent:'flex-start'}}>
@@ -558,7 +558,7 @@ export default class Social extends Component {
         />
          {(()=>{
            if (this.state.noFollowers) return (
-             <View style={{flex:1, justifyContent:'center'}}>
+             <View style={{flex:1, justifyContent:'center', alignItems:'center'}}>
                <Text style={[customStyles.listText, styles.textColor]}>No Followers</Text></View>
            )
          })()
@@ -583,7 +583,7 @@ export default class Social extends Component {
          />
           {(()=>{
             if (this.state.noFollowings) return (
-              <View style={{flex:1, justifyContent:'center'}}>
+              <View style={{flex:1, justifyContent:'center', alignItems:'center'}}>
                 <Text style={[customStyles.listText, styles.textColor]}>No Followers</Text></View>
             )
           })()

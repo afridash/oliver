@@ -36,7 +36,6 @@ class Notifications extends Component {
       this.retrieveNotifications(user.uid)
     }
   }
-
   async retrieveNotifications (userId) {
     this.notifications = []
     await this.notificationsRef.child(userId).once('value', (snapshots) =>{

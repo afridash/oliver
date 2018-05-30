@@ -22,9 +22,11 @@ import Button from 'react-native-button'
 import PureRenderMixin from 'react-addons-pure-render-mixin';
 import Firebase from '../auth/firebase'
 import * as Notifications from '../auth/notifications'
+import HTMLView from 'react-native-htmlview'
 import * as timestamp from '../auth/timestamp'
 import NavBar from './navBar'
 const firebase = require('firebase')
+var color = theme.name
 export default class Theory extends Component {
   constructor (props) {
     super (props)
@@ -64,6 +66,7 @@ export default class Theory extends Component {
   async componentWillMount () {
     //Set theme styles
     theme.setRoot(this)
+    color = theme.name
     //Retrieve user info
     var userId = await AsyncStorage.getItem('myKey')
     var profilePicture = await AsyncStorage.getItem('pPicture')
@@ -273,9 +276,22 @@ export default class Theory extends Component {
       )
    }
   renderHeader () {
+    const htmlStyles = {
+      p: {
+        fontSize:16,
+        padding:-10,
+        color: (color === 'default' ) ? 'white' : '#ed9b9b',
+        fontFamily:(Platform.OS === 'ios') ? 'verdana' : 'serif',
+      }
+    }
      return (
-       <View style={{flex:1,}}>
-         <Text style={[customStyles.listText, styles.textColor]}>{this.props.question}</Text>
+       <View style={{flex:1}}>
+         <View>
+           <HTMLView
+           value={"<p>"+this.props.question+"</p>"}
+           stylesheet={htmlStyles}
+           />
+         </View>
          {!this.props.comments ? <View style={{flex:0.5, justifyContent:'center', alignItems:'center', flexDirection:'row'}}>
             <Button onPress={()=>this.bookmarkQuestion()}>
              {this.state.bookmark ? <Image source={require('../assets/images/bookmark.png')} style={[{width:25, height:25, margin:10, tintColor:'red', padding:10}]} resizeMode={'contain'}/>:

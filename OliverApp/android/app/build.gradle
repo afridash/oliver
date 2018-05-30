@@ -100,10 +100,10 @@ android {
 
     defaultConfig {
         applicationId "com.afridash.oliver"
-        minSdkVersion 16
+        minSdkVersion 21
         targetSdkVersion 22
-        versionCode 10
-        versionName "2.0.4"
+        versionCode 12
+        versionName "2.0.6"
         ndk {
             abiFilters "armeabi-v7a", "x86"
         }

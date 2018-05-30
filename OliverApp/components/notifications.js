@@ -135,6 +135,48 @@ export default class Notifications extends Component {
     </View>
       )
   }
+  showFollow (notification, index, message) {
+    return (
+     <View
+      style={customStyles.listItem}
+    >
+      <Swipeable onRightActionRelease={()=>this.setState({activeRow:index, deleteRef:item.key})}
+        rightActionActivationDistance={100} onRef={ref => this.swipeable = ref} rightButtons={this.rightButtons}
+         onSwipeStart={()=>this.setState(prevState =>({swipingStarted:!prevState.swipingStarted}))} onSwipeComplete={()=>this.setState(prevState =>({swipingStarted:!prevState.swipingStarted}))}>
+      <TouchableWithoutFeedback onPress={()=>Actions.user({userId:notification.userId})} style={{flex:1}}>
+        <View style={{flex:1, flexDirection:'row', justifyContent:'space-between'}}>
+           <Image source={{uri:notification.profilePicture}} style={customStyles.profilePicture} resizeMode={'cover'}/>
+           <View style={{flex:1}}>
+             <Text style={[customStyles.listText, styles.textColor]}>{notification.displayName} {message}</Text>
+           </View>
+           <Text style={[customStyles.timestamp, styles.textColor]}>{timestamp.timeSince(notification.createdAt)}</Text>
+        </View>
+      </TouchableWithoutFeedback>
+    </Swipeable>
+    </View>
+      )
+  }
+  showLike (notification, index, message) {
+    return (
+     <View
+      style={customStyles.listItem}
+    >
+      <Swipeable onRightActionRelease={()=>this.setState({activeRow:index, deleteRef:notification.key})}
+        rightActionActivationDistance={100} onRef={ref => this.swipeable = ref} rightButtons={this.rightButtons}
+         onSwipeStart={()=>this.setState(prevState =>({swipingStarted:!prevState.swipingStarted}))} onSwipeComplete={()=>this.setState(prevState =>({swipingStarted:!prevState.swipingStarted}))}>
+      <TouchableWithoutFeedback onPress={()=>Actions.post({postId:notification.postId})} style={{flex:1}}>
+        <View style={{flex:1, flexDirection:'row', justifyContent:'space-between'}}>
+           <Image source={{uri:notification.profilePicture}} style={customStyles.profilePicture} resizeMode={'cover'}/>
+           <View style={{flex:1}}>
+             <Text style={[customStyles.listText, styles.textColor]}>{notification.displayName} {message}</Text>
+           </View>
+           <Text style={[customStyles.timestamp, styles.textColor]}>{timestamp.timeSince(notification.createdAt)}</Text>
+        </View>
+      </TouchableWithoutFeedback>
+    </Swipeable>
+    </View>
+      )
+  }
   renderItem({ item, index }) {
     if (item.type === 'upvote') return this.showExploreVote(item, index, 'upvoted your comment')
     else if (item.type === 'downvote') return this.showExploreVote(item, index, 'downvoted your comment')
@@ -146,6 +188,11 @@ export default class Notifications extends Component {
     else if (item.type === 'downvote_theory') return this.showTheoryVote(item, index, 'downvoted your comment to a question')
     else if (item.type === 'theory_comment') return this.showTheoryVote(item, index, 'commented on a question you follow')
     else if (item.type === 'theory_mention') return this.showTheoryVote(item, index, 'replied to your comment on a question')
+    else if (item.type === 'follow') return this.showFollow(item, index, 'started following you')
+    else if (item.type === 'like') return this.showLike(item, index, 'liked your post')
+    else if (item.type === 'comment') return this.showLike(item, index, 'commented on your post')
+    else if (item.type === 'comment_like') return this.showLike(item, index, 'liked your comment')
+    else if (item.type === 'comment_mention') return this.showLike(item, index, 'tagged you to a comment')
    }
    bannerError = (e) => {
      //Failed to load banner

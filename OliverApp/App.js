@@ -125,6 +125,7 @@ export default class App extends React.Component {
                         tabBarComponent={Footer}
                         >
                       <Scene
+                        initial
                         key="Home"
                         tab="Home"
                         icon="home"
@@ -132,7 +133,6 @@ export default class App extends React.Component {
                         hideNavBar={true}
                       />
                       <Scene
-                        initial
                         key="Social"
                         icon="md-person"
                         hideNavBar={true}

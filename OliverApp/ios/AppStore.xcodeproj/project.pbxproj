@@ -28,7 +28,6 @@
 		21402F9D16A046CDB6FE4FBA /* libRNImagePicker.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4494ACEFDB084934B8539F1C /* libRNImagePicker.a */; };
 		2173F94E1F9CCF9C00CDC00C /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 2173F94D1F9CCF9B00CDC00C /* GoogleService-Info.plist */; };
 		2173F9791F9D2B5F00CDC00C /* logo.png in Resources */ = {isa = PBXBuildFile; fileRef = 2173F9781F9D2B5F00CDC00C /* logo.png */; };
-		21B0760B1F95169600F22984 /* GoogleMobileAds.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 21B0760A1F95169600F22984 /* GoogleMobileAds.framework */; };
 		2782E67E79214946B91F76AD /* FontAwesome.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D12549B80A9E4E4EA568C6A9 /* FontAwesome.ttf */; };
 		2896A898354F4C09AA840B00 /* libRNFetchBlob.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 53ED639687264543995137AF /* libRNFetchBlob.a */; };
 		29FCBD349DA64C818B634A00 /* Roboto_medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 947AFF9507A540CF9A1865CD /* Roboto_medium.ttf */; };
@@ -352,7 +351,6 @@
 		187063E53D8F46E5BBEADA63 /* libRNAdMobManager.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRNAdMobManager.a; sourceTree = "<group>"; };
 		2173F94D1F9CCF9B00CDC00C /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		2173F9781F9D2B5F00CDC00C /* logo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = logo.png; sourceTree = "<group>"; };
-		21B0760A1F95169600F22984 /* GoogleMobileAds.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = GoogleMobileAds.framework; sourceTree = "<group>"; };
 		235D988A44ED4A0785E26AFF /* libRNFIRAnalytics.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRNFIRAnalytics.a; sourceTree = "<group>"; };
 		2D02E47B1E0B4A5D006451C7 /* AppStore-tvOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "AppStore-tvOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2D02E4901E0B4A5D006451C7 /* AppStore-tvOSTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "AppStore-tvOSTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -399,7 +397,6 @@
 			files = (
 				ADBDB9381DFEBF1600ED6528 /* libRCTBlob.a in Frameworks */,
 				5E9157361DD0AC6A00FF2AA8 /* libRCTAnimation.a in Frameworks */,
-				21B0760B1F95169600F22984 /* GoogleMobileAds.framework in Frameworks */,
 				146834051AC3E58100842450 /* libReact.a in Frameworks */,
 				5E9157361DD0AC6A00FF2AA8 /* libRCTAnimation.a in Frameworks */,
 				00C302E51ABCBA2D00DB3ED1 /* libRCTActionSheet.a in Frameworks */,
@@ -528,7 +525,6 @@
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
 				2173F9781F9D2B5F00CDC00C /* logo.png */,
 				13B07FB01A68108700A75B9A /* AppDelegate.m */,
-				21B0760A1F95169600F22984 /* GoogleMobileAds.framework */,
 				13B07FB51A68108700A75B9A /* Images.xcassets */,
 				13B07FB61A68108700A75B9A /* Info.plist */,
 				13B07FB11A68108700A75B9A /* LaunchScreen.xib */,

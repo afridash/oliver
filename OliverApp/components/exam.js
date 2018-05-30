@@ -11,6 +11,7 @@ import {
   Modal,
   FlatList,
   Alert,
+  StyleSheet,
   TouchableHighlight,
   ScrollView,
 } from 'react-native'
@@ -18,9 +19,11 @@ import {
 import {Actions} from 'react-native-router-flux'
 import theme, { styles } from 'react-native-theme'
 import Button from 'react-native-button'
+import HTMLView from 'react-native-htmlview'
 import Firebase from '../auth/firebase'
 const firebase = require('firebase')
 import NavBar from './navBar'
+var color = theme.name
 export default class Exams extends Component {
   constructor (props) {
     super (props)
@@ -43,6 +46,7 @@ export default class Exams extends Component {
                 {key:4, message:'Cool! I did great! Try it'} ]
     }
     //firebase realtime db references
+    this.courseId = this.props.courseId
     this.ref = firebase.database().ref().child('questions').child(this.props.courseId)
     this.bookmarksRef = firebase.database().ref().child('bookmarks')
     this.historyRef = firebase.database().ref().child('activities')
@@ -50,6 +54,10 @@ export default class Exams extends Component {
     this.followersRef = firebase.database().ref().child('question_followers')
     this.statsRef = firebase.database().ref().child('student_stats').child(this.props.courseId)
     this.coursesRef = firebase.database().ref().child('course_activities').child(this.props.courseId)
+    this.oliverStats = firebase.database().ref().child('oliver_stats')
+    this.userStats = firebase.database().ref().child('user_stats')
+    this.courseRef = firebase.database().ref().child('user_courses')
+    this.htmlStyles = {}
   }
   async componentWillMount () {
     theme.setRoot(this)
@@ -62,6 +70,15 @@ export default class Exams extends Component {
     Analytics.logEvent('exam_started', {
     'user': this.state.username
   })
+  color = theme.name
+  this.htmlStyles = {
+    p: {
+      fontSize:16,
+      padding:-10,
+      color: (color === 'default' ) ? 'white' : '#ed9b9b',
+      fontFamily:(Platform.OS === 'ios') ? 'verdana' : 'serif',
+    }
+  }
   }
   async getInfo () {
     //Retrieve user from local storage
@@ -83,11 +100,17 @@ export default class Exams extends Component {
             else if (snap.val().answer.toUpperCase() === 'B') answer = snap.val().optionB
             else if (snap.val().answer.toUpperCase() === 'C') answer = snap.val().optionC
             else answer = snap.val().optionD
-            this.data.push({key:snap.key,
-              question:snap.val().question,
-              optionA:snap.val().optionA, optionB:snap.val().optionB,
-              optionC:snap.val().optionC, optionD:snap.val().optionD, selected:'',
-              answer:snap.val().answer.toUpperCase(), show:false,textAnswer:answer})
+            this.data.push({
+                key:snap.key,
+                question:"<p>"+snap.val().question+"</p>",
+                optionA: "<p>"+ snap.val().optionA + "</p>",
+                optionB: "<p>" + snap.val().optionB + "</p>",
+                optionC: "<p>" + snap.val().optionC + "</p>",
+                optionD: "<p>" + snap.val().optionD + "</p>",
+                selected:'',
+                answer:snap.val().answer.toUpperCase(),
+                show:false,
+                textAnswer:answer})
             AsyncStorage.setItem(this.props.courseId+'obj', JSON.stringify(this.data))
           }
         })
@@ -124,8 +147,8 @@ export default class Exams extends Component {
           else if (snap.val().answer.toUpperCase() === 'B') answer = snap.val().optionB
           else if (snap.val().answer.toUpperCase() === 'C') answer = snap.val().optionC
           else answer = snap.val().optionD
-          this.data.push({key:snap.key, question:snap.val().question, optionA:snap.val().optionA, optionB:snap.val().optionB,
-            optionC:snap.val().optionC, optionD:snap.val().optionD, selected:'', answer:snap.val().answer.toUpperCase(), show:false,
+          this.data.push({key:snap.key, question:"<p>"+snap.val().question+"</p>", optionA: "<p>"+ snap.val().optionA + "</p>", optionB: "<p>" + snap.val().optionB + "</p>",
+            optionC: "<p>" + snap.val().optionC + "</p>", optionD: "<p>" + snap.val().optionD + "</p>", selected:'', answer:snap.val().answer.toUpperCase(), show:false,
             textAnswer:answer})
           this.setState({questions:this.data, noQuestions:false,isLoading:false})
           AsyncStorage.setItem(this.props.courseId+'obj', JSON.stringify(this.data))
@@ -183,7 +206,6 @@ export default class Exams extends Component {
     if (this.state.index < this.state.questions.length - 1)
     this.setState({index:this.state.index + 1})
     else {
-      this._saveHigh()
       this._saveToHistory()
       this.setState(prevState =>({finished:!prevState.finished}))
     }
@@ -209,10 +231,77 @@ export default class Exams extends Component {
     this.setState({percentage:(this.state.correct/this.state.total * 100).toFixed(2)})
   }
   saveCompleted () {
+    this._updateCourseStats()
+    this._updateGeneralStats()
+    this._updateUserStats()
+  }
+  async _updateCourseStats () {
     //Save to number of tests completed
-    var ref = this.statsRef.child(this.state.userId).child('total_completed').once('value', (snapshot)=>{
+    var score = (this.state.correct/this.state.total * 100).toFixed(2)
+    await this.statsRef.child(this.state.userId).once('value', (snapshot)=>{
+      if (snapshot.exists()) {
+        snapshot.ref.update({total_completed:snapshot.val().total_completed + 1, last:score})
+
+        if (snapshot.hasChild('highest')) {
+          var highest = snapshot.val().highest
+          if (highest < score) {
+            snapshot.ref.update({highest:score})
+          }
+        }else {
+          snapshot.ref.update({highest:score})
+        }
+
+      } else{
+        snapshot.ref.update({total_completed: 1, highest:score, last:score})
+      }
+    })
+  }
+  async _updateGeneralStats() {
+    //Update oliver completed stats
+    await this.oliverStats.child('completed').once('value', (snapshot)=> {
       if (snapshot.exists()) snapshot.ref.set(snapshot.val() + 1)
       else snapshot.ref.set(1)
+    })
+  }
+  async _updateUserStats() {
+    var score = (this.state.correct/this.state.total * 100).toFixed(2)
+    //Update student total completed and highest
+    await this.userStats.child(this.state.userId).once('value', (snapshot)=>{
+      //Update completed
+      if (snapshot.exists()) {
+        if (snapshot.hasChild('completed')) {
+          snapshot.ref.update({completed:snapshot.val().completed + 1})
+        }else{
+          snapshot.ref.update({completed:1})
+        }
+      //Update highest and last
+        if (snapshot.hasChild('last')) {
+          var highest = snapshot.val().highest
+          if (highest < score) {
+            snapshot.ref.update({highest:score})
+          }
+        }else{
+          snapshot.ref.update({highest:score})
+        }
+        if (snapshot.hasChild('points')) {
+          snapshot.ref.update({points: snapshot.val().points + score/100 * 10})
+        }else{
+          snapshot.ref.update({points:score/100 * 10})
+        }
+        snapshot.ref.update({last:score})
+      }else {
+        snapshot.ref.update({
+          completed:1,
+          highest:score,
+          last:score,
+          points:score/100 * 10
+        })
+      }
+    })
+    this.courseRef.child(this.state.userId).child(this.courseId).child('highest').once('value', (highest)=> {
+      if (highest.exists()) {
+        if (highest.val() < score ) highest.ref.set(score)
+      }else highest.ref.set(score)
     })
   }
   async _saveActivities (data) {
@@ -228,15 +317,6 @@ export default class Exams extends Component {
        AsyncStorage.setItem('savedActivities',JSON.stringify(newActivity))
     }
   }
-  async _saveHigh () {
-    //Determine if the user already has a high score, override it--if it is below the current score
-    //Save the current score if there is no current high score
-    var score = await AsyncStorage.getItem(this.props.courseId+'high')
-    if (score === null) AsyncStorage.setItem(this.props.courseId+'high',this.state.correct.toString())
-    else {
-      if (score < this.state.correct) AsyncStorage.setItem(this.props.courseId+'high',this.state.correct.toString())
-    }
-  }
   showPrevQuestion () {
     //Determine if going backward is possible (decrease the index), else exam has concluded
     if (this.state.index > 0)
@@ -249,7 +329,11 @@ export default class Exams extends Component {
       <View style={{flex:1}}>
         <ScrollView style={{flex:1}}>
           <View style={{flex:1, flexDirection:'row', justifyContent:'center', margin:10, padding:15,}}>
-            <Text style={[customStyles.question, styles.textColor]}>{question.question}</Text>
+            <View style={[customStyles.question]}>
+            <HTMLView
+            value={question.question}
+            stylesheet={this.htmlStyles}
+          /></View>
             <Button onPress={()=>this.bookmarkQuestion(question)}>
               {question.bookmark ? <Image source={require('../assets/images/bookmark.png')} style={[{width:25, height:25, margin:10, tintColor:'red'}]} resizeMode={'contain'}/>:
             <Image source={require('../assets/images/bookmark.png')} style={[styles.iconColor, {width:25, height:25, margin:10}]} resizeMode={'contain'}/>}
@@ -258,18 +342,38 @@ export default class Exams extends Component {
         </ScrollView>
         <View style={{flex:2, margin:20,}}>
           <ScrollView >
-            <View style={[customStyles.actionsContainer, styles.actionsContainer,{backgroundColor:question.selected === 'A' ? '#607d8b' : 'transparent'}]}>
-            <Text onPress={()=>this.selectOption('A', question.optionA)} style={[customStyles.actions, styles.textColor]}>{question.optionA}</Text>
+            <TouchableHighlight onPress={()=>this.selectOption('A', question.optionA)} style={[customStyles.actionsContainer, styles.actionsContainer,{backgroundColor:question.selected === 'A' ? '#607d8b' : 'transparent'}]}>
+            <View style={[customStyles.actions]}>
+              <HTMLView
+              value={question.optionA}
+              stylesheet={this.htmlStyles}
+            />
           </View>
-          <View style={[customStyles.actionsContainer,styles.actionsContainer, {backgroundColor:question.selected === 'B' ? '#607d8b' : 'transparent'}]}>
-            <Text onPress={()=>this.selectOption('B', question.optionB)} style={[customStyles.actions, styles.textColor]}>{question.optionB}</Text>
+          </TouchableHighlight>
+          <TouchableHighlight onPress={()=>this.selectOption('B', question.optionB)} style={[customStyles.actionsContainer,styles.actionsContainer, {backgroundColor:question.selected === 'B' ? '#607d8b' : 'transparent'}]}>
+            <View style={[customStyles.actions]}>
+              <HTMLView
+              value={question.optionB}
+              stylesheet={this.htmlStyles}
+            />
           </View>
-          <View style={[customStyles.actionsContainer,styles.actionsContainer, {backgroundColor:question.selected === 'C' ? '#607d8b' : 'transparent'}]}>
-            <Text onPress={()=>this.selectOption('C', question.optionC)} style={[customStyles.actions, styles.textColor]}>{question.optionC}</Text>
+          </TouchableHighlight>
+          <TouchableHighlight onPress={()=>this.selectOption('C', question.optionC)} style={[customStyles.actionsContainer,styles.actionsContainer, {backgroundColor:question.selected === 'C' ? '#607d8b' : 'transparent'}]}>
+            <View style={[customStyles.actions]}>
+              <HTMLView
+              value={question.optionC}
+              stylesheet={this.htmlStyles}
+            />
           </View>
-          <View style={[customStyles.actionsContainer, styles.actionsContainer, {backgroundColor:question.selected === 'D' ? '#607d8b' : 'transparent'}]}>
-            <Text onPress={()=>this.selectOption('D', question.optionD)} style={[customStyles.actions, styles.textColor]}>{question.optionD}</Text>
+          </TouchableHighlight>
+          <TouchableHighlight onPress={()=>this.selectOption('D', question.optionD)} style={[customStyles.actionsContainer, styles.actionsContainer, {backgroundColor:question.selected === 'D' ? '#607d8b' : 'transparent'}]}>
+            <View style={[customStyles.actions]}>
+              <HTMLView
+              value={question.optionD}
+              stylesheet={this.htmlStyles}
+            />
           </View>
+          </TouchableHighlight>
           </ScrollView>
         </View>
       </View>
@@ -352,17 +456,42 @@ export default class Exams extends Component {
   }
   _keyExtractor = (item, index) => item.key
   renderItem({ item, index }) {
+    const htmlStyles = {
+      p: {
+        fontSize:16,
+        padding:-10,
+        color: (color === 'default' ) ? 'white' : '#ed9b9b',
+        fontFamily:(Platform.OS === 'ios') ? 'verdana' : 'serif',
+      }
+    }
    return (
      <View
       style={customStyles.listItem}
       >
-      <Text style={[customStyles.listText, styles.textColor]}>{index+1}. {item.question}</Text>
-      <View style={{flex:1, justifyContent:'center', alignItems:'center'}}>
+        <View style={[customStyles.question]}>
+        <HTMLView
+        value={"<p>"+item.question+"</p>"}
+        stylesheet={htmlStyles}
+        />
+      </View>
+      <View style={{flex:1}}>
         <View style={[customStyles.actionsContainer, styles.actionsContainer]}>
-          <Text style={[customStyles.actions, styles.textColor]}>Correct Answer: {item.textAnswer} ({item.answer})</Text>
+          <Text style={[customStyles.actions, styles.textColor]}>Correct Answer</Text>
+          <View style={[customStyles.question]}>
+          <HTMLView
+          value= {"<p>"+item.textAnswer + " (" + item.answer +") </p>" }
+          stylesheet={htmlStyles}
+          />
         </View>
+      </View>
         <View style={[customStyles.actionsContainer,styles.actionsContainer, {borderColor:item.selected === item.answer ? '#004d40' : 'red'}]}>
-          <Text style={[customStyles.actions, styles.textColor]}>Your Answer: {item.textSelected} ({item.selected})</Text>
+          <Text style={[customStyles.actions, styles.textColor]}>Your Answer</Text>
+             <View style={[customStyles.question]}>
+             <HTMLView
+             value= {"<p>" + item.textSelected + " (" + item.selected +") </p>" }
+             stylesheet={htmlStyles}
+             />
+           </View>
         </View>
       </View>
     </View>
@@ -466,11 +595,9 @@ export default class Exams extends Component {
     )
   }
 }
-const customStyles = {
+const customStyles = StyleSheet.create({
   question:{
-    fontSize:16,
     padding:10,
-    fontFamily:(Platform.OS === 'ios') ? 'verdana' : 'serif',
   },
   actionsContainer:{
     borderWidth:1,
@@ -481,9 +608,7 @@ const customStyles = {
     marginRight:20,
   },
   actions:{
-    padding:15,
-    fontSize:18,
-    fontFamily:(Platform.OS === 'ios') ? 'verdana' : 'serif',
+    padding:10,
     },
     icons:{
       margin: 10,
@@ -532,4 +657,4 @@ const customStyles = {
       overflow:'hidden',
       borderRadius:10,
     },
-}
+})
