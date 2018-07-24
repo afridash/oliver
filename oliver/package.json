@@ -26,6 +26,7 @@
     "react-easy-chart": "^0.3.0",
     "react-file-reader-input": "^1.1.4",
     "react-native-router-flux": "^4.0.0-beta.22",
+    "react-ravepayment": "^1.0.1",
     "react-router-dom": "^4.2.0",
     "react-toastify": "^3.4.3",
     "recharts": "^1.0.0-beta.0"

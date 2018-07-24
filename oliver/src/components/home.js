@@ -99,11 +99,16 @@ export default class Home extends Component {
     this.setState({loading:true})
       event.preventDefault()
       await firebase.auth().signInWithEmailAndPassword(this.state.email, this.state.password).then((user)=>{
-        this.usersRef.child(user.uid).child('collegeId').once('value', (college)=>{
-          localStorage.setItem('collegeId', college.val())
+        this.usersRef.child(user.uid).once('value', (student)=>{
+          localStorage.setItem('collegeId', student.val().collegeId)
           localStorage.setItem('userId', user.uid)
+          if (student.hasChild('has_paid') && student.val().has_paid === true) {
+            this.setState({redirect:true, loading:false})
+          }else{
+            localStorage.setItem('has_paid', "false")
+            this.setState({notPaid:true, loading:false})
+          }
         })
-        this.setState({redirect:true, loading:false})
       }).catch((error)=> {
       var errorMessage = error.message
       this.setState({error:errorMessage, loading:false})
@@ -175,7 +180,8 @@ export default class Home extends Component {
       })
       localStorage.setItem('collegeId', college.key)
       localStorage.setItem('userId', userKey)
-      this.setState({redirect:true, loading:false})
+      localStorage.setItem('has_paid', "false")
+      this.setState({notPaid:true, loading:false})
   }
   logOut () {
     firebase.auth().signOut().then(()=> {
@@ -184,7 +190,7 @@ export default class Home extends Component {
   }
   render() {
     return (
-      this.state.redirect ? <Redirect to='/dashboard' push/> : <div>
+       <div>
         <section className="header parallax home-parallax page" id="HOME">
         <div className="section_overlay">
           <nav className="navbar navbar-default navbar-fixed-top">
@@ -386,11 +392,12 @@ export default class Home extends Component {
                       </div>
                     </MuiThemeProvider>
                   </div>
-
               </div>
           </div>
       </div>
       </section>
+      {this.state.redirect && <Redirect to='/dashboard' push />}
+      {this.state.notPaid && <Redirect to='/pay' push />}
     </div>
     )
   }

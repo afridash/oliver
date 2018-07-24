@@ -33,7 +33,8 @@ import Social from './components/social'
 import Post from './components/post'
 import Followers from './components/followers'
 import Profile from './components/profile'
-import App from './App';
+import App from './App'
+import Pay from './components/pay'
 import registerServiceWorker from './registerServiceWorker';
 
 ReactDOM.render(
@@ -41,6 +42,7 @@ ReactDOM.render(
   <div>
     <Switch>
        <Route exact path={"/"} component={App}/>
+         <Route exact path={"/pay"} component={Pay} />
         <Route exact path={"/questions"} component={Home} />
         <Route exact path={"/students"} component={Students} />
         <Route exact path={"/student/:id/:courseId"} component={Student} />

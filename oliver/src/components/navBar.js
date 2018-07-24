@@ -14,6 +14,7 @@ import NotificationsIcon from 'material-ui/svg-icons/social/notifications'
 import Avatar from 'material-ui/Avatar'
 import Divider from 'material-ui/Divider'
 import {Redirect} from 'react-router-dom'
+import moment from 'moment'
 import {Link} from 'react-router-dom'
 import '../styles/styles.css'
 const firebase = require('firebase')
@@ -53,14 +54,31 @@ export default class NavBar extends Component {
      };
      firebase.auth().onAuthStateChanged(this.handleUser)
      this.badgesRef = firebase.database().ref().child('badges')
+     this.usersRef = firebase.database().ref().child('users')
    }
    handleUser = (user) => {
      if (user) {
        this.setState({username:user.displayName, userId:user.uid, photoURL:user.photoURL})
        this.addListener(user.uid)
+       this.checkPaid(user.uid)
      }else {
        this.setState({redirect:true})
      }
+   }
+   checkPaid (userId) {
+     this.usersRef.child(userId).once('value', (student)=>{
+       if(!student.hasChild('has_paid') || student.val().has_paid === false){
+         this.setState({notPaid:true})
+       }else{
+         let date = moment(student.val().paid_on).add(1, 'years').calendar()
+         let current = moment().format('L')
+         if (date === current){
+           this.usersRef.child(this.state.userId).update({
+             has_paid:false
+           })
+         }
+       }
+     })
    }
    addListener (userId) {
      this.badgesRef.child(userId).on('child_added', (badges)=>{
@@ -277,6 +295,7 @@ export default class NavBar extends Component {
                               <MenuItem value="4" primaryText="Copyright @ Afridash Ltd" />
                             </IconMenu>
                    </div>
+                   {this.state.notPaid && <Redirect to='/pay' push />}
                   </div>}
                       />
                       {this.props.children}
