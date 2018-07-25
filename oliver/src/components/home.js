@@ -226,6 +226,7 @@ export default class Home extends Component {
                       <div className="home_text">
                           <h1>Oliver</h1>
                           <p>Exam Prep Simplified</p>
+                          <p style={{fontSize:18, color:'#ff1744', marginTop:30}} className='text-danger'>Now NGN 550.00 Per Year for a limited time</p>
                           <div className="download-btn">
                               <a className="btn home-btn wow fadeInLeft" href="#DOWNLOAD">Download</a>
                               <a className="tuor btn wow fadeInRight" href="#ABOUT">Take a tour <i className="fa fa-angle-down"></i></a>
