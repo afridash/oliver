@@ -96,7 +96,7 @@ export default class Theories extends Component {
       p: {
         fontSize:16,
         padding:-10,
-        color: (color === 'default' ) ? 'white' : '#ed9b9b',
+        color: (color === 'light' ) ? '#ed9b9b' : 'white',
         fontFamily:(Platform.OS === 'ios') ? 'verdana' : 'serif',
       }
     }

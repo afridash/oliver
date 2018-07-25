@@ -1,11 +1,34 @@
 import React from 'react';
-import { StyleSheet, Text, View , Image, TouchableHighlight, Platform, StatusBar, AsyncStorage} from 'react-native';
+import {
+  StyleSheet,
+  Text,
+  View ,
+  Image,
+  TouchableHighlight,
+  Platform,
+  StatusBar,
+  AsyncStorage,
+  Linking,
+} from 'react-native';
 import {Actions} from 'react-native-router-flux'
 import Slider from './slider'
 import theme, { styles } from 'react-native-theme'
 export default class Index extends React.Component {
+  constructor (props){
+    super(props)
+    this.handleOpenURL = this.handleOpenURL.bind(this)
+  }
   async componentWillMount () {
     theme.setRoot(this)
+  }
+  componentDidMount() {
+    Linking.addEventListener('url', this.handleOpenURL);
+  }
+  componentWillUnmount() {
+    Linking.removeEventListener('url', this.handleOpenURL);
+  }
+  handleOpenURL(event) {
+    return Linking.openURL("https://oliver.afridash.com")
   }
   render() {
     return (
@@ -22,7 +45,7 @@ export default class Index extends React.Component {
         </View>
         <Slider style={styles.image} logoStyle={styles.logo} informationStyle={styles.information} />
          </View>
-           <Text onPress={()=>Actions.signup()} style={[styles.primaryButton, customStyles.loginButton, customStyles.primaryButton]}>Create Account</Text>
+           <Text onPress={this.handleOpenURL} style={[styles.primaryButton, customStyles.loginButton, customStyles.primaryButton]}>Create Account</Text>
       </View>
     );
   }
