@@ -6,7 +6,7 @@ import {
  Text,
  Platform,
  AsyncStorage,
- AppState,
+ AppState
 } from 'react-native';
 import React, { Component } from 'react';
 import { Actions, Router, Scene } from 'react-native-router-flux';
@@ -23,6 +23,28 @@ export default class NavBar extends Component {
     this._handleAppStateChange = this._handleAppStateChange.bind(this)
     this.sessionsRef = firebase.database().ref().child('sessions')
     this.usersRef = firebase.database().ref().child('users')
+    firebase.auth().onAuthStateChanged(this.handleUser)
+  }
+  handleUser = (user) => {
+    if (user){
+      this.checkPaid(user.uid)
+    }
+  }
+  checkPaid (userId) {
+    this.usersRef.child(userId).once('value', (student)=>{
+      if(!student.hasChild('has_paid') || student.val().has_paid === false){
+        return Actions.pay()
+      }else{
+        let date = moment(student.val().paid_on).add(1, 'years').calendar()
+        let current = moment().format('L')
+        if (date === current){
+          this.usersRef.child(this.state.userId).update({
+            has_paid:false
+          })
+          return Actions.pay()
+        }
+      }
+    })
   }
   async componentWillMount () {
     theme.setRoot(this)
