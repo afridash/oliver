@@ -47,7 +47,7 @@ const muiTheme = getMuiTheme({
   },
 
 })
-var currency = 'NGN'
+var IPinfo = require('get-ipinfo');
 export default class Home extends Component {
   constructor(props){
     super(props);
@@ -94,10 +94,9 @@ export default class Home extends Component {
       text += possible.charAt(Math.floor(Math.random() * possible.length));
     return text;
   }
-  componentWillMount () {
-    let url= "http://api.ipstack.com/check?access_key=38df3054d6480880d32810d7591e9a96"
-    fetch(url).then((response)=>response.json()).then((responseJson)=> {
-      if (responseJson.country_code == 'NG'){
+  async componentWillMount () {
+    IPinfo((err, responseJson)=> {
+      if (responseJson.country == 'NG'){
         this.setState({currency:'NGN', amount:550, country:'NG', done:true})
       }else{
         this.setState({currency:'USD', amount:1.59, country:'US', done:true})
