@@ -4,13 +4,8 @@ import {Route, Switch, BrowserRouter} from 'react-router-dom'
 import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap/dist/css/bootstrap-theme.css'
 import './index.css';
-import {AddNew} from './components/AddNew'
-import {AddQuestions} from './components/AddQuestions'
-import {View} from './components/View'
-import {Stats} from './components/Stats'
-import NavBar from './components/navBar'
+//App Links
 import Policy from './components/policy'
-import Home from './components/App'
 import Dashboard from './components/AppHome'
 import Practice from './components/Practice'
 import Bookmarks from './components/bookmarks'
@@ -35,25 +30,39 @@ import Followers from './components/followers'
 import Profile from './components/profile'
 import App from './App'
 import Pay from './components/pay'
-import registerServiceWorker from './registerServiceWorker';
-
+import NavBar from './components/navBar'
+import registerServiceWorker from './registerServiceWorker'
+//In-House Links
+import Home from './in-house/App'
+import {AddQuestions} from './in-house/AddQuestions'
+import {View} from './in-house/View'
+import {Stats} from './in-house/Stats'
+import College from './in-house/college'
+import Faculty from './in-house/faculty'
+import Department from './in-house/Department'
+import LoginA from './in-house/Login'
+import AdminPay from './in-house/Admin-Pay'
 ReactDOM.render(
   <BrowserRouter >
   <div>
     <Switch>
        <Route exact path={"/"} component={App}/>
          <Route exact path={"/pay"} component={Pay} />
-        <Route exact path={"/questions"} component={Home} />
-        <Route exact path={"/students"} component={Students} />
-        <Route exact path={"/student/:id/:courseId"} component={Student} />
-       <Route exact path={"/add"} component={AddNew} />
-       <Route path={"/addquestions"} component={AddQuestions} />
-       <Route path={'/view'} component={View} />
-       <Route path={'/stats'} component={Stats} />
-        <Route path={'/policy'} component={Policy} />
-       <Route path={'/Login'} component={Login}/>
-       <Route exact path={'/search'} component={Search}/>
-      <Route exact path={'/search/:id'} component={Search}/>
+          <Route exact path={"/in-house/login"} component={LoginA} />
+          <Route exact path={"/in-house/home"} component={Home} />
+          <Route exact path={"/in-house/college/:id"} component={College} />
+          <Route exact path={"/in-house/college/:id/:faculty"} component={Faculty} />
+          <Route exact path={"/in-house/college/:id/:faculty/:department"} component={Department} />
+          <Route exact path={"/in-house/admin/pay"} component={AdminPay} />
+          <Route exact path={"/students"} component={Students} />
+          <Route exact path={"/student/:id/:courseId"} component={Student} />
+          <Route exact path={"/add/:college/:faculty/:department/:course"} component={AddQuestions} />
+          <Route exact path={'/view/:college/:faculty/:department/:course'} component={View} />
+          <Route path={'/in-house/stats/:id'} component={Stats} />
+          <Route path={'/policy'} component={Policy} />
+          <Route path={'/Login'} component={Login}/>
+          <Route exact path={'/search'} component={Search}/>
+          <Route exact path={'/search/:id'} component={Search}/>
        <NavBar>
          <Route exact path={"/dashboard"} component={Dashboard} />
           <Route path={"/Practice/:id"} component={Practice} />

@@ -1,10 +1,11 @@
 import React, {Component} from 'react'
 import {FormGroup, FormControl, ControlLabel, Col, Panel, Button, Checkbox, HelpBlock} from 'react-bootstrap'
-import { EditorState, convertFromRaw, convertToRaw, ContentState} from 'draft-js';
+import { EditorState, convertFromRaw, convertToRaw, ContentState} from 'draft-js'
+import {Link} from 'react-router-dom'
 import { Editor } from 'react-draft-wysiwyg'
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css'
-import draftToHtml from 'draftjs-to-html';
-import htmlToDraft from 'html-to-draftjs';
+import draftToHtml from 'draftjs-to-html'
+import htmlToDraft from 'html-to-draftjs'
 import {Firebase} from '../auth/firebase'
 const firebase =  require('firebase')
 export class Questions extends Component {
@@ -37,6 +38,10 @@ export class Questions extends Component {
     this.questions = []
     this.courseKey = this.props.courseKey
     this.questionsRef = firebase.database().ref().child('questions')
+    this.facultiesRef = firebase.database().ref().child('faculties')
+    this.collegesRef = firebase.database().ref().child('colleges')
+    this.departmentsRef = firebase.database().ref().child('departments')
+    this.coursesRef = firebase.database().ref().child('courses')
     this.statsRef = firebase.database().ref().child('oliver_stats').child('questions')
   }
   setChecked (event) {
@@ -154,9 +159,21 @@ export class Questions extends Component {
     }
   }
   _saveAssignment () {
-    this.questions.filter((question)=> this.uploadQuestion(question))
-    var ref = this.statsRef.once('value', (questions)=>{
-      questions.ref.set(questions.val() + this.questions.length-1)
+    this.questions.forEach((question)=> this.uploadQuestion(question))
+     this.statsRef.once('value', (questions)=>{
+      questions.ref.set(questions.val() + this.questions.length)
+    })
+    this.collegesRef.child(this.props.college).child('questions').once('value', (questions)=>{
+      questions.ref.set(questions.val() + this.questions.length)
+    })
+    this.facultiesRef.child(this.props.faculty).child('questions').once('value', (questions)=>{
+      questions.ref.set(questions.val() + this.questions.length)
+    })
+    this.departmentsRef.child(this.props.department).child('questions').once('value', (questions)=>{
+      questions.ref.set(questions.val() + this.questions.length)
+    })
+    this.coursesRef.child(this.props.department).child(this.props.courseKey).child('questions').once('value', (questions)=>{
+      questions.ref.set(questions.val() + this.questions.length)
     })
     this.setState({submitted:true})
   }
@@ -369,19 +386,19 @@ export class Questions extends Component {
         </FormGroup>
             {this.showQuestions()}
             <Checkbox checked={this.state.checked} onChange={(event)=>this.setChecked(event)}>Answered</Checkbox>
-            {this.state.error !== '' ? <p className='text-warning'>{this.state.error}</p> :<p></p>}
+            {this.state.error !== '' && <p className='text-warning'>{this.state.error}</p>}
             <Button onClick={()=>this.showNext()} bsStyle='primary' style={{margin:10}} >Next</Button>
-            {this.state.number > 0 ? <Button onClick={()=>this.showPrevious()} bsStyle='default'>Previous</Button> : <div></div>  }
+            {this.state.number > 0 && <Button onClick={()=>this.showPrevious()} bsStyle='default'>Previous</Button>}
             <div className='text-center'>
-              <Button  bsStyle='danger' onClick={this.props.close}>Close</Button>
-              {this.state.number > 0 ? <Button onClick={()=>this.saveAssignment()}  bsStyle='success' style={{margin:10}}>Save</Button> : <div></div>  }
+                <Link to={"/in-house/college/"+this.props.college+'/'+this.props.faculty+'/'+this.props.department}><Button bsStyle='danger' bsSize='small'>Back</Button></Link>
+              {this.state.number > 0 && <Button onClick={()=>this.saveAssignment()}  bsStyle='success' style={{margin:10}}>Save</Button> }
             </div>
     </div>
     )
   }
   render () {
     return (
-      this.state.submitted ? <div><p className='text-success'>Successfully Added Questions</p><Button onClick={this.props.close}>Close</Button></div> : this.showQuestionForm()
+      this.state.submitted ? <div><p className='text-success'>Successfully Added Questions</p><Link to={"/in-house/college/"+this.props.college+'/'+this.props.faculty+'/'+this.props.department}><Button >Close</Button></Link></div> : this.showQuestionForm()
     )
   }
 }

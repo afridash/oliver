@@ -1,11 +1,12 @@
 import React, {Component} from 'react'
 import {FormControl, ControlLabel, FormGroup, Radio, Button, Glyphicon, Modal, Checkbox} from 'react-bootstrap'
 import {Firebase} from '../auth/firebase'
-import { EditorState, convertFromRaw, convertToRaw, ContentState } from 'draft-js';
+import { EditorState, convertFromRaw, convertToRaw, ContentState } from 'draft-js'
+import {Link} from 'react-router-dom'
 import { Editor } from 'react-draft-wysiwyg'
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css'
-import draftToHtml from 'draftjs-to-html';
-import htmlToDraft from 'html-to-draftjs';
+import draftToHtml from 'draftjs-to-html'
+import htmlToDraft from 'html-to-draftjs'
 const firebase =  require('firebase')
 export class Questions extends Component {
   constructor (props) {
@@ -459,7 +460,9 @@ export class Questions extends Component {
         {this.state.questions.map((question, key)=>
           question.type === 'objective' ? this.showMultipleChoice(question, key) : this.showTheory(question, key)
         )}
-        <Button bsStyle='primary'  className='text-center' onClick={this.props.close}>Close</Button>
+        <Link to={"/in-house/college/"+this.props.college+'/'+this.props.faculty+'/'+this.props.department}>
+          <Button bsStyle='primary'  className='text-center' onClick={this.props.close}>Close</Button>
+        </Link>
         {this.showModal()}
         {this.showModalTheory()}
       </div>

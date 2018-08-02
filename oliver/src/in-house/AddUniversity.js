@@ -3,7 +3,7 @@ import { FormGroup, FormControl, ControlLabel, Button, Modal} from 'react-bootst
 import {Link} from 'react-router-dom'
 import {Firebase} from '../auth/firebase'
 const firebase =  require('firebase')
-export class AddUniversity extends Component {
+export default class AddUniversity extends Component {
   constructor (props) {
     super (props)
     this.state ={
@@ -29,7 +29,12 @@ export class AddUniversity extends Component {
   saveUniversity () {
     var data = {
       college:this.state.university,
-      location:this.state.location
+      location:this.state.location,
+      departments:0,
+      faculties:0,
+      questions:0,
+      published:false,
+      createdBy:this.props.user
     }
     this.ref.push(data)
     var ref = this.statsRef.once('value', (colleges)=>{
@@ -40,8 +45,7 @@ export class AddUniversity extends Component {
   showUniversityForm () {
     return (
       <div>
-      <h3 className='text-danger'>Before adding a new university, ensure it doesn't already exist <Button  bsStyle="primary"  bsSize="small" onClick={()=>this.open()}>here</Button></h3>
-      <p className='text-center text-info'>Add New University</p>
+      <h3 className='text-danger'>Before adding a new university, ensure it doesn't already exist </h3>
       {this.state.submittedUniversity ? <p className='text-center text-success'>Successfully Added New University</p> :<div></div>}
       <form>
         <FormGroup
@@ -70,37 +74,9 @@ export class AddUniversity extends Component {
               />
               <FormControl.Feedback />
             </FormGroup>
-            <Button bsStyle="primary" bsSize="small" onClick={()=>this.saveUniversity()}>Save</Button>
+            <Button bsStyle="primary" bsSize="large" onClick={()=>this.saveUniversity()}>Save</Button>
         </form>
-          {this.showModal()}
         </div>
-    )
-  }
-  close () {
-    this.setState({showModal:false})
-  }
-  open () {
-    this.setState({showModal:true})
-  }
-  showModal () {
-    return (
-      <Modal show={this.state.showModal} onHide={()=>this.close()}>
-        <Modal.Header closeButton>
-          <Modal.Title>List of Universities</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          {this.state.colleges.map((college, key)=>
-            <div>
-              <p>{college.college} ------- {college.location}</p>
-              <hr />
-            </div>
-          )}
-
-        </Modal.Body>
-        <Modal.Footer>
-          <Button onClick={()=>this.close()}>Close</Button>
-        </Modal.Footer>
-      </Modal>
     )
   }
   render () {
