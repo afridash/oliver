@@ -42,6 +42,8 @@ export default class Search extends Component {
     this.coursesRef =   firebase.database().ref().child('courses')
     this.userCoursesRef = firebase.database().ref().child('user_courses')
     this.registeredRef = firebase.database().ref().child('registered_courses')
+    this.collegeId = this.props.match.params.college
+    this.facultyId = this.props.match.params.faculty
   }
   handleUser = async (user) => {
     if (user) {
@@ -64,24 +66,28 @@ export default class Search extends Component {
     //1.Retrieve users courses from faculties in firebase and store them locally using AsyncStorage
     //Also filters the courses by department using the department Key
     this.data = []
-     this.facultiesRef.child(this.state.collegeId).once('value', (snapshots)=>{
-       if (!snapshots.exists()) {
-         this.setState({isloading:false, noActivity:true})
-       }
-      snapshots.forEach((childSnap)=>{
-        this.departmentsRef.child(childSnap.key).once('value', (snapshot)=>{
-          snapshot.forEach((department)=>{
-          this.coursesRef.child(department.key).once('value', (snap)=>{
-              let tempData = []
-              snap.forEach((course)=>{
-                this.data.push({key:course.key, show:false, name:course.val().name, code:course.val().code, department:department.key, title:department.val()})
-                this.addSection(this.data)
-              })
-            })
+    this.departmentsRef.child(this.facultyId).once('value', (snapshots)=>{
+      if (!snapshots.exists()) {
+        this.setState({isloading:false, noActivity:true})
+      }
+      snapshots.forEach((department)=>{
+      this.coursesRef.child(department.key).once('value', (snap)=>{
+          let tempData = []
+          snap.forEach((course)=>{
+            this.data.push({key:course.key, show:false, name:course.val().name, code:course.val().code, department:department.key, title:department.val()})
+            this.addSection(this.data)
           })
         })
       })
     })
+  }
+  componentWillReceiveProps (newProps) {
+    if (newProps.match.params.faculty !== this.facultyId) {
+      this.facultyId = newProps.match.params.faculty
+      this.data = []
+      this.setState({isloading:true,})
+      this.retrieveCoursesOnline()
+    }
   }
   addSection(data) {
     var tempData = _.groupBy(data, d => d.title)

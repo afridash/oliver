@@ -82,7 +82,7 @@ ReactDOM.render(
           <Route exact path={"/PracticeSummary"} component={PracticeSummary} />
           <Route path={'/recents'} component={RecentActivities} />
           <Route exact path={'/notifications'} component={Notifications} />
-          <Route exact path={'/courses'} component={Courses} />
+          <Route exact path={'/courses/:college/:faculty'} component={Courses} />
           <Route exact path={'/notifications/:id'} component={Notification} />
           <Route path={'/theory/:id/:question'} component={Theory} />
        </NavBar>

@@ -5,6 +5,7 @@ import IconMenu from 'material-ui/IconMenu'
 import MenuItem from 'material-ui/MenuItem'
 import FlatButton from 'material-ui/FlatButton'
 import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert'
+import School from 'material-ui/svg-icons/social/school'
 import Menu from 'material-ui/svg-icons/navigation/menu'
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
 import getMuiTheme from 'material-ui/styles/getMuiTheme'
@@ -51,10 +52,32 @@ export default class NavBar extends Component {
        userId:'',
        notificationCount: [],
        noNotificationCount: false,
+       collegeId:'',
+       faculties:[]
      };
      firebase.auth().onAuthStateChanged(this.handleUser)
      this.badgesRef = firebase.database().ref().child('badges')
+     this.facultiesRef = firebase.database().ref().child('faculties')
      this.usersRef = firebase.database().ref().child('users')
+   }
+   async componentWillMount () {
+      var collegeId = await localStorage.getItem('collegeId')
+      await this.setState({collegeId})
+      this.retrieveCoursesOnline()
+   }
+   async retrieveCoursesOnline () {
+     //1.Retrieve users courses from faculties in firebase and store them locally using AsyncStorage
+     //Also filters the courses by department using the department Key
+     this.data = []
+      this.facultiesRef.child(this.state.collegeId).once('value', (snapshots)=>{
+        if (!snapshots.exists()) {
+          this.setState({isloading:false, noActivity:true})
+        }
+       snapshots.forEach((childSnap)=>{
+         this.data.push({key:childSnap.key, name:childSnap.val()})
+         this.setState({faculties:this.data})
+         })
+     })
    }
    handleUser = (user) => {
      if (user) {
@@ -99,20 +122,24 @@ export default class NavBar extends Component {
       });
         this.setState({redirect:true})
     }
-    handleRequestClose = () => {
+   handleRequestClose = () => {
       this.setState({
         openMenu:false,
         openMore:false,
         openLargeProfile:false,
-        openBurger:false
+        openBurger:false,
+        viewColleges:false,
+        viewMicro:false
       })
     }
-    handleOnRequestChange = () => {
+   handleOnRequestChange = () => {
       this.setState({
         openMenu:false,
         openMore:false,
         openLargeProfile:false,
-        openBurger:false
+        openBurger:false,
+        viewColleges:false,
+        viewMicro:false
       })
     }
    setSearchText (text) {
@@ -159,10 +186,24 @@ export default class NavBar extends Component {
                iconElementRight={
                  <div className='col-sm-12'>
                    <div className="hidden-lg hidden-md ">
+                     <IconMenu
+                       onClick={()=>this.setState({viewMicro:!this.state.viewMicro})}
+                       iconButtonElement={
+                        <IconButton><School /></IconButton>}
+                       anchorOrigin={{horizontal: 'right', vertical: 'bottom'}}
+                       targetOrigin={{horizontal: 'right', vertical: 'top'}}
+                       iconStyle={{color:'white'}}
+                       open={this.state.viewMicro}
+                       onRequestChange={this.handleOnRequestChange}
+                       >
+                         {this.state.faculties.map((faculty, key)=>
+                           <Link onClick={this.handleRequestClose} to={'/courses/'+this.state.collegeId+"/"+faculty.key} style={{textDecoration:'none'}}><MenuItem value="4" primaryText={faculty.name} /></Link>
+                         )}
+                       </IconMenu>
                      <Link onClick={()=>this.loadNotifications()} to={"/notifications"}>
                       <Badge
                         badgeContent={this.state.badges}
-                        badgeStyle={{color:'white', backgroundColor: this.state.badges ? 'red' : 'transparent', top:10, left:25, }}
+                        badgeStyle={{color:'white', backgroundColor: this.state.badges ? 'red' : 'transparent', top:10 }}
                         style={{cursor:'pointer'}}
                         >
                           <NotificationsIcon  style={{color:'white'}} />
@@ -226,9 +267,20 @@ export default class NavBar extends Component {
                              </IconMenu>
                    </div>
                    <div className='hidden-sm hidden-xs'>
-                     <Link to={"/courses"}>
-                      <FlatButton label="Courses" style={{color:'white'}}/>
-                    </Link>
+                     <IconMenu
+                       onClick={()=>this.setState({viewColleges:!this.state.viewColleges})}
+                       iconButtonElement={
+                        <FlatButton label="Courses" style={{color:'white'}}/>}
+                       anchorOrigin={{horizontal: 'right', vertical: 'bottom'}}
+                       targetOrigin={{horizontal: 'right', vertical: 'top'}}
+                       iconStyle={{color:'white'}}
+                       open={this.state.viewColleges}
+                       onRequestChange={this.handleOnRequestChange}
+                       >
+                         {this.state.faculties.map((faculty, key)=>
+                           <Link onClick={this.handleRequestClose} to={'/courses/'+this.state.collegeId+"/"+faculty.key} style={{textDecoration:'none'}}><MenuItem value="4" primaryText={faculty.name} /></Link>
+                         )}
+                       </IconMenu>
                     <Link to={"/social"}>
                       <FlatButton label="social" style={{color:'white'}}/>
                     </Link>
