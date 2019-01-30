@@ -102,12 +102,7 @@ export default class Home extends Component {
         this.usersRef.child(user.uid).once('value', (student)=>{
           localStorage.setItem('collegeId', student.val().collegeId)
           localStorage.setItem('userId', user.uid)
-          if (student.hasChild('has_paid') && student.val().has_paid === true) {
-            this.setState({redirect:true, loading:false})
-          }else{
-            localStorage.setItem('has_paid', "false")
-            this.setState({notPaid:true, loading:false})
-          }
+          this.setState({redirect:true, loading:false})
         })
       }).catch((error)=> {
       var errorMessage = error.message
@@ -180,8 +175,6 @@ export default class Home extends Component {
       })
       localStorage.setItem('collegeId', college.key)
       localStorage.setItem('userId', userKey)
-      localStorage.setItem('has_paid', "false")
-      this.setState({notPaid:true, loading:false})
   }
   logOut () {
     firebase.auth().signOut().then(()=> {
@@ -226,7 +219,7 @@ export default class Home extends Component {
                       <div className="home_text">
                           <h1>Oliver</h1>
                           <p>Exam Prep Simplified</p>
-                          <p style={{fontSize:18, color:'#ff1744', marginTop:30}} className='text-danger'>Now NGN 550.00 Per Year for a limited time</p>
+                          <p style={{fontSize:18, color:'#ff1744', marginTop:30}} className='text-danger'>Practice Exams from your university, for FREE</p>
                           <div className="download-btn">
                               <a className="btn home-btn wow fadeInLeft" href="#DOWNLOAD">Download</a>
                               <a className="tuor btn wow fadeInRight" href="#ABOUT">Take a tour <i className="fa fa-angle-down"></i></a>
@@ -398,7 +391,6 @@ export default class Home extends Component {
       </div>
       </section>
       {this.state.redirect && <Redirect to='/dashboard' push />}
-      {this.state.notPaid && <Redirect to='/pay' push />}
     </div>
     )
   }

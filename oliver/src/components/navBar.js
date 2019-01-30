@@ -83,25 +83,9 @@ export default class NavBar extends Component {
      if (user) {
        this.setState({username:user.displayName, userId:user.uid, photoURL:user.photoURL})
        this.addListener(user.uid)
-       this.checkPaid(user.uid)
      }else {
        this.setState({redirect:true})
      }
-   }
-   checkPaid (userId) {
-     this.usersRef.child(userId).once('value', (student)=>{
-       if(!student.hasChild('has_paid') || student.val().has_paid === false){
-         this.setState({notPaid:true})
-       }else{
-         let date = moment(student.val().paid_on).add(1, 'years').calendar()
-         let current = moment().format('L')
-         if (date === current){
-           this.usersRef.child(this.state.userId).update({
-             has_paid:false
-           })
-         }
-       }
-     })
    }
    addListener (userId) {
      this.badgesRef.child(userId).on('child_added', (badges)=>{
@@ -347,7 +331,6 @@ export default class NavBar extends Component {
                               <MenuItem value="4" primaryText="Copyright @ Afridash Ltd" />
                             </IconMenu>
                    </div>
-                   {this.state.notPaid && <Redirect to='/pay' push />}
                   </div>}
                       />
                       {this.props.children}

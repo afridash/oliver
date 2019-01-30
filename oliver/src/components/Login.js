@@ -18,35 +18,31 @@ class Login extends Component {
     }
     firebase.auth().onAuthStateChanged(this.handleUser.bind(this))
   }
-
   handleUser(user){
       if(user){
         this.setState({redirect:true})
         localStorage.setItem('userId', user.uid)
       }
     }
-
   async handleSubmit (event) {
     event.preventDefault()
-    await firebase.auth().signInWithEmailAndPassword(this.state.email, this.state.password).then((user)=> {
-      localStorage.setItem('userId', user.uid)
+      await firebase.auth().signInWithEmailAndPassword(this.state.email, this.state.password).then((user)=> {
+        localStorage.setItem('userId', user.uid)
         this.setState({redirect:true})
-    }).catch((error)=> {
-    var errorMessage = error.message;
-    this.setState({error:errorMessage})
-  })
+      }).catch((error)=> {
+      var errorMessage = error.message;
+      this.setState({error:errorMessage})
+    })
   }
   handlePasswordChange (event){
     this.setState({password: event.target.value})
   }
-
   handleEmailChange (event) {
-  this.setState({email: event.target.value})
+    this.setState({email: event.target.value})
   }
-
   render () {
-  return (
-    this.state.redirect ? <Redirect to='/dashboard' push/> : <div className='center'>
+    return (
+      this.state.redirect ? <Redirect to='/dashboard' push/> : <div className='center'>
           <MuiThemeProvider>
             <div>
               <br/>
@@ -81,13 +77,13 @@ class Login extends Component {
           </MuiThemeProvider>
         </div>
 
-  );
-}
+      );
+  }
 }
 const styles = {
-button:{margin: 15},
-box:{
-  boxShadow: '10px 10px 5px #888888',
-},
+  button:{margin: 15},
+  box:{
+    boxShadow: '10px 10px 5px #888888',
+  },
 };
 export default Login;
