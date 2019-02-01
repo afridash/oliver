@@ -27,32 +27,14 @@ export default class NavBar extends Component {
   }
   handleUser = (user) => {
     if (user){
-      this.checkPaid(user.uid)
+      this.setState(prev => ({userId:user.uid}))
+      AppState.addEventListener('change', this._handleAppStateChange)
     }
   }
-  checkPaid (userId) {
-    this.usersRef.child(userId).once('value', (student)=>{
-      if(!student.hasChild('has_paid') || student.val().has_paid === false){
-        return Actions.pay()
-      }else{
-        let date = moment(student.val().paid_on).add(1, 'years').calendar()
-        let current = moment().format('L')
-        if (date === current){
-          this.usersRef.child(this.state.userId).update({
-            has_paid:false
-          })
-          return Actions.pay()
-        }
-      }
-    })
-  }
+
   async componentWillMount () {
     theme.setRoot(this)
-    var userId = await AsyncStorage.getItem('myKey')
-    this.setState({userId})
-  }
-  componentDidMount () {
-    AppState.addEventListener('change', this._handleAppStateChange)
+
   }
   componentWillUnmount () {
     AppState.removeEventListener('change', this._handleAppStateChange)

@@ -48,7 +48,6 @@ import Social from './components/social'
 import SocialUser from './components/social-second'
 import Post from './components/post'
 import Leaders from './components/leaderboard'
-import Pay from './components/pay'
 const reducerCreate = params => {
   const defaultReducer = new Reducer(params);
   return (state, action) => {
@@ -103,7 +102,6 @@ export default class App extends React.Component {
                 <Scene key='login' component={Login}  />
                 <Scene key='signup' component={SignUp} />
                 <Scene key='universities' component={Universities}  />
-                <Scene key='pay' component={Pay}  />
                 <Scene key='resetpassword'  component={Reset} />
                 <Drawer
                   initial
